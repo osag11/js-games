@@ -27,6 +27,10 @@ function handleKeyDown(event) {
       weaponModel.bomb.state = 1;
     }
   }
+
+  if (keyPressed == 40) {
+    planeModel.y+=50;
+  }
 }
 
 function main_loop() {

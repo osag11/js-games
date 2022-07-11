@@ -3,8 +3,8 @@ let cityModel = {
     houseWidth: 50,
     houseStageHeight: 50,
     houses: [],
-    minHouseSize: 5,
-    maxHouseSize: 10,
+    minHouseSize: 1,
+    maxHouseSize: 3,
     colors: ["beige", "Plum", "Salmon", "Cornsilk", "Peru", "CadetBlue", "green", "blue", "yellow", "violet", "brown", "grey"]
 }
 

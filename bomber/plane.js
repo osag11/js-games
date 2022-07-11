@@ -16,7 +16,8 @@ function drawPlane() {
     if (isPlaneLanded()) {
         planeModel.x-=40;
         planeModel.color = "green"
-        planeModel.y = scene.height - 50;
+        planeModel.y = scene.height-10;
+        message("Congratulations! Level passed.", "green")
     }
 
     ctx2d.fillStyle = planeModel.color;
@@ -33,7 +34,6 @@ function drawPlane() {
     ctx2d.lineTo(x + 10, y - 10);
     ctx2d.lineTo(x + 40, y - 12);
     ctx2d.moveTo(x + 50, y);
-
     ctx2d.fill();
 
     if (isPlaneCrashed()) {
@@ -79,7 +79,7 @@ function isPlaneCrashed() {
 function isPlaneLanded() {
     let survivedHouses = cityModel.houses.find(({size}) => size > 0);
 
-    if(!survivedHouses && planeModel.y >= scene.height){
+    if(!survivedHouses && planeModel.y >= scene.height-50){
         return true;
     }
     return false;
