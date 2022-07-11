@@ -3,9 +3,9 @@ let cityModel = {
     houseWidth: 50,
     houseStageHeight: 50,
     houses: [],
-    minHouseSize: 4,
-    maxHouseSize: 12,
-    colors: ["red", "green", "blue", "yellow", "violet", "brown", "black", "grey"]
+    minHouseSize: 5,
+    maxHouseSize: 10,
+    colors: ["beige", "Plum", "Salmon", "Cornsilk", "Peru", "CadetBlue", "green", "blue", "yellow", "violet", "brown", "grey"]
 }
 
 
@@ -14,17 +14,31 @@ function getRandom(min, max) {
 }
 
 function getRandomSize() {
-    return getRandom(5, 10);
+    return getRandom(cityModel.minHouseSize, cityModel.maxHouseSize);
 }
 
 function getRandomColor() {
     return cityModel.colors[getRandom(0, cityModel.colors.length - 1)]
 }
 
+function getRandomColor(excludeColor) {
+    let colorIdx = getRandom(0, cityModel.colors.length - 1);
+    let color = cityModel.colors[colorIdx];
+    if (color == excludeColor) {
+        if (colorIdx < cityModel.colors.length - 1) {
+            color = cityModel.colors[colorIdx + 1];
+        } else {
+            color = cityModel.colors[0];
+        }
+    }
+    return color;
+}
+
+
 function drawCity() {
     if (cityModel.houses.length == 0) {
-    // build houses model
-        for (let i = 0; i < scene.width / cityModel.houseWidth; i++) {
+        // build houses model
+        for (let i = 1; i < scene.width / cityModel.houseWidth; i++) {
             let size = getRandomSize();
             cityModel.houses.push({
                 x: i * cityModel.houseWidth,
@@ -43,9 +57,11 @@ function drawCity() {
 }
 
 function drawHouse(x, size, color, roofColor) {
-    drawWalls(x, size, color);
-    drawRoof(x, scene.height - size * cityModel.houseStageHeight, roofColor);
-    drawWindows(x, size);
+    if (size > 0) {
+        drawWalls(x, size, color);
+        drawRoof(x, scene.height - size * cityModel.houseStageHeight, roofColor);
+        drawWindows(x, size, color);
+     }
 }
 
 function drawWalls(x, size, color) {
@@ -58,20 +74,41 @@ function drawRoof(x, y, color) {
     ctx2d.fillStyle = color;
 
     ctx2d.beginPath();
-    ctx2d.moveTo(x-2, y);
-    ctx2d.lineTo(x+15, y-30);
-    ctx2d.lineTo(x+32, y-30);
-    ctx2d.lineTo(x+49, y);
+    ctx2d.moveTo(x - 2, y);
+    ctx2d.lineTo(x + 15, y - 30);
+    ctx2d.lineTo(x + 32, y - 30);
+    ctx2d.lineTo(x + 49, y);
     ctx2d.fill();
 }
 
-function drawWindows(x, size) {
 
-        ctx2d.fillStyle = getRandomColor();
+let winColors = [];
+let winRandomFloorColors = [];
+let lightSwitchCount = 0;
 
-    for (let i = 0; i <= size * cityModel.houseStageHeight; i+= cityModel.houseStageHeight) {
-        ctx2d.fillRect(x+5, scene.height - (i-10), 16, 25);
+function drawWindows(x, size, houseColor) {
 
-        ctx2d.fillRect(x+25, scene.height - (i-10), 16, 25);
+    if (!winColors[x]) {
+        winColors[x] = getRandomColor(houseColor);
     }
+
+    ctx2d.fillStyle = winColors[x];
+
+    for (let i = 0; i <= size * cityModel.houseStageHeight; i += cityModel.houseStageHeight) {
+        ctx2d.fillRect(x + 5, scene.height - (i - 10), 16, 25);
+        ctx2d.fillRect(x + 25, scene.height - (i - 10), 16, 25);
+    }
+
+    // blinking light
+    let randomFloor = getRandom(0, size)
+    if (lightSwitchCount % 5 == 0) {
+        winRandomFloorColors[x] = getRandomColor(houseColor);
+    }
+
+    ctx2d.fillStyle = winRandomFloorColors[x]
+    ctx2d.fillRect(x + 5, scene.height - (randomFloor * cityModel.houseStageHeight - 10), 16, 25);
+    ctx2d.fillRect(x + 25, scene.height - (randomFloor * cityModel.houseStageHeight - 10), 16, 25);
+
+    lightSwitchCount++;
+
 }
