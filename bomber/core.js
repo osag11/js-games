@@ -40,6 +40,8 @@ function main_loop() {
 
   draw();
 
+  wait(200) 
+
   setTimeout(function onTick() {
     main_loop();
   }, frameRate)
@@ -84,4 +86,12 @@ function drawMessage()
   ctx2d.font = '64px serif';
   ctx2d.textAlign = 'center';
   ctx2d.strokeText(messageModel.text, scene.width/2, scene.height/2);
+}
+
+function wait(ms){
+  var start = new Date().getTime();
+  var end = start;
+  while(end < start + ms) {
+    end = new Date().getTime();
+ }
 }
