@@ -3,9 +3,10 @@ let cityModel = {
     houseWidth: 50,
     houseStageHeight: 50,
     houses: [],
-    minHouseSize: 1,
-    maxHouseSize: 3,
-    colors: ["beige", "Plum", "Salmon", "Cornsilk", "Peru", "CadetBlue", "green", "blue", "yellow", "violet", "brown", "grey"]
+    minHouseSize: 2,
+    maxHouseSize: 5,
+    colors: ["beige", "Plum", "Salmon", "Cornsilk", "Peru", "CadetBlue", "green", "blue", "yellow", "violet", "brown", "grey"],
+    misionComplete: 1
 }
 
 
@@ -34,9 +35,31 @@ function getRandomColor(excludeColor) {
     return color;
 }
 
+function startNewMission(){
+
+    if(cityModel.misionComplete == 1){
+
+        let lifes = planeModel.lifes;
+        let x = planeModel.x;
+
+        planeModel = {
+            x: x,
+            y: 50,
+            color: "black",
+            lifes: lifes++,
+            direction: 0
+        };
+        cityModel.misionComplete = 0;
+        cityModel.houses = [];
+        weaponModel.bomb.state = 0;
+
+        showInstructions(5);
+    }
+}
+
 
 function drawCity() {
-    if (cityModel.houses.length == 0) {
+    if (cityModel.houses.length == 0 && cityModel.misionComplete==0) {
         // build houses model
         for (let i = 1; i < scene.width / cityModel.houseWidth; i++) {
             let size = getRandomSize();
@@ -101,7 +124,7 @@ function drawWindows(x, size, houseColor) {
 
     // blinking light
     let randomFloor = getRandom(0, size)
-    if (lightSwitchCount % 5 == 0) {
+    if (lightSwitchCount % 100 == 0) {
         winRandomFloorColors[x] = getRandomColor(houseColor);
     }
 
@@ -109,6 +132,6 @@ function drawWindows(x, size, houseColor) {
     ctx2d.fillRect(x + 5, scene.height - (randomFloor * cityModel.houseStageHeight - 10), 16, 25);
     ctx2d.fillRect(x + 25, scene.height - (randomFloor * cityModel.houseStageHeight - 10), 16, 25);
 
-    lightSwitchCount++;
+    lightSwitchCount+=size;
 
 }

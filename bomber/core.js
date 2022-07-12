@@ -6,17 +6,16 @@ let frameNumber = 0;
 const borderColor = 'green';
 const borderSize = 5;
 const frameRate = 200;
-
-let messageModel = {
-  text: "",
-  color: "black",
-  time: 10
-}
+let isGameOver = 0;
 
 // ------------functions-------------------
 
+document.addEventListener("DOMContentLoaded", () => {
+  scene.width = document.body.offsetWidth; 
+});
+
 document.addEventListener("keydown", handleKeyDown);
-clean();
+
 main_loop();
 
 function handleKeyDown(event) {
@@ -30,6 +29,16 @@ function handleKeyDown(event) {
 
   if (keyPressed == 40) {
     planeModel.y+=50;
+  }
+
+  if (keyPressed == 38) {
+    if(isPlaneLanded()){
+      planeModel.direction = -1;
+    }
+  }
+
+  if (keyPressed == 67) {
+       cityModel.houses.forEach(h=>{ h.size = 0, h.top = scene.height - h.size * cityModel.houseStageHeight });
   }
 }
 
@@ -54,17 +63,15 @@ function clean() {
   ctx2d.strokeRect(0, 0, scene.width, scene.height);
 }
 
-function message(text,color="black",time=10)
-{
-  messageModel.text = text;
-  messageModel.color = color;
-  messageModel.time = time;  
-}
 
 function draw() {
   drawCity();
-  if( planeModel.lifes<=0){
-    message("game over!", "red");
+
+  if(planeModel.lifes<=0){
+    if(isGameOver == 0){
+     message("game over!", 3, "red", 300);
+     isGameOver = 1;
+    }
     drawMessage();
     return;
   }
@@ -74,19 +81,6 @@ function draw() {
   drawMessage();
 }
 
-function drawMessage()
-{  
-  if(messageModel.time <=0){
-    messageModel.text = ""
-  }
-
-  messageModel.time--;
-
-  ctx2d.strokeStyle = messageModel.color
-  ctx2d.font = '64px serif';
-  ctx2d.textAlign = 'center';
-  ctx2d.strokeText(messageModel.text, scene.width/2, scene.height/2);
-}
 
 function wait(ms){
   var start = new Date().getTime();

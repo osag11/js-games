@@ -1,7 +1,7 @@
 let weaponModel = {
     bomb: {
         amount: 50,
-        states: ["ready", "fly"],
+        states: ["ready", "fly", "off"],
         state: 0,
         x: 0,
         y: 0,
@@ -15,6 +15,10 @@ let weaponModel = {
 }
 
 function drawBomb() {
+    if (weaponModel.bomb.state == 2) {
+        return;
+    }
+
     if (weaponModel.bomb.state == 0) {
         weaponModel.bomb.x = planeModel.x;
         weaponModel.bomb.y = planeModel.y;
@@ -46,7 +50,7 @@ function drawBomb() {
         drawBoom(x,y);
         drawBombBody(x, y);
     }
-
+    // internal functions >
     function drawBombOnboard(x, y) {
         ctx2d.fillStyle = "black";
         ctx2d.beginPath();
@@ -57,7 +61,7 @@ function drawBomb() {
     function drawBoom(x, y) {
         ctx2d.fillStyle = "red";
         ctx2d.beginPath();
-        ctx2d.arc(x + 20, y + 25, weaponModel.bomb.size * 3, 0, 2 * Math.PI, 0);
+        ctx2d.arc(x + 20, y + 15, weaponModel.bomb.size * 3, 0, 2 * Math.PI, 0);
         ctx2d.fill();
     }
 
@@ -71,6 +75,8 @@ function drawBomb() {
         ctx2d.lineTo(x + 20, y);
         ctx2d.fill();
     }
+    // < internal functions:
+
 }
 
 function isBombHitTarget() {

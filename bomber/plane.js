@@ -1,23 +1,41 @@
 let planeModel = {
     x: 0,
-    y: 50,
-    color: "black",
-    lifes: 3
+    y: scene.height-6,
+    color: "Grey",
+    lifes: 3,
+    direction: -1
 }
 
 function drawPlane() {
 
     planeModel.x += 50;
+    planeModel.y += planeModel.direction * 50;
+
+    if (planeModel.direction < 0)
+    {
+        if(planeModel.y <= 50)
+        {
+            startNewMission();
+        }
+    }
+
     if (planeModel.x > scene.width) {
         planeModel.x = 0;
         planeModel.y += 50;
     }
 
     if (isPlaneLanded()) {
-        planeModel.x-=40;
-        planeModel.color = "green"
-        planeModel.y = scene.height-10;
-        message("Congratulations! Level passed.", "green")
+        if(planeModel.x > scene.width/3){
+          planeModel.x-=40;
+        }
+        planeModel.color = "Grey"
+        planeModel.y = scene.height-6;
+        if(cityModel.misionComplete == 0){
+            message("Congratulations! Level passed.", 1, "green");
+            message("press arrow up to start next level", 1,"cadetblue", 100);
+        }
+        cityModel.misionComplete = 1;
+        weaponModel.bomb.state = 2;
     }
 
     ctx2d.fillStyle = planeModel.color;
@@ -40,7 +58,7 @@ function drawPlane() {
         drawCrash();
 
         planeModel.lifes--;
-        message(`plane crashed! ${planeModel.lifes} lifes left...`, "orange", 20);
+        message(`plane crashed! ${planeModel.lifes} lifes left...`,planeModel.lifes+10, "orange", 20);
 
         planeModel.x= 0;
         planeModel.y= 50;
@@ -79,7 +97,7 @@ function isPlaneCrashed() {
 function isPlaneLanded() {
     let survivedHouses = cityModel.houses.find(({size}) => size > 0);
 
-    if(!survivedHouses && planeModel.y >= scene.height-50){
+    if(!survivedHouses && planeModel.y >= scene.height - 10){
         return true;
     }
     return false;
