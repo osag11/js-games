@@ -2,15 +2,20 @@ const colors3 = ["blue", , "cyan", "aquamarine", "aqua", "royalblue", "steelvlue
 const colors4 = ["yellow", "orange",  "gold", "darkorange", "coral",  "SandyBrown", "LemonChiffon"];
 
 const colors1 = ["blue", , "cyan", "aqua", "skyblue"];
-const colors2 = ["yellow", "orange", "gold", "LemonChiffon"];
+const colors2 = ["yellow", "orange", "gold", "lemonchiffon"];
 
 function getRandom(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function getRandomColor() {
+function getDeviation(range){
+    return 1 + Math.random() * range - Math.random() * range;
+}
+
+function getRandomColor(colors) {
     return colors[getRandom(0, colors.length - 1)]
 }
+
 
 function getRandomUAColor(id) {
     if (id % 2 == 1)//odd

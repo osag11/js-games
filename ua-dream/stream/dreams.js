@@ -1,15 +1,24 @@
 const hearts = [];
+let heartSize = {min:20, max:50};
 
-function addHearts(x, y) {
-    roundCount++;
-    for (let i = 0; i < roundCount; i++) {
+// const flags = [];
+// let flagSize = {min:20, max:50};
+
+
+function addHearts(count, x, y, area) {
+    if(!area) area=200;
+
+    for (let i = 0; i < count; i++) {
+
+    let hca = w3color(getRandomUAColor(i));
+    hca.opacity=0.3;
 
         hearts.push({
-            x: x + getRandom(-200, 200),
-            y: y + getRandom(-200, 200),
-            w: getRandom(100, 200),
-            h: getRandom(100, 200),
-            color: getRandomUAColor(i)
+            x: x + getRandom(-area, area),
+            y: y + getRandom(-area, area),
+            w: getRandom(heartSize.min, heartSize.max),
+            h: getRandom(heartSize.min, heartSize.max),
+            color: hca.toRgbaString()
         });
     }
 }

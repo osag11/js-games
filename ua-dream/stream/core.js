@@ -1,7 +1,6 @@
 const canvas = document.getElementById("cw");
 const ctx = canvas.getContext("2d");
 ctx.globalAlpha = 0.5;
-let direction = 0;
 
 const cursor = {
     x: innerWidth / 2,
@@ -49,19 +48,18 @@ function main() {
     clear();
 
     drawDream();
-    drawTarget();
-    
+    drawTarget(ball);
+
     ball.color = "red";
 
     drawParticles();
 
-    if (particlesArray.length > minCount) {
-        let deleted = particlesArray.pop();
-        console.log(deleted.instance);
-    }
 }
 
 //------- Entry point -----------
+
 setSize();
 generateParticles(2);
+addHearts(5, getRandom(0,canvas.width),getRandom(0,canvas.height),500);
+
 main();

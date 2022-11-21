@@ -1,6 +1,8 @@
 const vF = 5;
+const ballProblemSolvedRadius = 5;
 const targetColor = 'red';
-let radiusStep = 1.5;
+let killingSpeed = 0.01;
+
 
 const ball = {
     x: 100,
@@ -16,39 +18,45 @@ const ball = {
         ctx.closePath();
         ctx.fillStyle = this.color;
         ctx.fill();
+    },
+
+    handleCollision(){
+        
     }
-};  
-
-  
-//   function drawBall() {
-//     clear();
-//     ball.draw();
-//     ball.x += ball.vx;
-//     ball.y += ball.vy;
-  
-//     if (ball.y + ball.vy > canvas.height || ball.y + ball.vy < 0) {
-//       ball.vy = -ball.vy;
-//     }
-//     if (ball.x + ball.vx > canvas.width || ball.x + ball.vx < 0) {
-//       ball.vx = -ball.vx;
-//     }
-  
-//     raf = window.requestAnimationFrame(drawBall);
-//   }
+}; 
 
 
+
+function handleBallCollision(ball, theta){
+    // log(theta);
+
+    ball.vx = -direction * Math.cos(theta) * vF * getDeviation(0.9);
+    ball.vy = -direction * Math.sin(theta) * vF * getDeviation(0.9);
+
+
+}
+
+function log(theta)
+{
+    console.log(theta*180/Math.PI%360);
+    console.log(`cos: ${Math.cos(theta)}` );
+    console.log(`sin: ${Math.sin(theta)}`);
+    console.log(`tan: ${Math.tan(theta)}`);
+}
+
   
-function drawTarget() {
+function drawTarget(ball) {
     ball.draw();
-    let rand = 1 + Math.random() * 0.5 - Math.random() * 0.5;
+    let speedDeviation = getDeviation(0.5);
+
     ball.x += ball.vx;
     ball.y += ball.vy;
 
     if (ball.y + ball.vy > canvas.height || ball.y + ball.vy < 0) {
-        ball.vy = -ball.vy * rand;
+        ball.vy = -ball.vy * speedDeviation;
     }
     if (ball.x + ball.vx > canvas.width || ball.x + ball.vx < 0) {
-        ball.vx = -ball.vx * rand;
+        ball.vx = -ball.vx * speedDeviation;
     }
 
     // invert if leaving canvas
@@ -68,7 +76,7 @@ function drawTarget() {
 
 }
 
-function minRadius(r) {
+function getMinRadius(r) {
     if (r < 20) return 20;
     return r;
 }
