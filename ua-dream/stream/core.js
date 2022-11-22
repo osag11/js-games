@@ -48,10 +48,7 @@ function main() {
     clear();
 
     drawDream();
-    drawTarget(ball);
-
-    ball.color = "red";
-
+    drawTargets();
     drawParticles();
 
 }
@@ -60,6 +57,7 @@ function main() {
 
 setSize();
 generateParticles(2);
-addHearts(5, getRandom(0,canvas.width),getRandom(0,canvas.height),500);
+addHearts(5, getRandom(0, canvas.width), getRandom(0, canvas.height), 500);
+initBalls(20);
 
 main();

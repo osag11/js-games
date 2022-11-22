@@ -1,17 +1,18 @@
 const hearts = [];
-let heartSize = {min:20, max:50};
+const heartSize = { min: 20, max: 50 };
+const rewardsSize= { hearts: 5, flags: 2, flowers: 2 };
 
 // const flags = [];
 // let flagSize = {min:20, max:50};
 
 
 function addHearts(count, x, y, area) {
-    if(!area) area=200;
+    if (!area) area = 200;
 
     for (let i = 0; i < count; i++) {
 
-    let hca = w3color(getRandomUAColor(i));
-    hca.opacity=0.3;
+        let hca = w3color(getRandomUAColor(hearts.length));
+        hca.opacity = 0.3;
 
         hearts.push({
             x: x + getRandom(-area, area),

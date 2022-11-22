@@ -1,7 +1,7 @@
-const colors3 = ["blue", , "cyan", "aquamarine", "aqua", "royalblue", "steelvlue", "skyblue", "CornflowerBlue", "DarkCyan"];
+const colors3 = ["blue", "cyan", "aquamarine", "aqua", "royalblue", "steelvlue", "skyblue", "CornflowerBlue", "DarkCyan"];
 const colors4 = ["yellow", "orange",  "gold", "darkorange", "coral",  "SandyBrown", "LemonChiffon"];
 
-const colors1 = ["blue", , "cyan", "aqua", "skyblue"];
+const colors1 = ["blue", "cyan", "aqua", "skyblue"];
 const colors2 = ["yellow", "orange", "gold", "lemonchiffon"];
 
 function getRandom(min, max) {
