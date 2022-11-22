@@ -50,7 +50,7 @@ function main() {
     drawDream();
     drawTargets();
     drawParticles();
-
+    disposeParticles();
 }
 
 //------- Entry point -----------

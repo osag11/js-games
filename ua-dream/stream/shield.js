@@ -1,5 +1,6 @@
 
 const particlesArray = [];
+
 let direction = -1;
 let roundCount = 1;
 const particleSize = 3;
@@ -70,22 +71,23 @@ function Particle(x, y, particleTrailWidth, strokeColor, rotateSpeed, instance) 
     };
 }
 
-
-
-function drawParticles() {
-
+function drawParticles() {    
     particlesArray.forEach((particle) => {
         particle.rotate();
         handleParticlesCollision(particle);
     });
+}
 
+const particlesIndex = [];
+
+function disposeParticles() {
     // remove from the end
     if (particlesArray.length > minCount) {
         let deleted = particlesArray.pop();
-        console.log(`${deleted.instance} / ${particlesArray.length}`);
+        particlesIndex.push(deleted.instance);
+        console.log(`disposing: ${deleted.instance} / ${particlesArray.length} / ${particlesIndex.length}`);
     }
 }
-
 
 function handleParticlesCollision(particle) {
 
@@ -96,7 +98,7 @@ function handleParticlesCollision(particle) {
             ball.color = particle.strokeColor;
 
             handleBallCollision(ball, particle.theta);
-            handleRoundEnd(ball);
+            handleRoundEnded(ball);
 
             break;
 
@@ -109,26 +111,34 @@ function handleParticlesCollision(particle) {
 
     if (particle.colliting) {
         particle.update(radiusStep * direction, speed, getRandomUAColor(particle.instance));
+        addParticle(speed);
 
-        if (particlesArray.length < maxCount) {
-            // add to beginning
-            particlesArray.unshift(new Particle(
-                cursor.x,
-                cursor.y,
-                particleSize,
-                getRandomUAColor(getRandom(3,5)),
-                speed,
-                particlesArray.length + 1
-            ));
-        }
     } else {
         particle.update(radiusStep * direction, speed);
     }
 }
 
 
+function addParticle(speed) {
+    let id = particlesArray.length;
 
-function handleRoundEnd(ball) {
+    if (particlesIndex.length > 0) {
+        id = particlesIndex.pop();
+    }
+    if (particlesArray.length < maxCount) {
+        // add to beginning
+        particlesArray.unshift(new Particle(
+            cursor.x,
+            cursor.y,
+            particleSize,
+            getRandomUAColor(id),
+            speed,
+            id
+        ));
+    }
+}
+
+function handleRoundEnded(ball) {
     if (ball.radius > ballProblemSolvedRadius) {
         ball.radius -= killingSpeed;
     } else {
