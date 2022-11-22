@@ -4,11 +4,13 @@ const vF = 5;
 const ballProblemSolvedRadius = 15;
 const targetColor = 'red';
 const ballInitialSize = 25;
+const ballMaxSize = 50;
 const killingSpeed = 0.1;
 const colorChangeCount = 600;
+const targetLifes = 3;
+let idCounter =0;
 
-
-function Ball() {
+function Ball(id) {
     this.x = canvas.width * Math.random();
     this.y = canvas.height * Math.random();
     this.vx = 1 * vF;
@@ -17,8 +19,8 @@ function Ball() {
     this.color = targetColor;
     this.colorChangeCounter = colorChangeCount;
     this.colliting = false;
-    this.lifesCount = 2;
-
+    this.lifesCount = targetLifes;
+    this.id = id?id:++idCounter;
 
     this.recoverColor = () => {
         this.colorChangeCounter--;

@@ -71,7 +71,7 @@ function Particle(x, y, particleTrailWidth, strokeColor, rotateSpeed, instance) 
     };
 }
 
-function drawParticles() {    
+function drawParticles() {
     particlesArray.forEach((particle) => {
         particle.rotate();
         handleParticlesCollision(particle);
@@ -85,7 +85,7 @@ function disposeParticles() {
     if (particlesArray.length > minCount) {
         let deleted = particlesArray.pop();
         particlesIndex.push(deleted.instance);
-        console.log(`disposing: ${deleted.instance} / ${particlesArray.length} / ${particlesIndex.length}`);
+        //console.log(`disposing: #${deleted.instance} / ${particlesArray.length} (${particlesIndex.length})`);
     }
 }
 
@@ -146,17 +146,24 @@ function handleRoundEnded(ball) {
         roundCount++;
         ball.lifesCount--;
 
-        addHearts(rewardsSize.hearts, ball.x, ball.y);
-
         if (ball.lifesCount > 0) {
-            // reborn
-            ball.radius = ballInitialSize + roundCount>50?50:roundCount;
-            
+
+            // respawn
+            ball.radius = ballInitialSize + (roundCount > ballMaxSize ? ballMaxSize : roundCount); // bigger than previous
+            console.log(`round: ${roundCount}, target: #${ball.id} / ${balls.length}, lifes: ${ball.lifesCount}`)
+
             ball.x = getRandom(100, canvas.width);
             ball.y = getRandom(100, canvas.height);
+
         } else {
+
+            // remove
             let idx = balls.indexOf(ball);
             balls.splice(idx, 1)
+
+            console.log(`round: ${roundCount}, finished target: #${ball.id} / ${balls.length}`)
         }
+
+        addHearts(rewardsSize.hearts, ball.x, ball.y);
     }
 }
