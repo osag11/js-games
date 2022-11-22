@@ -2,8 +2,8 @@ const colors3 = ["blue", "cyan", "aquamarine", "aqua", "royalblue", "steelvlue",
 const colors4 = ["yellow", "orange",  "gold", "darkorange", "coral",  "SandyBrown", "LemonChiffon"];
 
 // https://www.w3schools.com/colors/colors_names.asp
-const colors1 = ["blue", "cyan", "aqua", "skyblue"];
-const colors2 = ["yellow", "orange", "gold", "lemonchiffon"];
+const colors1 = ["blue", "cyan", "aqua", "skyblue", "RoyalBlue"];
+const colors2 = ["yellow", "orange", "gold", "PeachPuff", "LemonChiffon"];
 
 function getRandom(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -15,6 +15,12 @@ function getDeviation(range){
 
 function getRandomColor(colors) {
     return colors[getRandom(0, colors.length - 1)]
+}
+
+function addOpacity(color, opacity) {
+    let w3c = w3color(color);
+    w3c.opacity = opacity;
+    return w3c.toRgbaString()
 }
 
 
@@ -34,3 +40,20 @@ function generateColor() {
     }
     return finalHexString;
 }
+
+
+function shuffle(array) {
+
+    let newArray = [];
+ 
+    while (array.length) {
+ 
+       let randomIndex = Math.floor(Math.random() * array.length);
+       let element = array.splice(randomIndex, 1);
+ 
+       newArray.push(element[0]);
+    }
+ 
+    return newArray;
+ }
+ 

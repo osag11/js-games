@@ -1,18 +1,21 @@
 
 const particlesArray = [];
 
-let direction = -1;
-let roundCount = 1;
-const particleSize = 3;
 // settings, adjustable in runtime
-let maxCount = 300;
 let minCount = 51;
-let maxRadius = 80;
+let maxCount = 300;
+
 let minRadius = 30;
+let maxRadius = 80;
 
 const radiusStep = 1.5;
-const rotationSpeedMax = 0.05;
+const particleSize = 3;
+
 const rotationSpeedMin = 0.02;
+const rotationSpeedMax = 0.05;
+
+let direction = -1;
+let roundCount = 1;
 
 function generateParticles(amount) {
     for (let i = 0; i < amount; i++) {
@@ -26,7 +29,6 @@ function generateParticles(amount) {
         );
     }
 }
-
 
 // https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Basic_animations
 function Particle(x, y, particleTrailWidth, strokeColor, rotateSpeed, instance) {
@@ -82,7 +84,14 @@ const particlesIndex = [];
 
 function disposeParticles() {
     // remove from the end
-    if (particlesArray.length > minCount) {
+    let limit = minCount;
+
+    if (cursor.x >= canvas.width - 5 || cursor.x < 5) {
+        // cool down
+        limit = 2;
+    }
+
+    if (particlesArray.length > limit) {
         let deleted = particlesArray.pop();
         particlesIndex.push(deleted.instance);
         //console.log(`disposing: #${deleted.instance} / ${particlesArray.length} (${particlesIndex.length})`);
@@ -95,9 +104,10 @@ function handleParticlesCollision(particle) {
         if (rectIntersect(particle.x, particle.y, particleSize, particleSize, ball.x, ball.y, getMinRadius(ball.radius), getMinRadius(ball.radius))) {
 
             particle.colliting = true;
-            ball.color = particle.strokeColor;
 
-            handleBallCollision(ball, particle.theta);
+            ball.setColor(particle.strokeColor);
+            ball.handleCollision(particle.theta);
+
             handleRoundEnded(ball);
 
             break;
@@ -125,6 +135,7 @@ function addParticle(speed) {
     if (particlesIndex.length > 0) {
         id = particlesIndex.pop();
     }
+
     if (particlesArray.length < maxCount) {
         // add to beginning
         particlesArray.unshift(new Particle(
@@ -154,6 +165,8 @@ function handleRoundEnded(ball) {
 
             ball.x = getRandom(100, canvas.width);
             ball.y = getRandom(100, canvas.height);
+            ball.recoverColor(50);
+            addHearts(1, ball.x, ball.y);
 
         } else {
 
@@ -164,6 +177,21 @@ function handleRoundEnded(ball) {
             console.log(`round: ${roundCount}, finished target: #${ball.id} / ${balls.length}`)
         }
 
-        addHearts(rewardsSize.hearts, ball.x, ball.y);
+        showRewards(ball, roundCount);
     }
 }
+
+function showRewards(ball, roundCount) {
+    if (roundCount % 2 == 0) {
+        addFlag(ball.x, ball.y);
+    }
+
+    if (roundCount % 2 == 1) {
+        addHearts(rewardsSize.hearts, ball.x, ball.y);
+    }
+
+    if (roundCount % 3 == 0) {
+        showNextAffirmation();
+    }
+}
+

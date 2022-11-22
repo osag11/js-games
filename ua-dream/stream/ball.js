@@ -6,9 +6,9 @@ const targetColor = 'red';
 const ballInitialSize = 25;
 const ballMaxSize = 50;
 const killingSpeed = 0.1;
-const colorChangeCount = 600;
-const targetLifes = 3;
-let idCounter =0;
+const colorChangeCount = 300;
+const targetLifes = 9;
+let idCounter = 0;
 
 function Ball(id) {
     this.x = canvas.width * Math.random();
@@ -20,12 +20,21 @@ function Ball(id) {
     this.colorChangeCounter = colorChangeCount;
     this.colliting = false;
     this.lifesCount = targetLifes;
-    this.id = id?id:++idCounter;
+    this.id = id ? id : ++idCounter;
 
-    this.recoverColor = () => {
-        this.colorChangeCounter--;
-        if(this.colorChangeCounter < 0)
-        {
+    this.setColor = (newColor) => {
+        this.color = newColor;
+        this.colorChangeCounter = colorChangeCount;
+    }
+
+    this.recoverColor = (delay) => {
+        if (delay) {
+            this.colorChangeCounter = delay;
+        } else {
+            this.colorChangeCounter--;
+        }
+        
+        if (this.colorChangeCounter < 0) {
             this.colorChangeCounter = colorChangeCount;
             this.color = targetColor;
         }
@@ -37,9 +46,14 @@ function Ball(id) {
         ctx.closePath();
         ctx.fillStyle = this.color;
         ctx.fill();
+
+        ctx.fillStyle = 'white';
+        ctx.font = '18px serif';
+        ctx.fillText(this.id, this.x - this.radius / 4, this.y + this.radius / 3);
     }
 
     this.handleCollision = (theta) => {
+        // log(theta);
         this.vx = -direction * Math.cos(theta) * vF * getDeviation(0.9);
         this.vy = -direction * Math.sin(theta) * vF * getDeviation(0.9);
     }
@@ -55,13 +69,6 @@ function initBalls(n) {
     }
 }
 
-
-function handleBallCollision(ball, theta) {
-    // log(theta);
-
-    ball.vx = -direction * Math.cos(theta) * vF * getDeviation(0.9);
-    ball.vy = -direction * Math.sin(theta) * vF * getDeviation(0.9);
-}
 
 function log(theta) {
     console.log(theta * 180 / Math.PI % 360);
@@ -79,7 +86,6 @@ function drawTargets() {
 function drawTarget(ball) {
 
     ball.draw();
-    // ball.color = targetColor;
     ball.recoverColor();
     let speedDeviation = getDeviation(0.5);
 

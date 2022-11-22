@@ -43,21 +43,4 @@ function clear() {
 }
 
 
-function main() {
-    window.requestAnimationFrame(main);
-    clear();
 
-    drawDream();
-    drawTargets();
-    drawParticles();
-    disposeParticles();
-}
-
-//------- Entry point -----------
-
-setSize();
-generateParticles(2);
-addHearts(5, getRandom(0, canvas.width), getRandom(0, canvas.height), 500);
-initBalls(20);
-
-main();
