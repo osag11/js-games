@@ -182,16 +182,21 @@ function handleRoundEnded(ball) {
 }
 
 function showRewards(ball, roundCount) {
-    if (roundCount % 2 == 0) {
-        addFlag(ball.x, ball.y);
-    }
-
+    
     if (roundCount % 2 == 1) {
         addHearts(rewardsSize.hearts, ball.x, ball.y);
     }
-
+    
     if (roundCount % 3 == 0) {
-        showNextAffirmation();
+        showNextAffirmation(ball.x, ball.y);
+    }
+    
+    if (roundCount % 2 == 0) {
+        addFlowers(rewardsSize.flowers, ball.x, ball.y, 200)
+    }
+    
+    if (roundCount % 4 == 0) {
+        addFlag(ball.x, ball.y);
     }
 }
 

@@ -1,5 +1,5 @@
 const colors3 = ["blue", "cyan", "aquamarine", "aqua", "royalblue", "steelvlue", "skyblue", "CornflowerBlue", "DarkCyan"];
-const colors4 = ["yellow", "orange",  "gold", "darkorange", "coral",  "SandyBrown", "LemonChiffon"];
+const colors4 = ["yellow", "orange", "gold", "darkorange", "coral", "SandyBrown", "LemonChiffon"];
 
 // https://www.w3schools.com/colors/colors_names.asp
 const colors1 = ["blue", "cyan", "aqua", "skyblue", "RoyalBlue"];
@@ -9,7 +9,7 @@ function getRandom(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function getDeviation(range){
+function getDeviation(range) {
     return 1 + Math.random() * range - Math.random() * range;
 }
 
@@ -25,6 +25,7 @@ function addOpacity(color, opacity) {
 
 
 function getRandomUAColor(id) {
+    if (!id) id = getRandom(1, 2);
     if (id % 2 == 1)//odd
         return colors1[getRandom(0, colors1.length - 1)]
     else//even
@@ -45,15 +46,14 @@ function generateColor() {
 function shuffle(array) {
 
     let newArray = [];
- 
+
     while (array.length) {
- 
-       let randomIndex = Math.floor(Math.random() * array.length);
-       let element = array.splice(randomIndex, 1);
- 
-       newArray.push(element[0]);
+
+        let randomIndex = Math.floor(Math.random() * array.length);
+        let element = array.splice(randomIndex, 1);
+
+        newArray.push(element[0]);
     }
- 
+
     return newArray;
- }
- 
+}

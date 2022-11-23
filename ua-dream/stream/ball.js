@@ -4,7 +4,7 @@ const vF = 5;
 const ballProblemSolvedRadius = 15;
 const targetColor = 'red';
 const ballInitialSize = 25;
-const ballMaxSize = 50;
+const ballMaxSize = 25;
 const killingSpeed = 0.1;
 const colorChangeCount = 300;
 const targetLifes = 9;
@@ -33,7 +33,7 @@ function Ball(id) {
         } else {
             this.colorChangeCounter--;
         }
-        
+
         if (this.colorChangeCounter < 0) {
             this.colorChangeCounter = colorChangeCount;
             this.color = targetColor;

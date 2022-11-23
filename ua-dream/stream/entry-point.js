@@ -7,6 +7,7 @@ function main() {
     drawTargets();
     drawParticles();
     disposeParticles();
+    disposeRewards();
 }
 
 // Entry point
