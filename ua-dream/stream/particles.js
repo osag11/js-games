@@ -1,5 +1,7 @@
 
 const particlesArray = [];
+const radiusStep = 1.5;
+const particleSize = 3;
 
 // settings, adjustable in runtime
 let minCount = 51;
@@ -8,11 +10,8 @@ let maxCount = 300;
 let minRadius = 30;
 let maxRadius = 80;
 
-const radiusStep = 1.5;
-const particleSize = 3;
-
-const rotationSpeedMin = 0.02;
-const rotationSpeedMax = 0.05;
+let rotationSpeedMin = 0.02;
+let rotationSpeedMax = 0.05;
 
 let direction = -1;
 let roundCount = 1;
@@ -108,7 +107,7 @@ function handleParticlesCollision(particle) {
             ball.setColor(particle.strokeColor);
             ball.handleCollision(particle.theta);
 
-            handleRoundEnded(ball);
+            handleTargetDamage(ball);
 
             break;
 
@@ -149,54 +148,57 @@ function addParticle(speed) {
     }
 }
 
-function handleRoundEnded(ball) {
+function handleTargetDamage(ball) {
     if (ball.radius > ballProblemSolvedRadius) {
+        // target reducing
         ball.radius -= killingSpeed;
     } else {
-        // new round
+        // target eliminated
         roundCount++;
         ball.lifesCount--;
 
         if (ball.lifesCount > 0) {
 
-            // respawn
+            addHearts(1, ball.x, ball.y);
+
+            // respawn ball
             ball.radius = ballInitialSize + (roundCount > ballMaxSize ? ballMaxSize : roundCount); // bigger than previous
-            console.log(`round: ${roundCount}, target: #${ball.id} / ${balls.length}, lifes: ${ball.lifesCount}`)
+            output.log(`round: ${roundCount}, target: #${ball.id} / ${balls.length}, lifes: ${ball.lifesCount}`)
 
             ball.x = getRandom(100, canvas.width);
             ball.y = getRandom(100, canvas.height);
             ball.recoverColor(50);
-            addHearts(1, ball.x, ball.y);
 
         } else {
 
-            // remove
+            // remove ball
             let idx = balls.indexOf(ball);
             balls.splice(idx, 1)
 
-            console.log(`round: ${roundCount}, finished target: #${ball.id} / ${balls.length}`)
+            output.log(`round: ${roundCount}, finished target: #${ball.id} / ${balls.length}`)
         }
+        
+        showRewards(roundCount, ball.x, ball.y);
 
-        showRewards(ball, roundCount);
     }
 }
 
-function showRewards(ball, roundCount) {
-    
+function showRewards(roundCount, x, y) {
+
     if (roundCount % 2 == 1) {
-        addHearts(rewardsSize.hearts, ball.x, ball.y);
+        addHearts(rewardsSize.hearts, x, y);
     }
-    
+
     if (roundCount % 3 == 0) {
-        showNextAffirmation(ball.x, ball.y);
+        showNextAffirmation(x, y);
     }
-    
+
     if (roundCount % 2 == 0) {
-        addFlowers(rewardsSize.flowers, ball.x, ball.y, 200)
+        addFlowers(rewardsSize.flowers, x, y, 200)
     }
-    
+
     if (roundCount % 4 == 0) {
-        addFlag(ball.x, ball.y);
+        addFlag(x, y);
     }
 }
 

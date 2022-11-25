@@ -10,6 +10,7 @@ const colorChangeCount = 300;
 const targetLifes = 9;
 let idCounter = 0;
 
+// https://spicyyoghurt.com/tutorials/html5-javascript-game-development/collision-detection-physics
 function Ball(id) {
     this.x = canvas.width * Math.random();
     this.y = canvas.height * Math.random();
