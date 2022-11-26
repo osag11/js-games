@@ -3,13 +3,16 @@ const userInputState = ["", ""];
 addEventListener("keydown", handleKeyDown);
 // 107 NumpadAdd
 // 109 NumpadSubtract
+// 106 NumpadMultiply
 // 84 KeyT
 // 82 KeyR
 // 67 KeyC
-// 106 NumpadMultiply
 // 65 KeyA
 // 70 KeyF
 // 72 KeyH
+// 75 KeyK
+// 68 KeyD
+// 79 KeyO
 // 32 Space
 
 
@@ -17,27 +20,16 @@ function handleKeyDown(event) {
     const keyPressed = event.keyCode;
     console.log(`keyPressed: ${keyPressed} ${event.code}`)
 
-    // KeyS (80) => particles (shield) =>
-    // KeyT (84) => targets => (Add, Subtract)
-    // KeyR (82) => rewards => (Add, Subtract)
-    // KeyC (67) => cleanup (limits) => 
-    // `        { KeyF (70) => flags => (Add, Subtract) }
-    //          { KeyA (65) => aff => (Add, Subtract) }
-    //          { KeyH (72) => hearts => (Add, Subtract) }
-
-    // NumpadMultiply (106) { KeyH => hearts => (Add, Subtract) }
-
 
     if (keyPressed == 32) {
         // Show menu popup window
     }
 
-    // LVL 1
-    handleTopMenuCommands(keyPressed);
-
     // LVL 2
     handleLvl2MenuCommands(keyPressed);
 
+    // LVL 1
+    handleTopMenuCommands(keyPressed);
 
     let menuMessage;
     if (userInputState[0].length > 0) {
@@ -55,6 +47,8 @@ function handleKeyDown(event) {
     handleCreationActionCommands(keyPressed);
 
     handleRemovalActionCommands(keyPressed);
+
+    handleMenuHelpCommands(keyPressed);
 }
 
 
@@ -79,11 +73,17 @@ function handleTopMenuCommands(keyPressed) {
         userInputState[1] = "";
     }
 
+    if (keyPressed == 77) { //M
+        userInputState[0] = "menu";
+        userInputState[1] = "";
+    }
+
     if (keyPressed == 8) {  // Backspace
         reset();
         setNewGame();
     }
-    if (keyPressed == 192) {  //  Backquote
+
+    if (keyPressed == 192) {  // Backquote
         output.show = !output.show;
     }
 
@@ -113,7 +113,7 @@ function handleLvl2MenuCommands(keyPressed) {
         }
     }
 
-    if (keyPressed == 82) { //R
+    if (keyPressed == 81) { // Q
         if (userInputState[0] === "particles") {
             userInputState[1] = "external-radius";
         }
@@ -389,3 +389,82 @@ function handleRemovalActionCommands(keyPressed) {
     }
 }
 
+function handleMenuHelpCommands(keyPressed) {
+
+    if (userInputState[0] === "menu") {
+
+        if (keyPressed == 49) { //Num1
+            showDoc(0);
+        }
+
+        if (keyPressed == 50) { //Num2
+            showDoc(1);
+        }
+
+        if (keyPressed == 51) { //Num3
+            showDoc(2);
+        }
+    }
+}
+
+function showDoc(page) {
+    output.m_log(docs[page]);
+}
+
+const docs = [
+    `TOP MENU
+T - targets (balls and other "problems")
+R - rewards (hearts, flags, flowers etc)
+P - particles (shield)
+C - clear/create
+M - menu help
+\` - user menu console
+<- - restart game (with existing rewards limits)
+`
+    ,
+
+    `ACTIONS
+rewards => flags, flowers, hearts, affirmations =>
+[+] - increase limit of rewards
+[-] - reduce limit of rewards
+
+clean/create => flags, flowers, hearts, affirmations =>
+[+] - create one selected reward, put to mouse cursor position
+[-] - removes one selected rewards
+[*] - removes all rewards
+
+target
+[+] - add one target
+[-] - remove one target
+[*] - removes all targets
+`,
+
+    `OPTIONS
+particles =>
+I - internal-count
+E - external-count
+
+O - internal-radius
+Q - external-radius
+
+S - speed-min
+F - speed-max
+
+rewards =>
+F - flags
+K - flowers
+H - hearts
+A - affirmations
+
+clean/create =>
+F - flags
+K - flowers
+H - hearts
+A - affirmations
+
+menu help
+[1] - shows lvl 1 options
+[2] - shows lvl 2 options
+[3] - shows actions
+`
+];

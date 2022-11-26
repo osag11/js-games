@@ -150,7 +150,7 @@ function addParticle(speed) {
 
 function handleTargetDamage(ball) {
     if (ball.radius > ballProblemSolvedRadius) {
-        // target reducing
+        // target size reducing
         ball.radius -= killingSpeed;
     } else {
         // target eliminated
@@ -201,4 +201,3 @@ function showRewards(roundCount, x, y) {
         addFlag(x, y);
     }
 }
-

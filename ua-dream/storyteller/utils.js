@@ -21,6 +21,14 @@ function Output() {
         this.messageStack[this.messageStack.length - 1] += message;
     }
 
+    this.m_log = (message) => {
+        console.log(message);
+        clearArray(this.messageStack);
+        message.split(/\r?\n/).forEach(row => {
+         this.messageStack.push(row);           
+        });    
+    }
+
     this.draw = () => {
 
         if (this.show) {
