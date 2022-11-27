@@ -186,7 +186,7 @@ function handleTargetDamage(ball) {
 function showRewards(roundCount, x, y) {
 
     if (roundCount % 2 == 1) {
-        addHearts(rewardsSize.hearts, x, y);
+        addHearts(rewardsAmountPerRound.hearts, x, y);
     }
 
     if (roundCount % 3 == 0) {
@@ -194,7 +194,7 @@ function showRewards(roundCount, x, y) {
     }
 
     if (roundCount % 2 == 0) {
-        addFlowers(rewardsSize.flowers, x, y, 200)
+        addFlowers(rewardsAmountPerRound.flowers, x, y, 200)
     }
 
     if (roundCount % 4 == 0) {
