@@ -1,7 +1,8 @@
 1. Draw balls and rectangles
-2. Animation. The Ball
-3. Arrays, loops. Collisions, Multiple balls
-4. Image. Key handlers #1
+1. Animation. The Ball
+1. Random. Arrays, loops. 
+1. Collisions, Multiple balls
+1. Image. Key handlers #1
 Contol image movement
 Control orientation (rotation) 
 Tanks game
@@ -11,7 +12,7 @@ Archer: Putin shooter
 Sumbarines https://js13kgames.com/entries/submersible-warship-2063
 
 
-5. Objects. Key handlers #2
+1. Objects. Key handlers #2
 X/O editor: arrows, X, O
 TicTacToe game
 Vyshivka krestikom? arrows, space, numbers. Output grid to console
@@ -24,13 +25,14 @@ Minecraft 2d?
 Sudoku? 
 Miner
 
-6. Mouse handlers. 
+1. Mouse handlers. 
 Draw shapes, lines and curves
 Arcanoid game
 Ping pong game
 AngryBirds catapulta
 
-7. Sprite animation
+1. Sprite animation
+https://www.gameart2d.com/freebies.html
 Bomber man (https://js13kgames.com/ sample)
 Space shooter game (https://js13kgames.com/ sample)
 Tower defense (City defense)
@@ -39,7 +41,7 @@ Adventure game (https://lcapps.itch.io/death-game)
 Gravity games Arti Duel
 Terrains crushing games
 
-7. Models. Random. AI. 
+1. Models. Random. AI. 
 Yahtzee is a dice game
 Card games, deck Shuffling
 Scissors, Stone, Paper game
@@ -47,3 +49,5 @@ Horse Races game, Bet handler
 
 
 
+Engines
+https://breakouts.js13kgames.com/LittleJS/
