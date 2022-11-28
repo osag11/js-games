@@ -10,12 +10,12 @@ function setSize() {
 }
 
 function clear() {
-    ctx.fillStyle = "rgba(0,0,0,1)";
+    ctx.fillStyle = "rgba(0,0,0,1)"; //"rgba(0,0,0,0.1)"//#1
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
-// setSize();
-let ball = new Ball(100,100);
+// setSize();//#2
+let ball = new Ball(100, 100);
 main();
 
 function main() {
@@ -26,25 +26,24 @@ function main() {
     ball.draw();
 }
 
-function Ball(x,y) {
+function Ball(x, y) {
     this.x = x;
     this.y = y;
     this.vx = 10;
     this.vy = 10;
     this.radius = 25;
     this.color = 'white';
-    this.colliting = false;
 
     this.move = () => {
-        this.x+=this.vx;
-        this.y+=this.vy;
+        this.x += this.vx;
+        this.y += this.vy;
 
         if (ball.x + ball.vx > canvas.width || ball.x + ball.vx < 0) {
-            ball.vx = -ball.vx;// - 0.1;
+            ball.vx = -ball.vx;// - 0.1;//#3
         }
 
         if (ball.y + ball.vy > canvas.height || ball.y + ball.vy < 0) {
-            ball.vy = -ball.vy;// - 0.1;
+            ball.vy = -ball.vy;// - 0.1;//#3
         }
     }
 
