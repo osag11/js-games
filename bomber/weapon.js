@@ -33,7 +33,10 @@ function drawBomb() {
     let y = weaponModel.bomb.y;
 
     if (weaponModel.bomb.state == 1) {
-        weaponModel.bomb.y += 50;
+        weaponModel.bomb.y += 5;
+        if(weaponModel.bomb.x %50 !==0){
+            weaponModel.bomb.x++;
+        }
         drawBombBody(x,y);
     }
 

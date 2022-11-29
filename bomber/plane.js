@@ -8,8 +8,8 @@ let planeModel = {
 
 function drawPlane() {
 
-    planeModel.x += 50;
-    planeModel.y += planeModel.direction * 50;
+    planeModel.x += 5;
+    planeModel.y += planeModel.direction * 5;
 
     if (planeModel.direction < 0)
     {
@@ -21,12 +21,12 @@ function drawPlane() {
 
     if (planeModel.x > scene.width) {
         planeModel.x = 0;
-        planeModel.y += 50;
+        planeModel.y += 5;
     }
 
     if (isPlaneLanded()) {
         if(planeModel.x > scene.width/3){
-          planeModel.x-=40;
+          planeModel.x-=4;
         }
         planeModel.color = "Grey"
         planeModel.y = scene.height-6;

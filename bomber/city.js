@@ -124,7 +124,7 @@ function drawWindows(x, size, houseColor) {
 
     // blinking light
     let randomFloor = getRandom(0, size)
-    if (lightSwitchCount % 100 == 0) {
+    if (lightSwitchCount % 10 == 0) {
         winRandomFloorColors[x] = getRandomColor(houseColor);
     }
 

@@ -43,17 +43,18 @@ function handleKeyDown(event) {
 }
 
 function main_loop() {
+  window.requestAnimationFrame(main_loop);
   console.log(frameNumber++);
 
   clean();
 
   draw();
 
-  wait(200) 
+  // wait(200) 
 
-  setTimeout(function onTick() {
-    main_loop();
-  }, frameRate)
+  // setTimeout(function onTick() {
+  //   main_loop();
+  // }, frameRate)
 }
 
 function clean() {

@@ -3,7 +3,7 @@ let messageQueueModel = [
     {
       text: "The Bomber game",
       color: "black",
-      time:15
+      time:150
     }
 ]
 
@@ -49,7 +49,7 @@ function drawMessage()
 }
 
 function showInstructions(msgCtx=0){
-    message("Let's go!", msgCtx, "cadetBlue", 5);
-    message("Press 'space' to drop the bomb!", msgCtx, "cadetBlue", 5);
-    message("Press 'down' to move lower to the land!", msgCtx, "cadetBlue", 5);
+    message("Let's go!", msgCtx, "cadetBlue", 50);
+    message("Press 'space' to drop the bomb!", msgCtx, "cadetBlue", 50);
+    message("Press 'down' to move lower to the land!", msgCtx, "cadetBlue", 50);
 }
