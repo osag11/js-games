@@ -11,7 +11,7 @@ let isGameOver = 0;
 // ------------functions-------------------
 
 document.addEventListener("DOMContentLoaded", () => {
-  scene.width = document.body.offsetWidth; 
+  scene.width = document.body.offsetWidth;
 });
 
 document.addEventListener("keydown", handleKeyDown);
@@ -28,17 +28,17 @@ function handleKeyDown(event) {
   }
 
   if (keyPressed == 40) {
-    planeModel.y+=50;
+    planeModel.y += 50;
   }
 
   if (keyPressed == 38) {
-    if(isPlaneLanded()){
+    if (isPlaneLanded()) {
       planeModel.direction = -1;
     }
   }
 
   if (keyPressed == 67) {
-       cityModel.houses.forEach(h=>{ h.size = 0, h.top = scene.height - h.size * cityModel.houseStageHeight });
+    cityModel.houses.forEach(h => { h.size = 0, h.top = scene.height - h.size * cityModel.houseStageHeight });
   }
 }
 
@@ -68,10 +68,10 @@ function clean() {
 function draw() {
   drawCity();
 
-  if(planeModel.lifes<=0){
-    if(isGameOver == 0){
-     message("game over!", 3, "red", 300);
-     isGameOver = 1;
+  if (planeModel.lifes <= 0) {
+    if (isGameOver == 0) {
+      message("game over!", 3, "red", 300);
+      isGameOver = 1;
     }
     drawMessage();
     return;
@@ -83,10 +83,10 @@ function draw() {
 }
 
 
-function wait(ms){
+function wait(ms) {
   var start = new Date().getTime();
   var end = start;
-  while(end < start + ms) {
+  while (end < start + ms) {
     end = new Date().getTime();
- }
+  }
 }

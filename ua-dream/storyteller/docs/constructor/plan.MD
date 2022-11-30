@@ -11,8 +11,10 @@ Snake game
 Archer: Putin shooter
 Sumbarines https://js13kgames.com/entries/submersible-warship-2063
 
+1. Random functions. Generator
 
 1. Objects. Key handlers #2
+
 X/O editor: arrows, X, O
 TicTacToe game
 Vyshivka krestikom? arrows, space, numbers. Output grid to console
@@ -30,6 +32,9 @@ Draw shapes, lines and curves
 Arcanoid game
 Ping pong game
 AngryBirds catapulta
+
+1. Drag and drop gameplay
+Mosaic trinagles. Binding
 
 1. Sprite animation
 https://www.gameart2d.com/freebies.html

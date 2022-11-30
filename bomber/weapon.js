@@ -34,10 +34,10 @@ function drawBomb() {
 
     if (weaponModel.bomb.state == 1) {
         weaponModel.bomb.y += 5;
-        if(weaponModel.bomb.x %50 !==0){
+        if (weaponModel.bomb.x % 50 !== 0) {
             weaponModel.bomb.x++;
         }
-        drawBombBody(x,y);
+        drawBombBody(x, y);
     }
 
     if (isBombHitTarget()) {
@@ -50,7 +50,7 @@ function drawBomb() {
         }
         weaponModel.bomb.x = planeModel.x;
         //boom!
-        drawBoom(x,y);
+        drawBoom(x, y);
         drawBombBody(x, y);
     }
     // internal functions >

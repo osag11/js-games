@@ -1,6 +1,6 @@
 let planeModel = {
     x: 0,
-    y: scene.height-6,
+    y: scene.height - 6,
     color: "Grey",
     lifes: 3,
     direction: -1
@@ -8,31 +8,29 @@ let planeModel = {
 
 function drawPlane() {
 
-    planeModel.x += 5;
+    planeModel.x += 2;
     planeModel.y += planeModel.direction * 5;
 
-    if (planeModel.direction < 0)
-    {
-        if(planeModel.y <= 50)
-        {
+    if (planeModel.direction < 0) {
+        if (planeModel.y <= 50) {
             startNewMission();
         }
     }
 
     if (planeModel.x > scene.width) {
         planeModel.x = 0;
-        planeModel.y += 5;
+        planeModel.y += 50;
     }
 
     if (isPlaneLanded()) {
-        if(planeModel.x > scene.width/3){
-          planeModel.x-=4;
+        if (planeModel.x > scene.width / 3) {
+            planeModel.x -= 4;
         }
         planeModel.color = "Grey"
-        planeModel.y = scene.height-6;
-        if(cityModel.misionComplete == 0){
+        planeModel.y = scene.height - 6;
+        if (cityModel.misionComplete == 0) {
             message("Congratulations! Level passed.", 1, "green");
-            message("press arrow up to start next level", 1,"cadetblue", 100);
+            message("press arrow up to start next level", 1, "cadetblue", 100);
         }
         cityModel.misionComplete = 1;
         weaponModel.bomb.state = 2;
@@ -58,16 +56,15 @@ function drawPlane() {
         drawCrash();
 
         planeModel.lifes--;
-        message(`plane crashed! ${planeModel.lifes} lifes left...`,planeModel.lifes+10, "orange", 20);
+        message(`plane crashed! ${planeModel.lifes} lifes left...`, planeModel.lifes + 10, "orange", 20);
 
-        planeModel.x= 0;
-        planeModel.y= 50;
+        planeModel.x = 0;
+        planeModel.y = 50;
         weaponModel.bomb.state = 0;
     }
 }
 
-function drawCrash()
-{
+function drawCrash() {
     let x = planeModel.x;
     let y = planeModel.y;
 
@@ -95,9 +92,9 @@ function isPlaneCrashed() {
 }
 
 function isPlaneLanded() {
-    let survivedHouses = cityModel.houses.find(({size}) => size > 0);
+    let survivedHouses = cityModel.houses.find(({ size }) => size > 0);
 
-    if(!survivedHouses && planeModel.y >= scene.height - 10){
+    if (!survivedHouses && planeModel.y >= scene.height - 10) {
         return true;
     }
     return false;

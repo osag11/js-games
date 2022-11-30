@@ -35,9 +35,9 @@ function getRandomColor(excludeColor) {
     return color;
 }
 
-function startNewMission(){
+function startNewMission() {
 
-    if(cityModel.misionComplete == 1){
+    if (cityModel.misionComplete == 1) {
 
         let lifes = planeModel.lifes;
         let x = planeModel.x;
@@ -59,7 +59,7 @@ function startNewMission(){
 
 
 function drawCity() {
-    if (cityModel.houses.length == 0 && cityModel.misionComplete==0) {
+    if (cityModel.houses.length == 0 && cityModel.misionComplete == 0) {
         // build houses model
         for (let i = 1; i < scene.width / cityModel.houseWidth; i++) {
             let size = getRandomSize();
@@ -84,7 +84,7 @@ function drawHouse(x, size, color, roofColor) {
         drawWalls(x, size, color);
         drawRoof(x, scene.height - size * cityModel.houseStageHeight, roofColor);
         drawWindows(x, size, color);
-     }
+    }
 }
 
 function drawWalls(x, size, color) {
@@ -132,6 +132,6 @@ function drawWindows(x, size, houseColor) {
     ctx2d.fillRect(x + 5, scene.height - (randomFloor * cityModel.houseStageHeight - 10), 16, 25);
     ctx2d.fillRect(x + 25, scene.height - (randomFloor * cityModel.houseStageHeight - 10), 16, 25);
 
-    lightSwitchCount+=size;
+    lightSwitchCount += size;
 
 }
