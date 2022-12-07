@@ -1,7 +1,10 @@
 const canvas = document.getElementById('scene');
 const ctx = scene.getContext('2d');
-const image = new Image();
-image.src = "horse.png";
+const imageFinishedHorse = new Image();
+imageFinishedHorse.src = "horse.png";
+
+const imageRunningHorse = new Image();
+imageRunningHorse.src = "horse-run.png";
 
 document.addEventListener("keydown", handleKeyDown);
 
@@ -104,12 +107,13 @@ function drawHorse(horse) {
             horse.stats.steps[model.round - 1].s++;
 
         } else {
-            horse.stats.steps.push({ d: distance, s:1, r: model.round });
+            horse.stats.steps.push({ d: distance, s: 1, r: model.round });
         }
         console.log(`${horse.name} ran ${distance} distance`)
     }
-
-    ctx.drawImage(image, horse.x, horse.y, 100, 100);
+    
+    let img = horse.finished ? imageFinishedHorse : imageRunningHorse;
+    ctx.drawImage(img, horse.x, horse.y, 100, 100);
     ctx.textAlign = 'left';
     ctx.font = 'bold 12pt Arial Black';
     ctx.fillStyle = colors[1];
@@ -119,8 +123,8 @@ function drawHorse(horse) {
     let pos = model.winners.indexOf(horse);
 
     if (pos >= 0) {
-        let latestRun = horse.stats.steps[horse.stats.steps.length -1];
-        ctx.fillText(`${pos + 1} (${horse.stats.won}) (steps ${latestRun.s} distance ${latestRun.d} in round ${latestRun.r})`, 100, horse.y);
+        let latestRun = horse.stats.steps[horse.stats.steps.length - 1];
+        ctx.fillText(`${pos + 1} (won: ${horse.stats.won}) (steps: ${latestRun.s} distance: ${latestRun.d} in round: #${latestRun.r})`, 100, horse.y);
     }
 }
 
