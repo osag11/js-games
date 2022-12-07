@@ -1,4 +1,4 @@
-const SCALE = 6;
+const SCALE = 1;
 const WIDTH = 16;
 const HEIGHT = 18;
 const SCALED_WIDTH = SCALE * WIDTH;
