@@ -27,6 +27,17 @@ function handleKeyDown(event) {
     }
   }
 
+  if (keyPressed == 39) {//right
+    planeModel.speed += 2;
+  }
+
+  if (keyPressed == 37) {//left
+    planeModel.speed -= 2;
+    if (planeModel.speed < 2) {
+      planeModel.speed = 2;
+    }
+  }
+
   if (keyPressed == 40) {
     planeModel.y += 50;
   }
@@ -44,7 +55,7 @@ function handleKeyDown(event) {
 
 function main_loop() {
   window.requestAnimationFrame(main_loop);
-  console.log(frameNumber++);
+  // console.log(frameNumber++);
 
   clean();
 

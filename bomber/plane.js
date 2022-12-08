@@ -3,12 +3,13 @@ let planeModel = {
     y: scene.height - 6,
     color: "Grey",
     lifes: 3,
-    direction: -1
+    direction: -1,
+    speed: 2
 }
 
 function drawPlane() {
 
-    planeModel.x += 2;
+    planeModel.x += planeModel.speed;
     planeModel.y += planeModel.direction * 5;
 
     if (planeModel.direction < 0) {
@@ -82,7 +83,7 @@ function drawCrash() {
 }
 
 function isPlaneCrashed() {
-    const result = cityModel.houses.find(({ x, top }) => x === planeModel.x && top <= planeModel.y);
+    const result = cityModel.houses.find(({ x, top }) => x < planeModel.x+5 && x > planeModel.x-5 && top <= planeModel.y);
     if (result) {
         console.log(result);
         console.log("plane crashed!");

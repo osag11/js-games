@@ -47,7 +47,8 @@ function startNewMission() {
             y: 50,
             color: "black",
             lifes: lifes++,
-            direction: 0
+            direction: 0,
+            speed: 2
         };
         cityModel.misionComplete = 0;
         cityModel.houses = [];
@@ -61,7 +62,7 @@ function startNewMission() {
 function drawCity() {
     if (cityModel.houses.length == 0 && cityModel.misionComplete == 0) {
         // build houses model
-        for (let i = 1; i < scene.width / cityModel.houseWidth; i++) {
+        for (let i = 1; i < scene.width / cityModel.houseWidth - 1; i++) {
             let size = getRandomSize();
             cityModel.houses.push({
                 x: i * cityModel.houseWidth,
