@@ -7,6 +7,7 @@
 .container {
   display: flex;
   flex-wrap: nowrap;
+  align-items: flex-start;
 }
 .container > canvas {
   margin: 1px;
@@ -17,26 +18,31 @@
 #color-input {
   display: none;
 }
-#color-label {
-  right: 200px; 
 
+#color-label {
+  right: 210px;
   position: absolute;
-  height: 50px;
+  height: 160px;
   width: 50px;
-} 
-#color-input:checked ~ #color-picker {
-  opacity: 1;
 }
+
+#color-input:checked ~ #color-picker {
+  display: block;
+  /* opacity: 1; */
+}
+
 #color-picker {
   position: absolute;
-  right: 10px; 
+  right: 1px; 
   background-color: white;
   height: 150px;
   width: 185px;
   border: solid 1px #ccc;
-  opacity: 0;
+  display: none;
+  /* opacity: 0; */
   padding: 5px;
 }
+
 #color-block, #color-strip :hover {
   cursor: crosshair;
 }
@@ -60,6 +66,8 @@
             <canvas id="color-strip" height="150" width="30"></canvas>
         </div>
     </div>
+        
+    <script type="text/javascript" src="grid.js"></script>
     <script type="text/javascript" src="color-picker.js"></script>
     <script type="text/javascript" src="editor.js"></script>
     <script type="text/javascript" src="tools.js"></script>

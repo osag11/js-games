@@ -112,8 +112,7 @@ function clear()
 }
 
 let draw_shapes = function () {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
+    
     for (let shape of shapes) {
         ctx.fillStyle = shape.color;
         ctx.fillRect(shape.x, shape.y, shape.width, shape.height);

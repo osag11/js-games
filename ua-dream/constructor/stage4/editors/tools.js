@@ -1,9 +1,13 @@
 const mouse = { x: 0, y: 0, button: 0, lx: 0, ly: 0, update: true };
-
+const markRadius = 4;
 function mouseEvents(e) {
     const bounds = toolsCanvas.getBoundingClientRect();
-    mouse.x = e.pageX - bounds.left - window.scrollX;
-    mouse.y = e.pageY - bounds.top - window.scrollY;
+    mouse.x = e.pageX - bounds.left - window.scrollX - markRadius;
+    mouse.y = e.pageY - bounds.top - window.scrollY - markRadius;
+    if (gridOn) {
+        mouse.x = roundNearest(mouse.x, 10);
+        mouse.y = roundNearest(mouse.y, 10);
+    }
 
     if (mouse.x > 0 && mouse.x < toolsCanvas.width && mouse.y > 0 && mouse.y < toolsCanvas.height) {
         mouse.button = e.type === "mousedown" ? true : e.type === "mouseup" ? false : mouse.button;
@@ -60,13 +64,13 @@ const poly = () => ({
         // draw marks            
         ctx2.strokeStyle = "blue";
         for (const p of this.points) {
-            ctx2.moveTo(p.x + 4, p.y);
-            ctx2.arc(p.x, p.y, 4, 0, Math.PI * 2);
+            ctx2.moveTo(p.x, p.y);
+            ctx2.arc(p.x, p.y, markRadius, 0, Math.PI * 2);
         }
         ctx2.stroke();
     },
 
-    closest(pos, dist = 8) {
+    closest(pos, dist = markRadius * 2) {
         var i = 0, index = -1;
         dist *= dist;
         for (const p of this.points) {
@@ -96,11 +100,16 @@ const polygon = poly();
 var activePoint, insertPoint, cursor;
 var dragging = false;
 
+function clearTools() {
+}
 
 function update() {
     if (mouse.update) {
         cursor = "crosshair";
+
         ctx2.clearRect(0, 0, toolsCanvas.width, toolsCanvas.height);
+        if (gridOn) drawGrid(ctx2);
+
         if (!dragging) { activePoint = polygon.closest(mouse) }
         if (activePoint === undefined && mouse.button) {
             polygon.addPoint(mouse);
@@ -113,7 +122,7 @@ function update() {
                 } else { dragging = true }
             } else { dragging = false }
         }
-        polygon.fillColor = rgbaColor;
+        polygon.fillColor = pickerModel.rgbaColor;
         polygon.draw();
         if (activePoint) {
             drawCircle(activePoint);
@@ -154,6 +163,10 @@ function handleKeyDown(event) {
             mouse.update = true;
         }
     }
+
+    if (keyPressed == 71) {//G
+        gridOn = !gridOn;
+    }
 }
 
 function toolsMain() {
@@ -162,8 +175,3 @@ function toolsMain() {
 }
 
 toolsMain();
-
-
-
-
-

@@ -14,7 +14,7 @@ function setSize() {
     canvas.height = window.innerHeight;
     canvas.width = window.innerWidth - tools.width;
     toolsCanvas.height = window.innerHeight;
-    toolsCanvas.style.marginTop= colorBlock.height + 12 + "px";
+    toolsCanvas.style.marginTop = colorBlock.height + 12 + "px";
 }
 
 let offset_x;
@@ -100,23 +100,34 @@ let mouse_move = function (event) {
         event.preventDefault();
         let mouseX = parseInt(event.clientX - offset_x);
         let mouseY = parseInt(event.clientY - offset_y);
+
+        if (gridOn) {
+            mouseX = roundNearest(mouseX, 10);
+            mouseY = roundNearest(mouseY, 10);
+        }
+
         let dx = mouseX - startX;
         let dy = mouseY - startY;
+
+
         let current_shape = shapes[current_shape_index];
         current_shape.x += dx;
         current_shape.y += dy;
+        if (gridOn) {
+            current_shape.x = roundNearest(current_shape.x, 10);
+            current_shape.y = roundNearest(current_shape.y, 10);
+        }
+
         startX = mouseX;
         startY = mouseY;
     }
 }
 
-function clear()
-{
+function clear() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
 let draw_shapes = function () {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     for (let shape of shapes) {
         ctx.fillStyle = shape.color;
@@ -130,6 +141,9 @@ canvas.onmouseup = mouse_up;
 canvas.onmousemove = mouse_move;
 canvas.onmouseout = mouse_out;
 
+function roundNearest(num,nearest=10) {
+    return Math.round(num / nearest) * nearest;
+  }
 // entry-point
 setSize();
 get_offset();
@@ -138,6 +152,8 @@ function main() {
     window.requestAnimationFrame(main);
     clear();
     draw_shapes();
-    // update();
+    if (gridOn) drawGrid(ctx);
 }
+
+initGrid();
 main();
