@@ -1,11 +1,21 @@
 // https://www.youtube.com/watch?v=7PYvx8u_9Sk&t=577s
 // Canvas HTML5 JavaScript Full Tutorial
 // Canvas Drag & Drop Objects Tutorial | HTML5 Canvas JavaScript Tutorial [#10]
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+canvas.style.border = '5px solid blue';
 
-canvas = document.getElementById("canvas");
-ctx = canvas.getContext("2d");
+const toolsCanvas = document.getElementById("tools");
+toolsCanvas.style.border = '5px solid green';
+const ctx2 = toolsCanvas.getContext("2d");
 
-canvas.style.border = '5px solid red';
+
+function setSize() {
+    canvas.height = window.innerHeight;
+    canvas.width = window.innerWidth - tools.width;
+    toolsCanvas.height = window.innerHeight;
+    toolsCanvas.style.marginTop= colorBlock.height + 12 + "px";
+}
 
 let offset_x;
 let offset_y;
@@ -16,16 +26,12 @@ let get_offset = function () {
     offset_y = canvas_offsets.top;
 }
 
-get_offset();
-
 
 window.onscroll = function () { get_offset(); }
 window.onresize = function () {
     setSize();
     get_offset();
-    draw_shapes();
 }
-
 canvas.onresize = function () { get_offset(); }
 
 let shapes = [];
@@ -67,6 +73,8 @@ let mouse_down = function (event) {
         index++;
     }
 }
+
+
 let mouse_up = function (event) {
     if (!is_dragging) {
         return;
@@ -74,6 +82,8 @@ let mouse_up = function (event) {
     event.preventDefault();
     is_dragging = false;
 }
+
+
 let mouse_out = function (event) {
     if (!is_dragging) {
         return;
@@ -81,6 +91,8 @@ let mouse_out = function (event) {
     event.preventDefault();
     is_dragging = false;
 }
+
+
 let mouse_move = function (event) {
     if (!is_dragging) {
         return;
@@ -93,10 +105,14 @@ let mouse_move = function (event) {
         let current_shape = shapes[current_shape_index];
         current_shape.x += dx;
         current_shape.y += dy;
-        draw_shapes();
         startX = mouseX;
         startY = mouseY;
     }
+}
+
+function clear()
+{
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
 let draw_shapes = function () {
@@ -114,4 +130,14 @@ canvas.onmouseup = mouse_up;
 canvas.onmousemove = mouse_move;
 canvas.onmouseout = mouse_out;
 
-draw_shapes();
+// entry-point
+setSize();
+get_offset();
+
+function main() {
+    window.requestAnimationFrame(main);
+    clear();
+    draw_shapes();
+    // update();
+}
+main();
