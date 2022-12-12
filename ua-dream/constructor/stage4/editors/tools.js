@@ -21,6 +21,7 @@ function mouseEvents(e) {
 }
 
 ["mousedown", "mouseup", "mousemove"].forEach(name => document.addEventListener(name, mouseEvents));
+// http://jsfiddle.net/cpbwx5vr/1/
 
 const point = (x, y) => ({ x, y });
 
@@ -41,7 +42,11 @@ const poly = () => ({
 
     draw() {
         ctx2.lineWidth = 2;
-        ctx2.beginPath();
+        // ctx2.beginPath();
+
+        if(this.points && this.points.length >0){
+            ctx2.moveTo(this.points[0].x, this.points[0].y)
+        }
 
         for (const p of this.points) {
             ctx2.lineTo(p.x, p.y)
@@ -55,14 +60,14 @@ const poly = () => ({
             ctx2.stroke();
         }
 
-        ctx2.closePath();
+        // ctx2.closePath();
         ctx2.save();
 
         // draw marks
         if (this.fill) ctx2.strokeStyle = "blue";
 
         for (const p of this.points) {
-            ctx2.moveTo(p.x, p.y);
+            ctx2.moveTo(p.x+4, p.y);
             ctx2.arc(p.x, p.y, markRadius, 0, Math.PI * 2);
         }
         ctx2.stroke();
@@ -164,11 +169,13 @@ function handleKeyDown(event) {
 }
 
 function apply() {
-    polygons.push({
-        points: [...polygon.points],
-        color: polygon.color,
-        fill: polygon.fill
-    });
+    // polygons.push({
+    //     points: [...polygon.points],
+    //     color: polygon.color,
+    //     fill: polygon.fill
+    // });
+
+    Shapes.add(shape([...polygon.points],[],'path',polygon.color, polygon.fill))
 
     polygon.points = [];
     insertPoint = undefined;
@@ -178,6 +185,5 @@ function apply() {
 function switchFill(){
     polygon.fill = !polygon.fill;
     fillSwitch.style.background = polygon.fill?pickerModel.rgbaColor:"transparent";
-    // pickerModel.rgbaColor= undefined;
     mouse.update = true;
 }
