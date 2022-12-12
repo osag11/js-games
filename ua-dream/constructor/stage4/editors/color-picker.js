@@ -7,6 +7,7 @@ var colorStrip = document.getElementById('color-strip');
 var ctxColorStrip = colorStrip.getContext('2d');
 
 var colorLabel = document.getElementById('color-label');
+var fillSwitch = document.getElementById('fill-switch');
 
 let pickerModel = {
     x: 0,
@@ -83,7 +84,6 @@ function changeColor(e) {
 }
 
 colorStrip.addEventListener("click", click, false);
-
 colorBlock.addEventListener("mousedown", mousedown, false);
 colorBlock.addEventListener("mouseup", mouseup, false);
 colorBlock.addEventListener("mousemove", mousemove, false);

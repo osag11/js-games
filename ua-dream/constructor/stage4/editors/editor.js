@@ -1,21 +1,16 @@
 // https://www.youtube.com/watch?v=7PYvx8u_9Sk&t=577s
 // Canvas HTML5 JavaScript Full Tutorial
 // Canvas Drag & Drop Objects Tutorial | HTML5 Canvas JavaScript Tutorial [#10]
-const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d");
-canvas.style.border = '5px solid blue';
 
-const toolsCanvas = document.getElementById("tools");
-toolsCanvas.style.border = '5px solid green';
-const ctx2 = toolsCanvas.getContext("2d");
+let shapes = [];
+let polygons = [];
 
+let current_shape_index = null;
+let current_path_index = null;
 
-function setSize() {
-    canvas.height = window.innerHeight;
-    canvas.width = window.innerWidth - tools.width;
-    toolsCanvas.height = window.innerHeight;
-    toolsCanvas.style.marginTop = colorBlock.height + 12 + "px";
-}
+let is_dragging = false;
+let startX;
+let startY;
 
 let offset_x;
 let offset_y;
@@ -26,7 +21,6 @@ let get_offset = function () {
     offset_y = canvas_offsets.top;
 }
 
-
 window.onscroll = function () { get_offset(); }
 window.onresize = function () {
     setSize();
@@ -34,17 +28,9 @@ window.onresize = function () {
 }
 canvas.onresize = function () { get_offset(); }
 
-let shapes = [];
-let current_shape_index = null;
-let is_dragging = false;
-let startX;
-let startY;
 
-shapes.push({ x: 200, y: 50, width: 200, height: 200, color: 'blue' });
-shapes.push({ x: 100, y: 50, width: 100, height: 100, color: 'red' });
-shapes.push({ x: 100, y: 150, width: 70, height: 70, color: 'white' });
 
-let is_mouse_in_shape = function (x, y, shape) {
+function is_mouse_in_shape(x, y, shape) {
     let shape_left = shape.x;
     let shape_right = shape.x + shape.width;
 
@@ -57,7 +43,7 @@ let is_mouse_in_shape = function (x, y, shape) {
     return false;
 }
 
-let mouse_down = function (event) {
+function mouse_down(event) {
 
     event.preventDefault();
 
@@ -68,14 +54,28 @@ let mouse_down = function (event) {
         if (is_mouse_in_shape(startX, startY, shape)) {
             current_shape_index = index;
             is_dragging = true;
+
+            current_path_index = null;
             return;
         }
         index++;
     }
+    current_shape_index = null;
+
+    // pathes
+    index = 0;
+    for (let p of pathes) {
+        if (ctx.isPointInPath(p, startX, startY)) {
+            current_path_index = index;
+            is_dragging = true;
+            return;
+        }
+        index++;
+    }
+    current_path_index = null;
 }
 
-
-let mouse_up = function (event) {
+function mouse_up(event) {
     if (!is_dragging) {
         return;
     }
@@ -83,8 +83,7 @@ let mouse_up = function (event) {
     is_dragging = false;
 }
 
-
-let mouse_out = function (event) {
+function mouse_out(event) {
     if (!is_dragging) {
         return;
     }
@@ -92,8 +91,7 @@ let mouse_out = function (event) {
     is_dragging = false;
 }
 
-
-let mouse_move = function (event) {
+function mouse_move(event) {
     if (!is_dragging) {
         return;
     } else {
@@ -109,13 +107,34 @@ let mouse_move = function (event) {
         let dx = mouseX - startX;
         let dy = mouseY - startY;
 
-
+        // current_shape
         let current_shape = shapes[current_shape_index];
-        current_shape.x += dx;
-        current_shape.y += dy;
-        if (gridOn) {
-            current_shape.x = roundNearest(current_shape.x, 10);
-            current_shape.y = roundNearest(current_shape.y, 10);
+        if (current_shape) {
+            current_shape.x += dx;
+            current_shape.y += dy;
+            if (gridOn) {
+                current_shape.x = roundNearest(current_shape.x, 10);
+                current_shape.y = roundNearest(current_shape.y, 10);
+            }
+            console.log(`(${current_shape.x}; ${current_shape.y})`);
+        }
+
+        // current_path        
+        let current_path = polygons[current_path_index];
+        let pathOrigin = pathes[current_path_index];
+        if (current_path) {
+
+            for (const p of current_path.points) {
+                ctx.lineTo(p.x, p.y);
+                p.x += dx;
+                p.y += dy;
+
+                if (gridOn) {
+                    p.x = roundNearest(p.x, 10);
+                    p.y = roundNearest(p.y, 10);
+                }
+                console.log(`(${p.x}; ${p.y})`);
+            }
         }
 
         startX = mouseX;
@@ -127,12 +146,14 @@ function clear() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
-let draw_shapes = function () {
-
+function draw_shapes() {
     for (let shape of shapes) {
         ctx.fillStyle = shape.color;
         ctx.fillRect(shape.x, shape.y, shape.width, shape.height);
     }
+
+    // polygons:
+    drawPolygons2();
 }
 
 canvas.onmousedown = mouse_down;
@@ -141,19 +162,50 @@ canvas.onmouseup = mouse_up;
 canvas.onmousemove = mouse_move;
 canvas.onmouseout = mouse_out;
 
-function roundNearest(num,nearest=10) {
-    return Math.round(num / nearest) * nearest;
-  }
-// entry-point
-setSize();
-get_offset();
+let pathes = [];
+function drawPolygons2() {
+    pathes = [];
+    for (let poly of polygons) {
+        ctx.lineWidth = 2;
+        const path = new Path2D();
+        for (const p of poly.points) {
+            path.lineTo(p.x, p.y);
+        }
+        path.points = poly.points;
+        path.closePath();
 
-function main() {
-    window.requestAnimationFrame(main);
-    clear();
-    draw_shapes();
-    if (gridOn) drawGrid(ctx);
+        if (poly.fill) {
+            ctx.fillStyle = poly.color;
+            ctx.fill(path);
+        } else {
+            ctx.strokeStyle = poly.color;
+            ctx.stroke(path);
+        }
+
+        ctx.save();
+        pathes.push(path);
+    }
 }
 
-initGrid();
-main();
+function drawPolygons() {
+    for (let poly of polygons) {
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+
+        for (const p of poly.points) {
+            ctx.lineTo(p.x, p.y);
+        }
+        ctx.closePath();
+
+        if (poly.color) {
+            ctx.fillStyle = poly.color;
+            ctx.fill();
+        } else {
+            ctx.strokeStyle = 'green';
+            ctx.stroke();
+        }
+
+        ctx.save();
+    }
+}
+

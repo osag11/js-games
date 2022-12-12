@@ -27,8 +27,10 @@ function initGrid() {
     gridImage.src = url;
 }
 
-
 function drawGrid(ctx) {
     ctx.drawImage(gridImage, 0, 0);
 }
 
+function roundNearest(num, nearest = 10) {
+    return Math.round(num / nearest) * nearest;
+}

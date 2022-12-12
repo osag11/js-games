@@ -1,5 +1,6 @@
 const mouse = { x: 0, y: 0, button: 0, lx: 0, ly: 0, update: true };
 const markRadius = 4;
+
 function mouseEvents(e) {
     const bounds = toolsCanvas.getBoundingClientRect();
     mouse.x = e.pageX - bounds.left - window.scrollX - markRadius;
@@ -21,20 +22,11 @@ function mouseEvents(e) {
 
 ["mousedown", "mouseup", "mousemove"].forEach(name => document.addEventListener(name, mouseEvents));
 
-ctx2.lineWidth = 2;
-ctx2.strokeStyle = "blue";
 const point = (x, y) => ({ x, y });
 
-const polyExport = () => (
-    {
-        points: [],
-        fillColor: undefined,
-    }
-);
-
-
 const poly = () => ({
-    fillColor: undefined,
+    color: undefined,
+    fill: false,
     points: [],
 
     addPoint(p) {
@@ -44,6 +36,7 @@ const poly = () => ({
         } else {
             this.points.push(point(p.x, p.y));
         }
+        console.log(`(${p.x}; ${p.y})`);
     },
 
     draw() {
@@ -54,15 +47,20 @@ const poly = () => ({
             ctx2.lineTo(p.x, p.y)
         }
 
-        if (this.fillColor) {
-            ctx2.fillStyle = this.fillColor;
+        if (this.fill) {
+            ctx2.fillStyle = this.color;
             ctx2.fill();
+        }else{
+            ctx2.strokeStyle = this.color;
+            ctx2.stroke();
         }
 
         ctx2.closePath();
+        ctx2.save();
 
-        // draw marks            
-        ctx2.strokeStyle = "blue";
+        // draw marks
+        if (this.fill) ctx2.strokeStyle = "blue";
+
         for (const p of this.points) {
             ctx2.moveTo(p.x, p.y);
             ctx2.arc(p.x, p.y, markRadius, 0, Math.PI * 2);
@@ -95,13 +93,9 @@ function drawCircle(pos, color = "red", size = 8) {
     ctx2.stroke();
 }
 
-
 const polygon = poly();
 var activePoint, insertPoint, cursor;
 var dragging = false;
-
-function clearTools() {
-}
 
 function update() {
     if (mouse.update) {
@@ -122,7 +116,7 @@ function update() {
                 } else { dragging = true }
             } else { dragging = false }
         }
-        polygon.fillColor = pickerModel.rgbaColor;
+        polygon.color = pickerModel.rgbaColor;
         polygon.draw();
         if (activePoint) {
             drawCircle(activePoint);
@@ -155,7 +149,7 @@ function handleKeyDown(event) {
     const keyPressed = event.keyCode;
     console.log(`keyPressed: ${keyPressed} ${event.code}`)
 
-    if (keyPressed == 46) { //Del
+    if (keyPressed == 46) { // Del
         if (insertPoint) {
             let idx = polygon.points.indexOf(insertPoint)
             polygon.points.splice(idx, 1);
@@ -164,14 +158,26 @@ function handleKeyDown(event) {
         }
     }
 
-    if (keyPressed == 71) {//G
+    if (keyPressed == 71) {// G
         gridOn = !gridOn;
     }
 }
 
-function toolsMain() {
-    requestAnimationFrame(toolsMain);
-    update();
+function apply() {
+    polygons.push({
+        points: [...polygon.points],
+        color: polygon.color,
+        fill: polygon.fill
+    });
+
+    polygon.points = [];
+    insertPoint = undefined;
+    mouse.update = true;
 }
 
-toolsMain();
+function switchFill(){
+    polygon.fill = !polygon.fill;
+    fillSwitch.style.background = polygon.fill?pickerModel.rgbaColor:"transparent";
+    // pickerModel.rgbaColor= undefined;
+    mouse.update = true;
+}
