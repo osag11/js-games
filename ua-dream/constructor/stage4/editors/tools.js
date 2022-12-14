@@ -2,9 +2,11 @@ const mouse = { x: 0, y: 0, button: 0, lx: 0, ly: 0, update: true };
 const markRadius = 4;
 
 function mouseEvents(e) {
+
     const bounds = toolsCanvas.getBoundingClientRect();
     mouse.x = e.pageX - bounds.left - window.scrollX - markRadius;
     mouse.y = e.pageY - bounds.top - window.scrollY - markRadius;
+
     if (gridOn) {
         mouse.x = roundNearest(mouse.x, 10);
         mouse.y = roundNearest(mouse.y, 10);
@@ -42,9 +44,9 @@ const poly = () => ({
 
     draw() {
         ctx2.lineWidth = 2;
-        // ctx2.beginPath();
+        ctx2.beginPath();
 
-        if(this.points && this.points.length >0){
+        if (this.points && this.points.length > 0) {
             ctx2.moveTo(this.points[0].x, this.points[0].y)
         }
 
@@ -55,19 +57,19 @@ const poly = () => ({
         if (this.fill) {
             ctx2.fillStyle = this.color;
             ctx2.fill();
-        }else{
+        } else {
             ctx2.strokeStyle = this.color;
             ctx2.stroke();
         }
 
-        // ctx2.closePath();
+        ctx2.closePath();
         ctx2.save();
 
         // draw marks
         if (this.fill) ctx2.strokeStyle = "blue";
 
         for (const p of this.points) {
-            ctx2.moveTo(p.x+4, p.y);
+            ctx2.moveTo(p.x + 4, p.y);
             ctx2.arc(p.x, p.y, markRadius, 0, Math.PI * 2);
         }
         ctx2.stroke();
@@ -90,7 +92,6 @@ const poly = () => ({
     }
 });
 
-
 function drawCircle(pos, color = "red", size = 8) {
     ctx2.strokeStyle = color;
     ctx2.beginPath();
@@ -98,7 +99,7 @@ function drawCircle(pos, color = "red", size = 8) {
     ctx2.stroke();
 }
 
-const polygon = poly();
+let polygon = poly();
 var activePoint, insertPoint, cursor;
 var dragging = false;
 
@@ -110,6 +111,7 @@ function update() {
         if (gridOn) drawGrid(ctx2);
 
         if (!dragging) { activePoint = polygon.closest(mouse) }
+
         if (activePoint === undefined && mouse.button) {
             polygon.addPoint(mouse);
             mouse.button = false;
@@ -121,8 +123,10 @@ function update() {
                 } else { dragging = true }
             } else { dragging = false }
         }
+
         polygon.color = pickerModel.rgbaColor;
         polygon.draw();
+
         if (activePoint) {
             drawCircle(activePoint);
             cursor = "move";
@@ -140,13 +144,13 @@ function update() {
 }
 
 // function to detect the mouse position
-function oMousePos(canvas, evt) {
-    var ClientRect = canvas.getBoundingClientRect();
-    return {
-        x: Math.round(evt.clientX - ClientRect.left),
-        y: Math.round(evt.clientY - ClientRect.top)
-    };
-}
+// function oMousePos(canvas, evt) {
+//     var ClientRect = canvas.getBoundingClientRect();
+//     return {
+//         x: Math.round(evt.clientX - ClientRect.left),
+//         y: Math.round(evt.clientY - ClientRect.top)
+//     };
+// }
 
 window.addEventListener("keydown", handleKeyDown);
 
@@ -160,30 +164,63 @@ function handleKeyDown(event) {
             polygon.points.splice(idx, 1);
             insertPoint = undefined;
             mouse.update = true;
+            return;
+        }
+
+        if (current_shape) {
+            let idx = objectsStore.indexOf(current_shape)
+            objectsStore.splice(idx, 1);
+            current_shape = undefined;
+            return;
         }
     }
 
     if (keyPressed == 71) {// G
         gridOn = !gridOn;
     }
+
+    if (keyPressed == 27) {// Esc
+        // ["mousedown", "mouseup", "mousemove"].forEach(name => document.removeEventListener(name, mouseEvents));
+        // ["mousedown", "mouseup", "mousemove"].forEach(name => document.addEventListener(name, mouseEvents));
+        // Shapes = RenderModel(ctx);
+
+        // demo();
+        // polygon.points = [];
+        // polygon = poly();
+
+        if (objectsStore.length > 0) {
+            objectsStore = [];
+            return;
+        }
+
+        if (polygon.points.length > 0) {
+            polygon.points = [];
+            return;
+        }
+    }
+}
+
+let closePath = true;
+function handleClosePathClick(cb) {
+    closePath = cb.checked;
 }
 
 function apply() {
-    // polygons.push({
-    //     points: [...polygon.points],
-    //     color: polygon.color,
-    //     fill: polygon.fill
-    // });
+    let points = [...polygon.points];
+    if (closePath) {
+        points.push(point(polygon.points[0].x, polygon.points[0].y));
+    }
 
-    Shapes.add(shape([...polygon.points],[],'path',polygon.color, polygon.fill))
+    Shapes.add(shapeData(points, [], 'path', polygon.color, polygon.fill))
 
     polygon.points = [];
+
     insertPoint = undefined;
     mouse.update = true;
 }
 
-function switchFill(){
+function switchFill() {
     polygon.fill = !polygon.fill;
-    fillSwitch.style.background = polygon.fill?pickerModel.rgbaColor:"transparent";
+    fillSwitch.style.background = polygon.fill ? pickerModel.rgbaColor : "transparent";
     mouse.update = true;
 }

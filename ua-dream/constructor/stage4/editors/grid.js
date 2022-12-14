@@ -27,7 +27,7 @@ function initGrid() {
     gridImage.src = url;
 }
 
-function drawGrid(ctx) {
+function drawGrid(ctx) {    
     ctx.drawImage(gridImage, 0, 0);
 }
 

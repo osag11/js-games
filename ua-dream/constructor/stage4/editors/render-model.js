@@ -1,11 +1,13 @@
 const pathPoint = (x, y, m = false) => ({ x, y, m });
 // type = 'path([])', 'circle(x,y,r)', 'rect(x,y,w,h)', 'arcTo(x1,y1,x2,y2,r)', 
-const shape = (points = [], args = [], type = 'path', color = 'white', fill = true) => ({ points, args, type, color, fill });
+const shapeData = (points = [], args = [], type = 'path', color = 'white', fill = true) => ({ points, args, type, color, fill });
+let objectsStore=[];
 
 
-const ShapesCtor = (ctx) => ({
+// Renderer
+const RenderModel = (ctx) => ({
     ctx: ctx,
-    objects: [],
+    objects: objectsStore,
 
     is_in_shape(x, y) {
         for (let obj of this.objects) {
@@ -18,25 +20,25 @@ const ShapesCtor = (ctx) => ({
 
     move(obj, dx, dy) {
         obj.p2d = new Path2D();
-        switch (obj.shape.type) {
+        switch (obj.data.type) {
             case 'path':
-                for (const p of obj.shape.points) {
+                for (const p of obj.data.points) {
                     p.x += dx;
                     p.y += dy;
                 }
                 break;
 
             case 'arc':
-                obj.shape.args[0] += dx;
-                obj.shape.args[1] += dy;
-                obj.shape.args[2] += dx;
-                obj.shape.args[3] += dy;
+                obj.data.args[0] += dx;
+                obj.data.args[1] += dy;
+                obj.data.args[2] += dx;
+                obj.data.args[3] += dy;
                 break;
 
             case 'rect':
             case 'circle':
-                obj.shape.args[0] += dx;
-                obj.shape.args[1] += dy;
+                obj.data.args[0] += dx;
+                obj.data.args[1] += dy;
                 break;
         }
     },
@@ -44,36 +46,36 @@ const ShapesCtor = (ctx) => ({
     scale(obj, scale) {
         obj.p2d = new Path2D();
 
-        switch (obj.shape.type) {
+        switch (obj.data.type) {
             case 'path':
-                for (const p of obj.shape.points) {
+                for (const p of obj.data.points) {
                     p.x *= scale;
                     p.y *= scale;
                 }
                 break;
 
             case 'arc':
-                obj.shape.args[0] *= scale;
-                obj.shape.args[1] *= scale;
-                obj.shape.args[2] *= scale;
-                obj.shape.args[3] *= scale;
+                obj.data.args[0] *= scale;
+                obj.data.args[1] *= scale;
+                obj.data.args[2] *= scale;
+                obj.data.args[3] *= scale;
                 break;
 
             case 'rect':
-                obj.shape.args[2] *= scale;
-                obj.shape.args[3] *= scale;
+                obj.data.args[2] *= scale;
+                obj.data.args[3] *= scale;
                 break;
 
             case 'circle':
-                obj.shape.args[2] *= scale;
+                obj.data.args[2] *= scale;
                 break;
         }
     },
 
-    add(shape) {
+    add(data) {
         const obj = {};
         obj.p2d = new Path2D();
-        obj.shape = shape;
+        obj.data = data;
         this.objects.push(obj);
     },
 
@@ -86,7 +88,8 @@ const ShapesCtor = (ctx) => ({
     },
 
     draw(obj) {
-        switch (obj.shape.type) {
+
+        switch (obj.data.type) {
             case 'path':
                 this.drawPath(obj);
                 break;
@@ -105,6 +108,7 @@ const ShapesCtor = (ctx) => ({
 
             default: this.drawPath(obj);
         }
+
     },
 
     ctxFillColor(shape, p2d) {
@@ -122,8 +126,8 @@ const ShapesCtor = (ctx) => ({
 
     drawPath(obj) {
 
-        let shape = obj.shape;
-        let p2d= obj.p2d;
+        let shape = obj.data;
+        let p2d = obj.p2d;
 
         if (shape.points && shape.points.length > 0) {
             p2d.moveTo(shape.points[0].x, shape.points[0].y);
@@ -139,14 +143,14 @@ const ShapesCtor = (ctx) => ({
         }
 
         this.ctxFillColor(shape, p2d);
-        
+
         this.ctx.save();
     },
 
     drawCircle(obj) {
 
-        let shape = obj.shape;
-        let p2d= obj.p2d;
+        let shape = obj.data;
+        let p2d = obj.p2d;
 
         this.ctx.lineWidth = 1;
         p2d.arc(shape.args[0], shape.args[1], shape.args[2], 0, 2 * Math.PI);
@@ -156,8 +160,8 @@ const ShapesCtor = (ctx) => ({
     },
 
     drawRect(obj) {
-        let shape = obj.shape;
-        let p2d= obj.p2d;
+        let shape = obj.data;
+        let p2d = obj.p2d;
 
         p2d.rect(shape.args[0], shape.args[1], shape.args[2], shape.args[3]);
         this.ctxFillColor(shape, p2d);
@@ -166,8 +170,8 @@ const ShapesCtor = (ctx) => ({
     },
 
     drawArc(obj) {
-        let shape = obj.shape;
-        let p2d= obj.p2d;
+        let shape = obj.data;
+        let p2d = obj.p2d;
 
         p2d.arcTo(shape.args[0], shape.args[1], shape.args[2], shape.args[3], shape.args[4]);
         this.ctxFillColor(shape, p2d);
