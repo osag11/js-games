@@ -143,14 +143,6 @@ function update() {
     }
 }
 
-// function to detect the mouse position
-// function oMousePos(canvas, evt) {
-//     var ClientRect = canvas.getBoundingClientRect();
-//     return {
-//         x: Math.round(evt.clientX - ClientRect.left),
-//         y: Math.round(evt.clientY - ClientRect.top)
-//     };
-// }
 
 window.addEventListener("keydown", handleKeyDown);
 
@@ -198,6 +190,25 @@ function handleKeyDown(event) {
             return;
         }
     }
+
+    if (keyPressed == 69) {// E
+        if(current_shape){
+
+            // TBD: clone all points, transfer Move To data
+            polygon.points = [...current_shape.data.points];
+            polygon
+        }
+    }
+
+    if (keyPressed == 83) {// S
+        if(current_shape){
+
+            // [S] TBD:Scale
+        }
+    }
+    // [M]  TBD: Move To action polygon
+    // [C] Copy points
+
 }
 
 let closePath = true;

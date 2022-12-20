@@ -92,6 +92,28 @@ canvas.onmousemove = mouse_move;
 canvas.onmouseout = mouse_out;
 
 
+
+function singleDoubleClick (doubleClickCallback, singleClickCallback) {
+    return (function () {
+        var clicks = 0,
+            timeout;
+        return function () {
+            var me = this;
+            clicks++;
+            if (clicks == 1) {
+                singleClickCallback && singleClickCallback.apply(me, arguments);
+                timeout = setTimeout(function () {
+                    clicks = 0;
+                }, 400);
+            } else {
+                timeout && clearTimeout(timeout);
+                doubleClickCallback && doubleClickCallback.apply(me, arguments);
+                clicks = 0;
+            }
+        };
+    }());
+}
+
 // function is_mouse_in_shape(x, y, shape) {
 //     let shape_left = shape.x;
 //     let shape_right = shape.x + shape.width;
