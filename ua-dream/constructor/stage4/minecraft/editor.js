@@ -2,6 +2,7 @@
 // Canvas HTML5 JavaScript Full Tutorial
 // Canvas Drag & Drop Objects Tutorial | HTML5 Canvas JavaScript Tutorial [#10]
 let shapes = [];
+let shapesHistory = [];
 
 let is_dragging, edit_mode = false;
 let startX;
@@ -32,10 +33,10 @@ function selectShape() {
     let pY = mouseEditor.y;
     // let pColor = pickerModel.rgbaColor;
 
-
-    let existing = shapes.find(el =>
-        el.x === pX &&
-        el.y === pY);
+    let existing =  findShape(pX,pY);
+    // let existing = shapes.find(el =>
+    //     el.x === pX &&
+    //     el.y === pY);
 
     if (existing) {
         current_shape = existing;
@@ -159,3 +160,21 @@ canvas.onmouseup = mouse_up;
 
 canvas.onmousemove = mouse_move;
 canvas.onmouseout = mouse_out;
+
+
+function findShape(x, y) {
+
+    for (let shape of shapes) {
+        let shape_left = shape.x- gridSize*0.2;
+        let shape_right = shape.x + gridSize*1.2;
+
+        let shape_top = shape.y- gridSize*0.2;
+        let shape_bottom = shape.y + gridSize*1.2;
+
+        if (x > shape_left && x < shape_right && y > shape_top && y < shape_bottom) {
+            return shape;
+        }
+    }
+
+    return null;
+}
