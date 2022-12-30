@@ -195,8 +195,7 @@ function handleKeyDown(event) {
         if(current_shape){
 
             // TBD: clone all points, transfer Move To data
-            polygon.points = [...current_shape.data.points];
-            polygon
+            polygon.points = [...current_shape.data.points];            
         }
     }
 
@@ -222,7 +221,7 @@ function apply() {
         points.push(point(polygon.points[0].x, polygon.points[0].y));
     }
 
-    Shapes.add(shapeData(points, [], 'path', polygon.color, polygon.fill))
+    Shapes.add(shapeData(points, [], 'polygon', polygon.color, polygon.fill))
 
     polygon.points = [];
 

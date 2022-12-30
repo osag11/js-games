@@ -1,10 +1,10 @@
 const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d");
+const ctx = canvas.getContext("2d",{ willReadFrequently: true });
 canvas.style.border = '5px solid blue';
 
 const toolsCanvas = document.getElementById("tools");
 toolsCanvas.style.border = '5px solid green';
-const ctx2 = toolsCanvas.getContext("2d");
+const ctx2 = toolsCanvas.getContext("2d",{ willReadFrequently: true });
 
 ctx2.lineWidth = 2;
 ctx2.strokeStyle = "blue";
@@ -36,7 +36,7 @@ function setSize() {
 // entry-point
 setSize();
 get_offset();
-initGrid();
+initGrid(10);
 main();
 
 
