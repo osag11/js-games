@@ -1,48 +1,17 @@
-// https://www.youtube.com/watch?v=7PYvx8u_9Sk&t=577s
-// Canvas HTML5 JavaScript Full Tutorial
-// Canvas Drag & Drop Objects Tutorial | HTML5 Canvas JavaScript Tutorial [#10]
-let shapes = [];
-let shapesHistory = [];
-
-let is_dragging, edit_mode = false;
-let startX;
-let startY;
-
-let offset_x;
-let offset_y;
-
-function get_offset() {
-    let canvas_offsets = canvas.getBoundingClientRect();
-    offset_x = canvas_offsets.left;
-    offset_y = canvas_offsets.top;
-}
-
-window.onscroll = function () { get_offset(); }
-
-window.onresize = function () {
-    setSize();
-    get_offset();
-}
-canvas.onresize = function () { get_offset(); }
-
 let current_shape = null;
 
 function selectShape() {
 
     let pX = mouseEditor.x;
     let pY = mouseEditor.y;
-    // let pColor = pickerModel.rgbaColor;
 
     let existing = findShape(pX, pY);
 
-    // let existing = shapes.find(el =>
-    //     el.x === pX &&
-    //     el.y === pY);
 
     if (existing) {
         current_shape = existing;
         pick(existing.c);
-        randomColor = false;
+        randomColorState(false);
 
     } else {
         current_shape = null;
@@ -61,7 +30,6 @@ function addShape() {
 
     if (!existing) {
         shapes.push(newShape);
-        // current_shape = newShape;
 
     } else {
 
@@ -70,97 +38,6 @@ function addShape() {
     }
 }
 
-function mouse_down(event) {
-    //event.preventDefault();
-
-    startX = parseInt(event.clientX - offset_x)
-    startY = parseInt(event.clientY - offset_y)
-
-
-    if (edit_mode)
-        selectShape();
-    else
-        addShape();
-
-
-    is_dragging = true;
-}
-
-function mouse_up(event) {
-    if (!is_dragging) {
-        return;
-    }
-    //event.preventDefault();
-    is_dragging = false;
-}
-
-function mouse_out(event) {
-    if (!is_dragging) {
-        return;
-    }
-    //event.preventDefault();
-    is_dragging = false;
-}
-
-function mouse_move(event) {
-
-    mouseEditor.x = parseInt(event.clientX - offset_x) - gridSize / 2;
-    mouseEditor.y = parseInt(event.clientY - offset_y) - gridSize / 2;
-
-    if (gridOn) {
-        mouseEditor.x = roundNearest(mouseEditor.x, gridSize);
-        mouseEditor.y = roundNearest(mouseEditor.y, gridSize);
-    }
-
-    if (!is_dragging) {
-        return;
-    } else {
-
-        // event.preventDefault();
-
-        let mouseX = parseInt(event.clientX - offset_x);
-        let mouseY = parseInt(event.clientY - offset_y);
-
-        if (gridOn) {
-            mouseX = roundNearest(mouseX, gridSize);
-            mouseY = roundNearest(mouseY, gridSize);
-        }
-
-        let dx = mouseX - startX;
-        let dy = mouseY - startY;
-
-        if (edit_mode) {
-
-            if (current_shape) {
-
-                current_shape.x += dx;
-                current_shape.y += dy;
-                if (gridOn) {
-                    current_shape.x = roundNearest(current_shape.x, gridSize);
-                    current_shape.y = roundNearest(current_shape.y, gridSize);
-                }
-            }
-
-        } else {
-            addShape();
-        }
-
-        startX = mouseX;
-        startY = mouseY;
-
-        // console.log(`${startX}, ${startY}`)
-    }
-}
-
-function clear() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-}
-
-canvas.onmousedown = mouse_down;
-canvas.onmouseup = mouse_up;
-
-canvas.onmousemove = mouse_move;
-canvas.onmouseout = mouse_out;
 
 function draw() {
 
@@ -176,6 +53,18 @@ function draw() {
             ctx.arc(s.x + gridSize / 2, s.y + gridSize / 2, Math.abs(gridSize / 2), 0, 2 * Math.PI, 0);
             ctx.fill();
         }
+
+        if (shapeType === 'circle2x') {
+            ctx.beginPath();
+            ctx.arc(s.x + gridSize / 2, s.y + gridSize / 2, Math.abs(gridSize), 0, 2 * Math.PI, 0);
+            ctx.fill();
+        }
+
+        if (shapeType === 'polygon') {
+            drawPolygon(s.x + gridSize / 2, s.y + gridSize / 2, Math.abs(gridSize / 2), s.c, polygonSize);
+        }
+
+
         // center
         // ctx.fillStyle = "red";
         // ctx.fillRect(s.x, s.y, 2, 2);
@@ -203,7 +92,7 @@ function drawPointer() {
             ctx.strokeRect(current_shape.x, current_shape.y, gridSize, gridSize);
         }
     }
-    // big crosss
+    // big cross
     ctx.lineWidth = 0.5;
     ctx.strokeStyle = pickerModel.rgbaColor; // from picker
     ctx.beginPath();
@@ -214,7 +103,6 @@ function drawPointer() {
     ctx.lineTo(canvas.width, mouseEditor.y + gridSize / 2);
     ctx.rect(mouseEditor.x, mouseEditor.y, gridSize, gridSize);
     ctx.stroke();
-
 }
 
 function findShape(x, y) {
@@ -244,9 +132,32 @@ function findShape(x, y) {
     return result[0];// result[result.length-1];
 }
 
-function randomColorClick(isChecked)
-{
-    console.log(isChecked);
-    colorLabel.style.backgroundColor = isChecked?'white':pickerModel.rgbaColor;
-    colorLabel.children[0].textContent = isChecked?'random':'';
+
+function randomColorState(enabled) {
+    console.log(enabled);
+    randomColor = enabled;
+    colorLabel.style.backgroundColor = enabled ? 'white' : pickerModel.rgbaColor;
+    colorLabel.children[0].textContent = enabled ? 'random' : '';
+}
+
+
+function drawPolygon(x, y, r, color, corners = 6) {
+    const a = 2 * Math.PI / corners;
+    ctx.fillStyle = color;
+    
+    ctx.beginPath();
+    for (var i = 0; i < corners; i++) {
+        ctx.lineTo(x + r * Math.cos(a * i), y + r * Math.sin(a * i));
+    }
+    ctx.closePath();
+    ctx.fill();
+}
+
+// https://eperezcosano.github.io/hex-grid/
+function drawHexagonGrid(width, height) {    
+    for (let y = r; y + r * Math.sin(a) < height; y += r * Math.sin(a)) {
+        for (let x = r, j = 0; x + r * (1 + Math.cos(a)) < width; x += r * (1 + Math.cos(a)), y += (-1) ** j++ * r * Math.sin(a)) {
+            drawHexagon(x, y);
+        }
+    }
 }

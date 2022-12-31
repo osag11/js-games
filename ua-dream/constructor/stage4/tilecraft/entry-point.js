@@ -8,9 +8,12 @@ const ctx2 = toolsCanvas.getContext("2d");
 ctx2.lineWidth = 2;
 ctx2.strokeStyle = "blue";
 
-const mouseEditor = { x: 0, y: 0, button: 0, lx: 0, ly: 0, update: true };
-let shapeType = 'circle';
+const mouseEditor = { x: 0, y: 0 };
+let shapeType = 'circle';// 'circle' 'square' 'circle2x'
+let polygonSize = 6;
 let randomColor = false;
+
+
 function main() {
 
     const t0 = performance.now();
@@ -19,6 +22,9 @@ function main() {
     clear();
     draw();
     if (gridOn) drawGrid(ctx);
+
+    // PoC
+    // drawHexagonGrid(canvas.width,canvas.height);
 
     const t1 = performance.now();
     // console.log(`Call to main: ${t1 - t0} ms.`);
@@ -36,11 +42,12 @@ function setSize() {
 setSize();
 get_offset();
 initGrid(gridSize);
+setup();
+// start loop
 main();
-demo();
 
 
-function demo() {
+function setup() {
     gridOn = true;
     gridSize = 50;
     randomColor =true;

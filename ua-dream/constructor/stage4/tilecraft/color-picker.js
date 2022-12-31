@@ -43,6 +43,7 @@ function click(e) {
     pickerModel.y = e.offsetY;
     var imageData = ctxColorStrip.getImageData(pickerModel.x, pickerModel.y, 1, 1).data;
     pickerModel.rgbaColor = 'rgba(' + imageData[0] + ',' + imageData[1] + ',' + imageData[2] + ',1)';
+    randomColorState(false);
     fillGradient();
 }
 
@@ -84,8 +85,9 @@ function changeColor(e) {
     var imageData = ctxColor.getImageData(pickerModel.x, pickerModel.y, 1, 1).data;
     pickerModel.rgbaColor = 'rgba(' + imageData[0] + ',' + imageData[1] + ',' + imageData[2] + ',1)';
     colorLabel.style.backgroundColor = pickerModel.rgbaColor;
-    // inform tools about change:
-    mouse.update = true;
+
+    // inform
+    randomColorState(false);
 }
 
 colorStrip.addEventListener("click", click, false);

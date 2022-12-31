@@ -8,7 +8,13 @@ function handleKeyDown(event) {
     console.log(`keyPressed: ${keyPressed} ${event.code}`)
 
     if (keyPressed == 46) { // Del
-        shapes.pop();
+
+        if (current_shape) {
+            let idx = shapes.indexOf(current_shape)
+            shapes.splice(idx, 1);
+            current_shape = shapes[idx - 1];
+            console.log(`deleted #${idx} from ${shapes.length}`)
+        }
     }
 
     if (keyPressed == 107) {// +
@@ -38,20 +44,67 @@ function handleKeyDown(event) {
     }
 
     if (keyPressed == 84) {// T
-        shapeType = 'triangle'
+
     }
 
     if (keyPressed == 82) {// R
         randomColor = !randomColor;
-        randomColorClick(randomColor);
+        randomColorState(randomColor);
     }
 
-    if (keyPressed == 83) {// S
+    if (keyPressed == 49) {// 1
         shapeType = 'square'
     }
 
-    if (keyPressed == 67) {// C
+    if (keyPressed == 50) {// 2
         shapeType = 'circle'
+    }
+
+    if (keyPressed == 51) {// 3
+        shapeType = 'polygon';
+        polygonSize = 3;
+    }
+
+    if (keyPressed == 52) {// 4
+        shapeType = 'polygon';
+        polygonSize = 4;
+
+    }
+
+    if (keyPressed == 53) {// 5
+        shapeType = 'polygon';
+        polygonSize = 5;
+
+    }
+    
+    if (keyPressed == 54) {// 6
+        shapeType = 'polygon';
+        polygonSize = 6;
+
+    }
+
+    if (keyPressed == 55) {// 7
+        shapeType = 'polygon';
+        polygonSize = 7;
+
+    }
+
+        
+    if (keyPressed == 56) {// 8
+        shapeType = 'polygon';
+        polygonSize = 8;
+    }
+
+
+    if (keyPressed == 57) {// 9
+        shapeType = 'circle2x'
+    }
+
+
+    if (keyPressed == 83) {// S
+    }
+
+    if (keyPressed == 67) {// C
     }
 
     // 39 ArrowRight
@@ -118,3 +171,4 @@ function generateColor() {
     }
     return finalHexString;
 }
+
