@@ -37,6 +37,7 @@ setSize();
 get_offset();
 initGrid(layer().gridSize);
 setup();
+
 // start loop
 main();
 
@@ -46,6 +47,5 @@ function setup() {
     gridSize = 50;
     randomColor = true;
     initGrid(layer().gridSize);
-
-    // shapesX().push({x:10,y:20});
+    updateLayersList();
 }

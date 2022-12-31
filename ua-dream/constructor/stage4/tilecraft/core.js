@@ -9,6 +9,7 @@ const model = {
     activeLayer: 0,
     layers: [
         {
+            id:0,
             name: "first",
             visible: true,
             shapes: [],
@@ -16,10 +17,10 @@ const model = {
             shapeType: 'circle',
             polygonSize: 6,
             gridSize: 50,
-            current_shape: null
         },
 
         {
+            id:1,
             name: "second",
             visible: true,
             shapes: [],
@@ -27,10 +28,10 @@ const model = {
             shapeType: 'polygon',
             polygonSize: 3,
             gridSize: 30,
-            current_shape: null
         },
 
         {
+            id:2,
             name: "third",
             visible: true,
             shapes: [],
@@ -38,7 +39,6 @@ const model = {
             shapeType: 'square',
             polygonSize: 3,
             gridSize: 10,
-            current_shape: null
         },
     ]
 }
@@ -131,6 +131,7 @@ function drawPointer() {
     let gridSize = layer().gridSize;
 
     if (edit_mode) {
+
         // selected grid cell
         ctx.fillStyle = "blue";
         let size = 5;
@@ -186,7 +187,7 @@ function findShape(x, y) {
     console.log(`----${x};${y}------`)
     console.log(JSON.stringify(result));
 
-    return result[0];// result[result.length-1];
+    return result[0];
 }
 
 

@@ -109,6 +109,7 @@ function mouse_move(event) {
 
 function clear() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0, 0, toolsCanvas.width, toolsCanvas.height);
 }
 
 canvas.onmousedown = mouse_down;

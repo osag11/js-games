@@ -11,7 +11,9 @@ function generateColor() {
 }
 
 const layerHeight = 70;
-const lineHeight = 30;
+const lineHeight = 20;
+const lineHeight2 = 40;
+
 function drawLayers() {
     let counter = 0;
 
@@ -19,25 +21,21 @@ function drawLayers() {
     ctx2.beginPath();
 
     for (let l of model.layers) {
+
         ctx2.fillStyle = 'beige';
-
-        let layerIdx = model.layers.indexOf(l);
-        if (layerIdx === model.activeLayer) {
+        if (model.layers.indexOf(l) === model.activeLayer) {
             ctx2.fillStyle = 'rgba(188,69,69,1)';
-
-            // ctx2.strokeStyle = 'red';
-            // ctx2.lineWidth = 4;
-            // ctx2.strokeRect(0, layerHeight * counter, toolsCanvas.width, layerHeight - 20);
         }
         ctx2.fillRect(0, layerHeight * counter, toolsCanvas.width, layerHeight - 20);
 
         ctx2.fillStyle = 'black';
         ctx2.fillText(l.name, 5, layerHeight * counter + lineHeight);
 
-        ctx2.fillText(l.shapes.length, 60, layerHeight * counter + lineHeight);
-        ctx2.fillText(l.gridSize, 110, layerHeight * counter + lineHeight);
-        ctx2.fillText(l.shapeType, 140, layerHeight * counter + lineHeight);
-        ctx2.fillText(l.polygonSize, 220, layerHeight * counter + lineHeight);
+        ctx2.fillText(l.shapes.length, 60, layerHeight * counter + lineHeight2);
+        ctx2.fillText(l.gridSize, 110, layerHeight * counter + lineHeight2);
+        ctx2.fillText(l.shapeType, 140, layerHeight * counter + lineHeight2);
+        ctx2.fillText(l.polygonSize, 220, layerHeight * counter + lineHeight2);
+        ctx2.closePath();
 
 
         ctx2.fillStyle = l.visible ? 'green' : 'red';
@@ -45,21 +43,56 @@ function drawLayers() {
         ctx2.beginPath();
         ctx2.arc(260, layerHeight * counter + 25, 15, 0, 2 * Math.PI, 0);
         ctx2.fill();
+        ctx2.closePath();
+
         l.posX = 260;
         l.posY = layerHeight * counter + 25;
 
         counter++;
     }
-
 }
 
 function onActiveLayerChanged(val) {
     model.activeLayer = parseInt(val);
     initGrid(layer().gridSize);
-
 }
 
+function updateLayersList() {
+    let activeLayerEl = document.getElementById('activeLayer');
+    activeLayerEl.innerHTML = "";
 
+    for (let l of model.layers) {
+        var option = document.createElement("option");
+        option.text = l.name;
+        option.value = l.id;
+        activeLayerEl.options.add(option);
+    }
+}
+
+function addLayer() {
+    model.layers.push(
+        {
+            id: model.layers.length,
+            name: Date.now(),
+            visible: true,
+            shapes: [],
+            shapesHistory: [],
+            shapeType: 'square',
+            polygonSize: 6,
+            gridSize: 20,
+            current_shape: null
+        }
+    );
+    model.activeLayer = 0;
+
+    updateLayersList();
+}
+
+function removeLayer() {
+    model.layers.splice(model.activeLayer, 1);
+    model.activeLayer = 0;
+    updateLayersList();
+}
 
 function mouseEvents(e) {
 
