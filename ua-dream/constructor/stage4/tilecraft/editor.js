@@ -1,10 +1,7 @@
 // https://www.youtube.com/watch?v=7PYvx8u_9Sk&t=577s
 // Canvas HTML5 JavaScript Full Tutorial
 // Canvas Drag & Drop Objects Tutorial | HTML5 Canvas JavaScript Tutorial [#10]
-let shapes = [];
-let shapesHistory = [];
 
-let is_dragging, edit_mode = false;
 let startX;
 let startY;
 
@@ -23,6 +20,7 @@ window.onresize = function () {
     setSize();
     get_offset();
 }
+
 canvas.onresize = function () { get_offset(); }
 
 
@@ -59,6 +57,7 @@ function mouse_out(event) {
 }
 
 function mouse_move(event) {
+    let gridSize= layer().gridSize;
 
     mouseEditor.x = parseInt(event.clientX - offset_x) - gridSize / 2;
     mouseEditor.y = parseInt(event.clientY - offset_y) - gridSize / 2;

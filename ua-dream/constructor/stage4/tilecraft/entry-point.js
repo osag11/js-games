@@ -5,13 +5,6 @@ canvas.style.border = '5px solid blue';
 const toolsCanvas = document.getElementById("tools");
 toolsCanvas.style.border = '5px solid green';
 const ctx2 = toolsCanvas.getContext("2d");
-ctx2.lineWidth = 2;
-ctx2.strokeStyle = "blue";
-
-const mouseEditor = { x: 0, y: 0 };
-let shapeType = 'circle';// 'circle' 'square' 'circle2x'
-let polygonSize = 6;
-let randomColor = false;
 
 
 function main() {
@@ -22,6 +15,7 @@ function main() {
     clear();
     draw();
     if (gridOn) drawGrid(ctx);
+    drawLayers();
 
     // PoC
     //drawHexagonGrid(canvas.width,canvas.height);
@@ -41,7 +35,7 @@ function setSize() {
 // entry-point
 setSize();
 get_offset();
-initGrid(gridSize);
+initGrid(layer().gridSize);
 setup();
 // start loop
 main();
@@ -50,6 +44,8 @@ main();
 function setup() {
     gridOn = true;
     gridSize = 50;
-    randomColor =true;
-    initGrid(gridSize);
+    randomColor = true;
+    initGrid(layer().gridSize);
+
+    // shapesX().push({x:10,y:20});
 }

@@ -1,6 +1,6 @@
 const gridImage = new Image();
 let gridOn = false;
-let gridSize = 0;
+// let gridSize = 0;
 function initGrid(size = 10) {
     var data = `<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"> \
     <defs> \

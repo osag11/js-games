@@ -4,6 +4,9 @@ function handleKeyDown(event) {
     const keyPressed = event.keyCode;
     console.log(`keyPressed: ${keyPressed} ${event.code}`)
 
+    let shapes = layer().shapes;
+    let shapesHistory = layer().shapesHistory;
+
     if (keyPressed == 46) { // Del
 
         if (current_shape) {
@@ -15,13 +18,13 @@ function handleKeyDown(event) {
     }
 
     if (keyPressed == 107) {// +
-        gridSize++;
-        initGrid(gridSize);
+        layer().gridSize++;
+        initGrid(layer().gridSize);
     }
 
     if (keyPressed == 109) {// -
-        gridSize--;
-        initGrid(gridSize);
+        layer().gridSize--;
+        initGrid(layer().gridSize);
 
     }
     // keyPressed: 83 KeyS
@@ -33,7 +36,7 @@ function handleKeyDown(event) {
     }
 
     if (keyPressed == 27) {// Esc
-        shapes = [];
+        layer().shapes = [];
     }
 
     if (keyPressed == 69) {// E
@@ -49,52 +52,54 @@ function handleKeyDown(event) {
         randomColorState(randomColor);
     }
 
+   // let shapeType= layer().shapeType;
+
     if (keyPressed == 49) {// 1
-        shapeType = 'square'
+        layer().shapeType = 'square'
     }
 
     if (keyPressed == 50) {// 2
-        shapeType = 'circle'
+        layer().shapeType = 'circle'
     }
 
     if (keyPressed == 51) {// 3
-        shapeType = 'polygon';
-        polygonSize = 3;
+        layer().shapeType = 'polygon';
+        layer().polygonSize = 3;
     }
 
     if (keyPressed == 52) {// 4
-        shapeType = 'polygon';
-        polygonSize = 4;
+        layer().shapeType = 'polygon';
+        layer().polygonSize = 4;
 
     }
 
     if (keyPressed == 53) {// 5
-        shapeType = 'polygon';
-        polygonSize = 5;
+        layer().shapeType = 'polygon';
+        layer().polygonSize = 5;
 
     }
-    
+
     if (keyPressed == 54) {// 6
-        shapeType = 'polygon';
-        polygonSize = 6;
+        layer().shapeType = 'polygon';
+        layer().polygonSize = 6;
 
     }
 
     if (keyPressed == 55) {// 7
-        shapeType = 'polygon';
-        polygonSize = 7;
+        layer().shapeType = 'polygon';
+        layer().polygonSize = 7;
 
     }
 
-        
+
     if (keyPressed == 56) {// 8
-        shapeType = 'polygon';
-        polygonSize = 8;
+        layer().shapeType = 'polygon';
+        layer().polygonSize = 8;
     }
 
 
     if (keyPressed == 57) {// 9
-        shapeType = 'circle2x'
+        layer().shapeType = 'circle2x'
     }
 
 
@@ -107,9 +112,12 @@ function handleKeyDown(event) {
     // 39 ArrowRight
     // 37 ArrowLeft
     // 38 ArrowUp
-    if (keyPressed == 38) { // 
+    // 40 ArrowDown
 
-        let clonedShapes = [...shapes];
+    if (keyPressed == 38) { // ArrowUp
+        let gridSize =  layer().gridSize;
+
+        let clonedShapes = [...layer().shapes];
         clonedShapes.sort((a, b) => {
             const nameA = a.c.toUpperCase(); // ignore upper and lowercase
             const nameB = b.c.toUpperCase(); // ignore upper and lowercase
@@ -125,7 +133,7 @@ function handleKeyDown(event) {
         });
 
         let usedColors = [];
-        shapes = [];
+        layer().shapes = [];
         let x = 0;
         let y = 0;
 
@@ -134,7 +142,7 @@ function handleKeyDown(event) {
             if (usedColors.indexOf(cS.c) < 0) {
                 usedColors.push(cS.c);
 
-                shapes.unshift({ x: x, y: y, c: cS.c });
+                layer().shapes.unshift({ x: x, y: y, c: cS.c });
                 x += gridSize;
                 if (x > canvas.width) {
 
@@ -144,21 +152,19 @@ function handleKeyDown(event) {
             }
         }
 
-        drawHexagonGrid(toolsCanvas.width,toolsCanvas.height, 30, usedColors);
+        // drawHexagonGrid(toolsCanvas.width,toolsCanvas.height, 30, usedColors);
 
     }
 
-    // 40 ArrowDown
-    if (keyPressed == 37) { // 
+    if (keyPressed == 37) { // ArrowLeft
 
         let s = shapes.pop();
         if (s) shapesHistory.push(s);
     }
 
-    if (keyPressed == 39) { // 
+    if (keyPressed == 39) { // ArrowRight
 
         let s = shapesHistory.pop();
         if (s) shapes.push(s);
     }
-
 }

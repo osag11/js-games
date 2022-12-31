@@ -1,12 +1,58 @@
 let current_shape = null;
+const mouseEditor = { x: 0, y: 0 };
+// let shapeType = 'circle';// 'circle' 'square' 'circle2x'
+// let polygonSize = 6;
+let randomColor = false;
+let is_dragging, edit_mode = false;
+
+const model = {
+    activeLayer: 0,
+    layers: [
+        {
+            name: "first",
+            visible: true,
+            shapes: [],
+            shapesHistory: [],
+            shapeType: 'circle',
+            polygonSize: 6,
+            gridSize: 50,
+            current_shape: null
+        },
+
+        {
+            name: "second",
+            visible: true,
+            shapes: [],
+            shapesHistory: [],
+            shapeType: 'polygon',
+            polygonSize: 3,
+            gridSize: 30,
+            current_shape: null
+        },
+
+        {
+            name: "third",
+            visible: true,
+            shapes: [],
+            shapesHistory: [],
+            shapeType: 'square',
+            polygonSize: 3,
+            gridSize: 10,
+            current_shape: null
+        },
+    ]
+}
+let layer = function () {
+    return model.layers[model.activeLayer];
+}
 
 function selectShape() {
+    if(!layer().visible) return;
 
     let pX = mouseEditor.x;
     let pY = mouseEditor.y;
 
     let existing = findShape(pX, pY);
-
 
     if (existing) {
         current_shape = existing;
@@ -19,10 +65,12 @@ function selectShape() {
 }
 
 function addShape() {
+    if(!layer().visible) return;
+
+    let shapes = layer().shapes;
 
     let color = randomColor ? generateColor() : pickerModel.rgbaColor;
     let newShape = { x: mouseEditor.x, y: mouseEditor.y, c: color };
-
     let existing = shapes.find(el =>
         el.x === newShape.x &&
         el.y === newShape.y &&
@@ -38,36 +86,41 @@ function addShape() {
     }
 }
 
-
 function draw() {
 
-    for (let s of shapes) {
-        ctx.fillStyle = s.c;
-        if (shapeType === 'square') {
+    for (let layer of model.layers) {
+        if (!layer.visible) { continue;}
 
-            ctx.fillRect(s.x, s.y, gridSize, gridSize);
+        let gridSize = layer.gridSize;
+        let shapeType = layer.shapeType;
+
+        for (let s of layer.shapes) {
+            ctx.fillStyle = s.c;
+            if (shapeType === 'square') {
+                ctx.fillRect(s.x, s.y, gridSize, gridSize);
+            }
+
+            if (shapeType === 'circle') {
+                ctx.beginPath();
+                ctx.arc(s.x + gridSize / 2, s.y + gridSize / 2, Math.abs(gridSize / 2), 0, 2 * Math.PI, 0);
+                ctx.fill();
+            }
+
+            if (shapeType === 'circle2x') {
+                ctx.beginPath();
+                ctx.arc(s.x + gridSize / 2, s.y + gridSize / 2, Math.abs(gridSize), 0, 2 * Math.PI, 0);
+                ctx.fill();
+            }
+
+            if (shapeType === 'polygon') {
+                drawPolygon(s.x + gridSize / 2, s.y + gridSize / 2, Math.abs(gridSize / 2), s.c, layer.polygonSize);
+            }
+
+
+            // center
+            // ctx.fillStyle = "red";
+            // ctx.fillRect(s.x, s.y, 2, 2);
         }
-
-        if (shapeType === 'circle') {
-            ctx.beginPath();
-            ctx.arc(s.x + gridSize / 2, s.y + gridSize / 2, Math.abs(gridSize / 2), 0, 2 * Math.PI, 0);
-            ctx.fill();
-        }
-
-        if (shapeType === 'circle2x') {
-            ctx.beginPath();
-            ctx.arc(s.x + gridSize / 2, s.y + gridSize / 2, Math.abs(gridSize), 0, 2 * Math.PI, 0);
-            ctx.fill();
-        }
-
-        if (shapeType === 'polygon') {
-            drawPolygon(s.x + gridSize / 2, s.y + gridSize / 2, Math.abs(gridSize / 2), s.c, polygonSize);
-        }
-
-
-        // center
-        // ctx.fillStyle = "red";
-        // ctx.fillRect(s.x, s.y, 2, 2);
     }
 
     drawPointer();
@@ -75,6 +128,7 @@ function draw() {
 
 
 function drawPointer() {
+    let gridSize = layer().gridSize;
 
     if (edit_mode) {
         // selected grid cell
@@ -106,6 +160,9 @@ function drawPointer() {
 }
 
 function findShape(x, y) {
+    let shapes = layer().shapes;
+    let gridSize = layer().gridSize;
+
     result = [];
     for (var i = shapes.length - 1; i >= 0; i--) {
         let shape = shapes[i];
