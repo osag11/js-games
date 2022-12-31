@@ -31,24 +31,7 @@ function setSize() {
     toolsCanvas.style.marginTop = colorBlock.height + 44 + "px";
 }
 
-function draw() {
 
-    for (let s of shapes) {
-        ctx.fillStyle = s.c;
-        if (shapeType === 'square') {
-
-            ctx.fillRect(s.x, s.y, gridSize, gridSize);
-        }
-
-        if (shapeType === 'circle') {
-            ctx.beginPath();
-            ctx.arc(s.x+ gridSize/2, s.y+ gridSize/2, gridSize/2, 0, 2 * Math.PI, 0);
-            ctx.fill();
-        }
-    }
-
-    drawPointer();
-}
 // entry-point
 setSize();
 get_offset();
@@ -56,19 +39,6 @@ initGrid(gridSize);
 main();
 demo();
 
-function drawPointer() {
-    ctx.lineWidth = 0.5;
-    ctx.strokeStyle = pickerModel.rgbaColor; // from picker
-    ctx.beginPath();
-    ctx.moveTo(mouseEditor.x + gridSize / 2, 0);
-    ctx.lineTo(mouseEditor.x + gridSize / 2, canvas.height);
-
-    ctx.moveTo(0, mouseEditor.y + gridSize / 2);
-    ctx.lineTo(canvas.width, mouseEditor.y + gridSize / 2);
-    ctx.rect(mouseEditor.x, mouseEditor.y, gridSize, gridSize);
-    ctx.stroke();
-
-}
 
 function demo() {
     gridOn = true;

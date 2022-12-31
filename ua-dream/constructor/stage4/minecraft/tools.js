@@ -63,31 +63,31 @@ function handleKeyDown(event) {
             const nameA = a.c.toUpperCase(); // ignore upper and lowercase
             const nameB = b.c.toUpperCase(); // ignore upper and lowercase
             if (nameA < nameB) {
-              return -1;
+                return -1;
             }
             if (nameA > nameB) {
-              return 1;
+                return 1;
             }
-          
+
             // names must be equal
             return 0;
-          });
-          ///shapes = [];
-          let x = 0;
-          let y= 0;
-          for(let cS of clonedShapes)
-          {
-            shapes.push({x:x,y:y,c:cS.c});
-            x+=gridSize;
-            if(x>canvas.width)
-            {
+        });
 
-                x=0;
-                y+=gridSize;
+        shapes = [];
+        let x = 0;
+        let y = 0;
+
+        for (let cS of clonedShapes) {
+            shapes.unshift({ x: x, y: y, c: cS.c });
+            x += gridSize;
+            if (x > canvas.width) {
+
+                x = 0;
+                y += gridSize;
             }
-          }
-    }    
-    
+        }
+    }
+
     // 40 ArrowDown
     if (keyPressed == 37) { // 
 

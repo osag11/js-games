@@ -33,7 +33,8 @@ function selectShape() {
     let pY = mouseEditor.y;
     // let pColor = pickerModel.rgbaColor;
 
-    let existing =  findShape(pX,pY);
+    let existing = findShape(pX, pY);
+
     // let existing = shapes.find(el =>
     //     el.x === pX &&
     //     el.y === pY);
@@ -161,15 +162,61 @@ canvas.onmouseup = mouse_up;
 canvas.onmousemove = mouse_move;
 canvas.onmouseout = mouse_out;
 
+function draw() {
+
+    for (let s of shapes) {
+        ctx.fillStyle = s.c;
+        if (shapeType === 'square') {
+
+            ctx.fillRect(s.x, s.y, gridSize, gridSize);
+        }
+
+        if (shapeType === 'circle') {
+            ctx.beginPath();
+            ctx.arc(s.x + gridSize / 2, s.y + gridSize / 2, gridSize / 2, 0, 2 * Math.PI, 0);
+            ctx.fill();
+        }
+
+        // ctx.fillStyle = "red";
+        // ctx.fillRect(s.x, s.y, 2, 2);
+    }
+
+    if (edit_mode) {
+        ctx.fillStyle = "blue";
+        let size = 5;
+        ctx.fillRect(mouseEditor.x, mouseEditor.y, size, size);
+        ctx.fillRect(mouseEditor.x, mouseEditor.y + gridSize - size, size, size);
+        ctx.fillRect(mouseEditor.x + gridSize - size, mouseEditor.y, size, size);
+        ctx.fillRect(mouseEditor.x + gridSize - size, mouseEditor.y + gridSize - size, size, size);
+    }
+
+    drawPointer();
+}
+
+
+function drawPointer() {
+    ctx.lineWidth = 0.5;
+    ctx.strokeStyle = pickerModel.rgbaColor; // from picker
+    ctx.beginPath();
+    ctx.moveTo(mouseEditor.x + gridSize / 2, 0);
+    ctx.lineTo(mouseEditor.x + gridSize / 2, canvas.height);
+
+    ctx.moveTo(0, mouseEditor.y + gridSize / 2);
+    ctx.lineTo(canvas.width, mouseEditor.y + gridSize / 2);
+    ctx.rect(mouseEditor.x, mouseEditor.y, gridSize, gridSize);
+    ctx.stroke();
+
+}
 
 function findShape(x, y) {
+    for (var i = shapes.length - 1; i >= 0; i--) {
+        let shape = shapes[i];
 
-    for (let shape of shapes) {
-        let shape_left = shape.x- gridSize*0.2;
-        let shape_right = shape.x + gridSize*1.2;
+        let shape_left = shape.x - gridSize * 0.1;
+        let shape_right = shape.x + gridSize * 1.1;
 
-        let shape_top = shape.y- gridSize*0.2;
-        let shape_bottom = shape.y + gridSize*1.2;
+        let shape_top = shape.y - gridSize * 0.1;
+        let shape_bottom = shape.y + gridSize * 1.1;
 
         if (x > shape_left && x < shape_right && y > shape_top && y < shape_bottom) {
             return shape;
