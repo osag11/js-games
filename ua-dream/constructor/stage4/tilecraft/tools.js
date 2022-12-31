@@ -1,167 +1,7 @@
 const mouse = { x: 0, y: 0, button: 0, lx: 0, ly: 0, update: true };
 const markRadius = 4;
 
-window.addEventListener("keydown", handleKeyDown);
 
-function handleKeyDown(event) {
-    const keyPressed = event.keyCode;
-    console.log(`keyPressed: ${keyPressed} ${event.code}`)
-
-    if (keyPressed == 46) { // Del
-
-        if (current_shape) {
-            let idx = shapes.indexOf(current_shape)
-            shapes.splice(idx, 1);
-            current_shape = shapes[idx - 1];
-            console.log(`deleted #${idx} from ${shapes.length}`)
-        }
-    }
-
-    if (keyPressed == 107) {// +
-        gridSize++;
-        initGrid(gridSize);
-    }
-
-    if (keyPressed == 109) {// -
-        gridSize--;
-        initGrid(gridSize);
-
-    }
-    // keyPressed: 83 KeyS
-    // keyPressed: 67 KeyC
-
-
-    if (keyPressed == 71) {// G
-        gridOn = !gridOn;
-    }
-
-    if (keyPressed == 27) {// Esc
-        shapes = [];
-    }
-
-    if (keyPressed == 69) {// E
-        edit_mode = !edit_mode;
-    }
-
-    if (keyPressed == 84) {// T
-
-    }
-
-    if (keyPressed == 82) {// R
-        randomColor = !randomColor;
-        randomColorState(randomColor);
-    }
-
-    if (keyPressed == 49) {// 1
-        shapeType = 'square'
-    }
-
-    if (keyPressed == 50) {// 2
-        shapeType = 'circle'
-    }
-
-    if (keyPressed == 51) {// 3
-        shapeType = 'polygon';
-        polygonSize = 3;
-    }
-
-    if (keyPressed == 52) {// 4
-        shapeType = 'polygon';
-        polygonSize = 4;
-
-    }
-
-    if (keyPressed == 53) {// 5
-        shapeType = 'polygon';
-        polygonSize = 5;
-
-    }
-    
-    if (keyPressed == 54) {// 6
-        shapeType = 'polygon';
-        polygonSize = 6;
-
-    }
-
-    if (keyPressed == 55) {// 7
-        shapeType = 'polygon';
-        polygonSize = 7;
-
-    }
-
-        
-    if (keyPressed == 56) {// 8
-        shapeType = 'polygon';
-        polygonSize = 8;
-    }
-
-
-    if (keyPressed == 57) {// 9
-        shapeType = 'circle2x'
-    }
-
-
-    if (keyPressed == 83) {// S
-    }
-
-    if (keyPressed == 67) {// C
-    }
-
-    // 39 ArrowRight
-    // 37 ArrowLeft
-    // 38 ArrowUp
-    if (keyPressed == 38) { // 
-
-        let clonedShapes = [...shapes];
-        clonedShapes.sort((a, b) => {
-            const nameA = a.c.toUpperCase(); // ignore upper and lowercase
-            const nameB = b.c.toUpperCase(); // ignore upper and lowercase
-            if (nameA < nameB) {
-                return -1;
-            }
-            if (nameA > nameB) {
-                return 1;
-            }
-
-            // names must be equal
-            return 0;
-        });
-
-        let usedColors = [];
-        shapes = [];
-        let x = 0;
-        let y = 0;
-
-        for (let cS of clonedShapes) {
-
-            if (usedColors.indexOf(cS.c) < 0) {
-                usedColors.push(cS.c);
-
-                shapes.unshift({ x: x, y: y, c: cS.c });
-                x += gridSize;
-                if (x > canvas.width) {
-
-                    x = 0;
-                    y += gridSize;
-                }
-            }
-        }
-    }
-
-    // 40 ArrowDown
-    if (keyPressed == 37) { // 
-
-        let s = shapes.pop();
-        if (s) shapesHistory.push(s);
-    }
-
-    if (keyPressed == 39) { // 
-
-        let s = shapesHistory.pop();
-        if (s) shapes.push(s);
-    }
-
-}
 
 function generateColor() {
     let hexSet = "0123456789ABCDEF";
@@ -170,5 +10,36 @@ function generateColor() {
         finalHexString += hexSet[Math.ceil(Math.random() * 15)];
     }
     return finalHexString;
+}
+
+
+
+// https://eperezcosano.github.io/hex-grid/
+function drawHexagonGrid(width, height, r, colors = ['red', 'green', 'blue']) {
+    let idx = -1;
+    const a = 2 * Math.PI / 6;
+
+    for (let y = r; y + r * Math.sin(a) < height; y += r * Math.sin(a)) {
+        for (let x = r, j = 0; x + r * (1 + Math.cos(a)) < width; x += r * (1 + Math.cos(a)), y += (-1) ** j++ * r * Math.sin(a)) {
+            idx++;
+            if (idx > colors.length - 1) idx = 0;
+
+            let color = colors[idx];
+            drawPolygonCtx2(x, y, r, color);
+        }
+    }
+}
+
+
+function drawPolygonCtx2(x, y, r, color, corners = 6) {
+    const a = 2 * Math.PI / corners;
+    ctx2.fillStyle = color;
+
+    ctx2.beginPath();
+    for (var i = 0; i < corners; i++) {
+        ctx2.lineTo(x + r * Math.cos(a * i), y + r * Math.sin(a * i));
+    }
+    ctx2.closePath();
+    ctx2.fill();
 }
 

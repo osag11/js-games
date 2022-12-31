@@ -24,7 +24,7 @@ function main() {
     if (gridOn) drawGrid(ctx);
 
     // PoC
-    // drawHexagonGrid(canvas.width,canvas.height);
+    //drawHexagonGrid(canvas.width,canvas.height);
 
     const t1 = performance.now();
     // console.log(`Call to main: ${t1 - t0} ms.`);
