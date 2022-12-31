@@ -7,7 +7,6 @@ var colorStrip = document.getElementById('color-strip');
 var ctxColorStrip = colorStrip.getContext('2d',{ willReadFrequently: true });
 
 var colorLabel = document.getElementById('color-label');
-var fillSwitch = document.getElementById('fill-switch');
 
 let pickerModel = {
     x: 0,
@@ -35,6 +34,7 @@ function initPicker() {
 
 function pick(color) {
     pickerModel.rgbaColor = color;
+    colorLabel.style.backgroundColor = pickerModel.rgbaColor;
     fillGradient();
 }
 

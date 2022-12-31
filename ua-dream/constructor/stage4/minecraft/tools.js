@@ -43,6 +43,7 @@ function handleKeyDown(event) {
 
     if (keyPressed == 82) {// R
         randomColor = !randomColor;
+        randomColorClick(randomColor);
     }
 
     if (keyPressed == 83) {// S
@@ -73,17 +74,23 @@ function handleKeyDown(event) {
             return 0;
         });
 
+        let usedColors = [];
         shapes = [];
         let x = 0;
         let y = 0;
 
         for (let cS of clonedShapes) {
-            shapes.unshift({ x: x, y: y, c: cS.c });
-            x += gridSize;
-            if (x > canvas.width) {
 
-                x = 0;
-                y += gridSize;
+            if (usedColors.indexOf(cS.c) < 0) {
+                usedColors.push(cS.c);
+
+                shapes.unshift({ x: x, y: y, c: cS.c });
+                x += gridSize;
+                if (x > canvas.width) {
+
+                    x = 0;
+                    y += gridSize;
+                }
             }
         }
     }
@@ -111,6 +118,3 @@ function generateColor() {
     }
     return finalHexString;
 }
-
-
-

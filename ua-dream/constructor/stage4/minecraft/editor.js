@@ -173,21 +173,12 @@ function draw() {
 
         if (shapeType === 'circle') {
             ctx.beginPath();
-            ctx.arc(s.x + gridSize / 2, s.y + gridSize / 2, gridSize / 2, 0, 2 * Math.PI, 0);
+            ctx.arc(s.x + gridSize / 2, s.y + gridSize / 2, Math.abs(gridSize / 2), 0, 2 * Math.PI, 0);
             ctx.fill();
         }
-
+        // center
         // ctx.fillStyle = "red";
         // ctx.fillRect(s.x, s.y, 2, 2);
-    }
-
-    if (edit_mode) {
-        ctx.fillStyle = "blue";
-        let size = 5;
-        ctx.fillRect(mouseEditor.x, mouseEditor.y, size, size);
-        ctx.fillRect(mouseEditor.x, mouseEditor.y + gridSize - size, size, size);
-        ctx.fillRect(mouseEditor.x + gridSize - size, mouseEditor.y, size, size);
-        ctx.fillRect(mouseEditor.x + gridSize - size, mouseEditor.y + gridSize - size, size, size);
     }
 
     drawPointer();
@@ -195,6 +186,24 @@ function draw() {
 
 
 function drawPointer() {
+
+    if (edit_mode) {
+        // selected grid cell
+        ctx.fillStyle = "blue";
+        let size = 5;
+        ctx.fillRect(mouseEditor.x, mouseEditor.y, size, size);
+        ctx.fillRect(mouseEditor.x, mouseEditor.y + gridSize - size, size, size);
+        ctx.fillRect(mouseEditor.x + gridSize - size, mouseEditor.y, size, size);
+        ctx.fillRect(mouseEditor.x + gridSize - size, mouseEditor.y + gridSize - size, size, size);
+
+        // current shape selection
+        if (current_shape) {
+            ctx.strokeStyle = "red"
+            ctx.lineWidth = 2;
+            ctx.strokeRect(current_shape.x, current_shape.y, gridSize, gridSize);
+        }
+    }
+    // big crosss
     ctx.lineWidth = 0.5;
     ctx.strokeStyle = pickerModel.rgbaColor; // from picker
     ctx.beginPath();
@@ -209,19 +218,35 @@ function drawPointer() {
 }
 
 function findShape(x, y) {
+    result = [];
     for (var i = shapes.length - 1; i >= 0; i--) {
         let shape = shapes[i];
 
-        let shape_left = shape.x - gridSize * 0.1;
-        let shape_right = shape.x + gridSize * 1.1;
+        let shape_left = shape.x - gridSize / 2;
+        let shape_right = shape.x + gridSize;
 
-        let shape_top = shape.y - gridSize * 0.1;
-        let shape_bottom = shape.y + gridSize * 1.1;
+        let shape_top = shape.y - gridSize / 2;
+        let shape_bottom = shape.y + gridSize;
 
         if (x > shape_left && x < shape_right && y > shape_top && y < shape_bottom) {
-            return shape;
+            if (result.length < 30) {
+                result.push(shape);
+            }
         }
     }
+    console.log(JSON.stringify(result));
+    result.sort((a, b) => {
+        return (a.x - b.x) * (a.y - b.y);
+    })
+    console.log(`----${x};${y}------`)
+    console.log(JSON.stringify(result));
 
-    return null;
+    return result[0];// result[result.length-1];
+}
+
+function randomColorClick(isChecked)
+{
+    console.log(isChecked);
+    colorLabel.style.backgroundColor = isChecked?'white':pickerModel.rgbaColor;
+    colorLabel.children[0].textContent = isChecked?'random':'';
 }
