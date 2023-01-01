@@ -15,8 +15,11 @@ function main() {
     clear();
     draw();
     if (gridOn) drawGrid(ctx);
-    drawLayers();
 
+    if (help)
+        drawHelp();
+    else
+        drawLayers();
     // PoC
     //drawHexagonGrid(canvas.width,canvas.height);
 

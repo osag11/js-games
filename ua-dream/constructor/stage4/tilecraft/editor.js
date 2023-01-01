@@ -30,8 +30,7 @@ function mouse_down(event) {
     startX = parseInt(event.clientX - offset_x)
     startY = parseInt(event.clientY - offset_y)
 
-
-    if (edit_mode)
+    if (layer().edit_mode)
         selectShape();
     else
         addShape();
@@ -55,11 +54,19 @@ function mouse_out(event) {
     is_dragging = false;
 }
 
+
 function mouse_move(event) {
-    let gridSize= layer().gridSize;
+    let gridSize = layer().gridSize;
 
     mouseEditor.x = parseInt(event.clientX - offset_x) - gridSize / 2;
     mouseEditor.y = parseInt(event.clientY - offset_y) - gridSize / 2;
+
+    if (xLock) {
+        mouseEditor.x = xLock;
+    }
+    if (yLock) {
+        mouseEditor.y = yLock;
+    }
 
     if (gridOn) {
         mouseEditor.x = roundNearest(mouseEditor.x, gridSize);
@@ -83,7 +90,7 @@ function mouse_move(event) {
         let dx = mouseX - startX;
         let dy = mouseY - startY;
 
-        if (edit_mode) {
+        if (layer().edit_mode) {
 
             if (current_shape) {
 

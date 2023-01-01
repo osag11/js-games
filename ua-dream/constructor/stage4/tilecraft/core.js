@@ -2,7 +2,7 @@ let current_shape = null;
 const mouseEditor = { x: 0, y: 0 };
 
 let randomColor = false;
-let is_dragging, edit_mode, move_mode = false;
+let is_dragging, move_mode = false;
 
 const model = {
     activeLayer: 0,
@@ -20,18 +20,27 @@ const model = {
             visible: true,
             shapes: [],
             shapesHistory: [],
-            shapeType: 'polygon',
-            polygonSize: 3,
-            gridSize: 30,
+            shapeType: 'square',
+            polygonSize: 6,
+            gridSize: 10,
         },
 
         {
             visible: true,
             shapes: [],
             shapesHistory: [],
-            shapeType: 'square',
-            polygonSize: 3,
+            shapeType: 'circle2x',
+            polygonSize: 4,
             gridSize: 10,
+        },
+
+        {
+            visible: true,
+            shapes: [],
+            shapesHistory: [],
+            shapeType: 'polygon',
+            polygonSize: 6,
+            gridSize: 20,
         },
     ]
 }
@@ -57,6 +66,9 @@ function selectShape() {
     }
 }
 
+let xLock = null;
+let yLock = null;
+
 function addShape() {
     if (!layer().visible) return;
 
@@ -64,6 +76,7 @@ function addShape() {
 
     let color = randomColor ? generateColor() : pickerModel.rgbaColor;
     let newShape = { x: mouseEditor.x, y: mouseEditor.y, c: color };
+
     let existing = shapes.find(el =>
         el.x === newShape.x &&
         el.y === newShape.y &&
@@ -77,6 +90,7 @@ function addShape() {
         current_shape = existing;
         console.log('skip:' + JSON.stringify(newShape));
     }
+
 }
 
 function draw() {
@@ -124,6 +138,7 @@ function draw() {
 function drawPointer() {
     let gridSize = layer().gridSize;
     let zoom = layer().zoom ?? 1;
+    let edit_mode = layer().edit_mode;
 
     if (edit_mode) {
 

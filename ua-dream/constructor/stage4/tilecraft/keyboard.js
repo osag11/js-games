@@ -33,13 +33,17 @@ function handleKeyDown(event) {
     if (keyPressed == 71) {// G
         gridOn = !gridOn;
     }
-
+    if (keyPressed == 72) {// H
+        help = !help;
+    }
     if (keyPressed == 27) {// Esc
-        layer().shapes = [];
+        if (layer().visible) {
+            layer().shapes = [];
+        }
     }
 
     if (keyPressed == 69) {// E
-        edit_mode = !edit_mode;
+        layer().edit_mode = !layer().edit_mode;
     }
 
 
@@ -48,7 +52,7 @@ function handleKeyDown(event) {
         randomColorState(randomColor);
     }
 
-   // let shapeType= layer().shapeType;
+    // let shapeType= layer().shapeType;
 
     if (keyPressed == 49) {// 1
         layer().shapeType = 'square'
@@ -94,6 +98,30 @@ function handleKeyDown(event) {
         layer().shapeType = 'circle2x'
     }
 
+    if (keyPressed == 67) {// C
+        layerCloneMode = !layerCloneMode;
+    }
+
+    if (keyPressed == 88) {// X
+
+        if (xLock) {
+            xLock = null;
+        }
+        else {
+            xLock = mouseEditor.x;
+        }
+
+    }
+
+    if (keyPressed == 89) {// Y
+        if (yLock) {
+            yLock = null;
+        }
+        else {
+            yLock = mouseEditor.y;
+        }
+    }
+
 
     if (keyPressed == 83) {// S
     }
@@ -101,8 +129,7 @@ function handleKeyDown(event) {
     if (keyPressed == 84) {// T
     }
 
-    if (keyPressed == 67) {// C
-    }
+
 
     // 39 ArrowRight
     // 37 ArrowLeft
@@ -110,7 +137,7 @@ function handleKeyDown(event) {
     // 40 ArrowDown
 
     if (keyPressed == 38) { // ArrowUp
-        let gridSize =  layer().gridSize;
+        let gridSize = layer().gridSize;
 
         let clonedShapes = [...layer().shapes];
 
@@ -129,7 +156,7 @@ function handleKeyDown(event) {
             return 0;
         });
 
-        let usedColors = [];        
+        let usedColors = [];
         layer().shapes = [];
 
         let x = 0;

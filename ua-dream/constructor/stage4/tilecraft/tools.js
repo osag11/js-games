@@ -10,14 +10,29 @@ function generateColor() {
     return finalHexString;
 }
 
-const layerHeight = 70;
+let layerCloneMode = false;
+const layerHeight = 75;
 const lineHeight = 20;
 const lineHeight2 = 40;
+const margin = 40;
 
 function drawLayers() {
     let counter = 0;
 
-    ctx2.font = "20px serif";
+    ctx2.font = "16px serif";
+    ctx2.fillStyle = layerCloneMode ? 'red' : 'green';
+
+    ctx2.fillText(`layer clone: ${layerCloneMode}`, 5, 25);
+
+    if (xLock) {
+        ctx2.fillStyle = 'red';
+        ctx2.fillText(`xLock: ${xLock}`, 200, 25);
+    }
+
+    if (yLock) {
+        ctx2.fillStyle = 'red';
+        ctx2.fillText(`yLock: ${yLock}`, 200, 25);
+    }
 
     for (let l of model.layers) {
 
@@ -25,26 +40,34 @@ function drawLayers() {
         if (model.layers.indexOf(l) === model.activeLayer) {
             ctx2.fillStyle = 'rgba(188,69,69,1)';
         }
-        ctx2.fillRect(0, layerHeight * counter, toolsCanvas.width, layerHeight - 20);
+        ctx2.fillRect(0, layerHeight * counter + margin, toolsCanvas.width, layerHeight - 50 + margin);
 
         ctx2.fillStyle = 'black';
-        ctx2.fillText(l.name ?? layerNames[l.id], 5, layerHeight * counter + lineHeight);
+        ctx2.font = "20px serif";
 
-        ctx2.fillText(l.zoom ?? 1, 5, layerHeight * counter + lineHeight2);
-        ctx2.fillText(l.shapes.length, 40, layerHeight * counter + lineHeight2);
-        ctx2.fillText(l.gridSize, 110, layerHeight * counter + lineHeight2);
-        ctx2.fillText(l.shapeType, 140, layerHeight * counter + lineHeight2);
-        ctx2.fillText(l.polygonSize, 220, layerHeight * counter + lineHeight2);
+        ctx2.fillText(l.name ?? layerNames[l.id], 5, layerHeight * counter + lineHeight + margin);
+
+
+        ctx2.fillText(l.zoom ?? 1, 5, layerHeight * counter + lineHeight2 + margin);
+        ctx2.fillText(l.shapes.length, 40, layerHeight * counter + lineHeight2 + margin);
+        ctx2.fillText(l.gridSize, 110, layerHeight * counter + lineHeight2 + margin);
+        ctx2.fillText(l.shapeType, 140, layerHeight * counter + lineHeight2 + margin);
+        ctx2.fillText(l.polygonSize, 220, layerHeight * counter + lineHeight2 + margin);
+
+        ctx2.font = "10px serif";
+        ctx2.fillText("zoom      count                     grid     shape                      corners    visible", 0, layerHeight * counter + 52 + margin);
+
 
         ctx2.fillStyle = l.visible ? 'green' : 'red';
 
         ctx2.beginPath();
-        ctx2.arc(260, layerHeight * counter + 25, 15, 0, 2 * Math.PI, 0);
+        ctx2.arc(270, layerHeight * counter + 25 + margin, 15, 0, 2 * Math.PI, 0);
         ctx2.fill();
         ctx2.closePath();
 
-        l.posX = 260;
-        l.posY = layerHeight * counter + 25;
+        // remember 'visible' button position
+        l.posX = 270;
+        l.posY = layerHeight * counter + 25 + margin;
 
         counter++;
     }
@@ -77,22 +100,22 @@ function updateLayersList() {
     activeLayerEl.selectedIndex = model.activeLayer;
 }
 
-const layerNames = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth', 'ninth', 'tenth'];
+const layerNames = ['palette', 'first layer', 'second layer', 'third layer', 'fourth layer', 'fifth layer', 'sixth layer', 'seventh layer', 'eighth layer', 'ninth layer', 'tenth layer'];
 
 function addLayer() {
-    if (model.layers.length >= 10) {
+    if (model.layers.length >= 11) {
         return;
     }
 
     model.layers.push(
         {
             visible: true,
-            shapes: [],
+            shapes: layerCloneMode ? [...layer().shapes] : [],
             shapesHistory: [],
-            shapeType: 'square',
-            polygonSize: 6,
-            gridSize: 20,
-            current_shape: null
+
+            shapeType: layer().shapeType,
+            polygonSize: layer().polygonSize,
+            gridSize: layer().gridSize,
         }
     );
     model.activeLayer = 0;
@@ -113,6 +136,52 @@ function removeLayer() {
         }
     }
     updateLayersList();
+}
+
+let help = false;
+let helpContent = [
+    'Hot keys',
+    ' [R] : random color',
+    ' [G] : grid on/off',
+    ' [+] : make grid larger',
+    ' [-] : make grid smaller',
+    ' ',
+
+    '1,2,3,4,5,6,7,8,9 : shapes selection, where',
+    ' [1] : square',
+    ' [2] : circle',
+    ' [3-8] : polygons from triangle to octagon',
+    ' [9] : double size circle',
+    ' ',
+
+    ' [Esc] : clean active visible layer from shapes',
+    ' [E] : edit mode',
+    ' Edit mode allows to select shape,',
+    '  drag and drop selected shape to move,',
+    '  take color from selected shape',
+    ' ',
+    ' [up arrow] : extract all colors to palette',
+    ' [left arrow] : replay back shapes creation',
+    ' [right arrow] : replay forth shapes creation',
+    ' ',
+    ' [H]: show help',
+
+];
+
+function drawHelp() {
+    let counter = 0;
+
+    ctx2.font = "16px serif";
+    ctx2.fillStyle = 'lime';
+
+    for (let h of helpContent) {
+        ctx2.fillText(h, 5, 18 * counter + 20);
+        counter++;
+    }
+}
+
+function helpEnable() {
+    help = !help;
 }
 
 function mouseEvents(e) {
@@ -145,7 +214,7 @@ function mouseEvents(e) {
                 console.log(l);
                 let idx = model.layers.indexOf(l);
 
-                if (idx >= 0){
+                if (idx >= 0) {
                     model.activeLayer = idx;
                     updateLayersList();
                     onActiveLayerChanged(idx);
