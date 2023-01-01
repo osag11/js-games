@@ -1,16 +1,13 @@
 let current_shape = null;
 const mouseEditor = { x: 0, y: 0 };
-// let shapeType = 'circle';// 'circle' 'square' 'circle2x'
-// let polygonSize = 6;
+
 let randomColor = false;
-let is_dragging, edit_mode = false;
+let is_dragging, edit_mode, move_mode = false;
 
 const model = {
     activeLayer: 0,
     layers: [
         {
-            id:0,
-            name: "first",
             visible: true,
             shapes: [],
             shapesHistory: [],
@@ -20,8 +17,6 @@ const model = {
         },
 
         {
-            id:1,
-            name: "second",
             visible: true,
             shapes: [],
             shapesHistory: [],
@@ -31,8 +26,6 @@ const model = {
         },
 
         {
-            id:2,
-            name: "third",
             visible: true,
             shapes: [],
             shapesHistory: [],
@@ -47,7 +40,7 @@ let layer = function () {
 }
 
 function selectShape() {
-    if(!layer().visible) return;
+    if (!layer().visible) return;
 
     let pX = mouseEditor.x;
     let pY = mouseEditor.y;
@@ -65,7 +58,7 @@ function selectShape() {
 }
 
 function addShape() {
-    if(!layer().visible) return;
+    if (!layer().visible) return;
 
     let shapes = layer().shapes;
 
@@ -89,31 +82,32 @@ function addShape() {
 function draw() {
 
     for (let layer of model.layers) {
-        if (!layer.visible) { continue;}
+        if (!layer.visible) { continue; }
 
         let gridSize = layer.gridSize;
         let shapeType = layer.shapeType;
+        let zoom = layer.zoom ?? 1;
 
         for (let s of layer.shapes) {
             ctx.fillStyle = s.c;
             if (shapeType === 'square') {
-                ctx.fillRect(s.x, s.y, gridSize, gridSize);
+                ctx.fillRect(s.x * zoom, s.y * zoom, gridSize * zoom, gridSize * zoom);
             }
 
             if (shapeType === 'circle') {
                 ctx.beginPath();
-                ctx.arc(s.x + gridSize / 2, s.y + gridSize / 2, Math.abs(gridSize / 2), 0, 2 * Math.PI, 0);
+                ctx.arc((s.x + gridSize / 2) * zoom, (s.y + gridSize / 2) * zoom, Math.abs(gridSize / 2) * zoom, 0, 2 * Math.PI, 0);
                 ctx.fill();
             }
 
             if (shapeType === 'circle2x') {
                 ctx.beginPath();
-                ctx.arc(s.x + gridSize / 2, s.y + gridSize / 2, Math.abs(gridSize), 0, 2 * Math.PI, 0);
+                ctx.arc((s.x + gridSize / 2) * zoom, (s.y + gridSize / 2) * zoom, Math.abs(gridSize) * zoom, 0, 2 * Math.PI, 0);
                 ctx.fill();
             }
 
             if (shapeType === 'polygon') {
-                drawPolygon(s.x + gridSize / 2, s.y + gridSize / 2, Math.abs(gridSize / 2), s.c, layer.polygonSize);
+                drawPolygon((s.x + gridSize / 2) * zoom, (s.y + gridSize / 2) * zoom, (Math.abs(gridSize / 2)) * zoom, s.c, layer.polygonSize);
             }
 
 
@@ -129,34 +123,35 @@ function draw() {
 
 function drawPointer() {
     let gridSize = layer().gridSize;
+    let zoom = layer().zoom ?? 1;
 
     if (edit_mode) {
 
         // selected grid cell
         ctx.fillStyle = "blue";
         let size = 5;
-        ctx.fillRect(mouseEditor.x, mouseEditor.y, size, size);
-        ctx.fillRect(mouseEditor.x, mouseEditor.y + gridSize - size, size, size);
-        ctx.fillRect(mouseEditor.x + gridSize - size, mouseEditor.y, size, size);
-        ctx.fillRect(mouseEditor.x + gridSize - size, mouseEditor.y + gridSize - size, size, size);
+        ctx.fillRect(mouseEditor.x * zoom, mouseEditor.y * zoom, size, size);
+        ctx.fillRect(mouseEditor.x * zoom, (mouseEditor.y + gridSize - size) * zoom, size, size);
+        ctx.fillRect((mouseEditor.x + gridSize - size) * zoom, mouseEditor.y * zoom, size, size);
+        ctx.fillRect((mouseEditor.x + gridSize - size) * zoom, (mouseEditor.y + gridSize - size) * zoom, size, size);
 
         // current shape selection
         if (current_shape) {
             ctx.strokeStyle = "red"
             ctx.lineWidth = 2;
-            ctx.strokeRect(current_shape.x, current_shape.y, gridSize, gridSize);
+            ctx.strokeRect(current_shape.x * zoom, current_shape.y * zoom, gridSize * zoom, gridSize * zoom);
         }
     }
     // big cross
     ctx.lineWidth = 0.5;
     ctx.strokeStyle = pickerModel.rgbaColor; // from picker
     ctx.beginPath();
-    ctx.moveTo(mouseEditor.x + gridSize / 2, 0);
-    ctx.lineTo(mouseEditor.x + gridSize / 2, canvas.height);
+    ctx.moveTo((mouseEditor.x + gridSize / 2) * zoom, 0);
+    ctx.lineTo((mouseEditor.x + gridSize / 2) * zoom, canvas.height);
 
-    ctx.moveTo(0, mouseEditor.y + gridSize / 2);
-    ctx.lineTo(canvas.width, mouseEditor.y + gridSize / 2);
-    ctx.rect(mouseEditor.x, mouseEditor.y, gridSize, gridSize);
+    ctx.moveTo(0, (mouseEditor.y + gridSize / 2) * zoom);
+    ctx.lineTo(canvas.width , (mouseEditor.y + gridSize / 2) * zoom);
+    ctx.rect(mouseEditor.x * zoom, mouseEditor.y * zoom, gridSize * zoom, gridSize * zoom);
     ctx.stroke();
 }
 

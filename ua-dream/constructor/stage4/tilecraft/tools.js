@@ -18,7 +18,6 @@ function drawLayers() {
     let counter = 0;
 
     ctx2.font = "20px serif";
-    ctx2.beginPath();
 
     for (let l of model.layers) {
 
@@ -29,14 +28,13 @@ function drawLayers() {
         ctx2.fillRect(0, layerHeight * counter, toolsCanvas.width, layerHeight - 20);
 
         ctx2.fillStyle = 'black';
-        ctx2.fillText(l.name, 5, layerHeight * counter + lineHeight);
+        ctx2.fillText(l.name ?? layerNames[l.id], 5, layerHeight * counter + lineHeight);
 
-        ctx2.fillText(l.shapes.length, 60, layerHeight * counter + lineHeight2);
+        ctx2.fillText(l.zoom ?? 1, 5, layerHeight * counter + lineHeight2);
+        ctx2.fillText(l.shapes.length, 40, layerHeight * counter + lineHeight2);
         ctx2.fillText(l.gridSize, 110, layerHeight * counter + lineHeight2);
         ctx2.fillText(l.shapeType, 140, layerHeight * counter + lineHeight2);
         ctx2.fillText(l.polygonSize, 220, layerHeight * counter + lineHeight2);
-        ctx2.closePath();
-
 
         ctx2.fillStyle = l.visible ? 'green' : 'red';
 
@@ -52,9 +50,16 @@ function drawLayers() {
     }
 }
 
+function onLayerNameChanged(val) {
+    layer().name = val;
+    updateLayersList();
+}
+
 function onActiveLayerChanged(val) {
     model.activeLayer = parseInt(val);
-    initGrid(layer().gridSize);
+    let layerNameEl = document.getElementById('layerName');
+    layerNameEl.value = layer().name ?? layerNames[model.activeLayer];
+    initGrid(layer().gridSize * (layer().zoom ?? 1));
 }
 
 function updateLayersList() {
@@ -62,18 +67,25 @@ function updateLayersList() {
     activeLayerEl.innerHTML = "";
 
     for (let l of model.layers) {
+        l.id = model.layers.indexOf(l);
         var option = document.createElement("option");
-        option.text = l.name;
+        option.text = l.name ?? layerNames[l.id];
         option.value = l.id;
         activeLayerEl.options.add(option);
     }
+
+    activeLayerEl.selectedIndex = model.activeLayer;
 }
 
+const layerNames = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth', 'ninth', 'tenth'];
+
 function addLayer() {
+    if (model.layers.length >= 10) {
+        return;
+    }
+
     model.layers.push(
         {
-            id: model.layers.length,
-            name: Date.now(),
             visible: true,
             shapes: [],
             shapesHistory: [],
@@ -89,8 +101,17 @@ function addLayer() {
 }
 
 function removeLayer() {
+    if (model.layers.length <= 1) {
+        return;
+    }
+
     model.layers.splice(model.activeLayer, 1);
-    model.activeLayer = 0;
+    for (let i = model.activeLayer; i >= 0; i--) {
+        if (model.layers[i]) {
+            model.activeLayer = i;
+            break;
+        }
+    }
     updateLayersList();
 }
 
@@ -99,7 +120,6 @@ function mouseEvents(e) {
     const bounds = toolsCanvas.getBoundingClientRect();
     mouse.x = e.pageX - bounds.left - window.scrollX - markRadius;
     mouse.y = e.pageY - bounds.top - window.scrollY - markRadius;
-
 
     if (mouse.x > 0 && mouse.x < toolsCanvas.width && mouse.y > 0 && mouse.y < toolsCanvas.height) {
 
@@ -115,6 +135,21 @@ function mouseEvents(e) {
             ) {
                 console.log(l);
                 l.visible = !l.visible;
+                break;
+            }
+
+            if (
+                l.posY > mouse.y - 20
+                && l.posY < mouse.y + 20
+            ) {
+                console.log(l);
+                let idx = model.layers.indexOf(l);
+
+                if (idx >= 0){
+                    model.activeLayer = idx;
+                    updateLayersList();
+                    onActiveLayerChanged(idx);
+                }
             }
 
         }
@@ -122,7 +157,6 @@ function mouseEvents(e) {
 }
 
 ["mousedown"].forEach(name => document.addEventListener(name, mouseEvents));
-
 
 // https://eperezcosano.github.io/hex-grid/
 function drawHexagonGrid(width, height, r, colors = ['red', 'green', 'blue']) {
@@ -139,7 +173,6 @@ function drawHexagonGrid(width, height, r, colors = ['red', 'green', 'blue']) {
         }
     }
 }
-
 
 function drawPolygonCtx2(x, y, r, color, corners = 6) {
     const a = 2 * Math.PI / corners;

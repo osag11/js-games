@@ -13,7 +13,6 @@
   margin: 1px;
 }
 
-
 /* color picker */
 #color-input {
   display: none;
@@ -25,19 +24,7 @@
   height: 180px;
   width: 50px;
 }
-/*
-#fill-switch {
-  top: 100px;
-  right: 210px;
-  position: absolute;
-  height: 60px;
-  width: 50px;
-}*/
-/*
-#color-input:checked ~ #color-picker {
-  display: block;
-}
-*/
+
 #color-picker {
   position: absolute;
   right: 1px; 
@@ -47,8 +34,8 @@
   border: solid 1px #ccc;
   display: block;
   padding: 5px;
-writing-mode: vertical-rl;
-text-orientation: mixed;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
 }
 
 #color-block, #color-strip :hover {
@@ -56,7 +43,7 @@ text-orientation: mixed;
 }
 
 #tool-panel {
-  top: 210px;
+  top: 205px;
   right: 0px;
   position: absolute;
 }
@@ -71,6 +58,7 @@ text-orientation: mixed;
         <canvas id="tools" style="border: 1px solid; background-color:black;" width="300" height="300"></canvas>
 
         <div id="tool-panel">
+        <input type="input" style="width:100px;" id="layerName" onchange="onLayerNameChanged(this.value)" value="first">
         <button type="button" onclick="addLayer()">+</button>
         <button type="button" onclick="removeLayer()">-</button>
           <select name="activeLayer" id="activeLayer" onchange="onActiveLayerChanged(this.value)">

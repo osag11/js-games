@@ -25,7 +25,7 @@ canvas.onresize = function () { get_offset(); }
 
 
 function mouse_down(event) {
-    //event.preventDefault();
+    event.preventDefault();
 
     startX = parseInt(event.clientX - offset_x)
     startY = parseInt(event.clientY - offset_y)
@@ -36,7 +36,6 @@ function mouse_down(event) {
     else
         addShape();
 
-
     is_dragging = true;
 }
 
@@ -44,7 +43,7 @@ function mouse_up(event) {
     if (!is_dragging) {
         return;
     }
-    //event.preventDefault();
+    event.preventDefault();
     is_dragging = false;
 }
 
@@ -52,7 +51,7 @@ function mouse_out(event) {
     if (!is_dragging) {
         return;
     }
-    //event.preventDefault();
+    event.preventDefault();
     is_dragging = false;
 }
 
@@ -71,7 +70,7 @@ function mouse_move(event) {
         return;
     } else {
 
-        // event.preventDefault();
+        event.preventDefault();
 
         let mouseX = parseInt(event.clientX - offset_x);
         let mouseY = parseInt(event.clientY - offset_y);
@@ -109,7 +108,7 @@ function mouse_move(event) {
 
 function clear() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.clearRect(0, 0, toolsCanvas.width, toolsCanvas.height);
+    ctx2.clearRect(0, 0, toolsCanvas.width, toolsCanvas.height);
 }
 
 canvas.onmousedown = mouse_down;

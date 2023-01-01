@@ -19,17 +19,16 @@ function handleKeyDown(event) {
 
     if (keyPressed == 107) {// +
         layer().gridSize++;
-        initGrid(layer().gridSize);
+        initGrid(layer().gridSize * (layer().zoom ?? 1));
     }
 
     if (keyPressed == 109) {// -
         layer().gridSize--;
-        initGrid(layer().gridSize);
-
+        initGrid(layer().gridSize * (layer().zoom ?? 1));
     }
+
     // keyPressed: 83 KeyS
     // keyPressed: 67 KeyC
-
 
     if (keyPressed == 71) {// G
         gridOn = !gridOn;
@@ -43,9 +42,6 @@ function handleKeyDown(event) {
         edit_mode = !edit_mode;
     }
 
-    if (keyPressed == 84) {// T
-
-    }
 
     if (keyPressed == 82) {// R
         randomColor = !randomColor;
@@ -70,25 +66,21 @@ function handleKeyDown(event) {
     if (keyPressed == 52) {// 4
         layer().shapeType = 'polygon';
         layer().polygonSize = 4;
-
     }
 
     if (keyPressed == 53) {// 5
         layer().shapeType = 'polygon';
         layer().polygonSize = 5;
-
     }
 
     if (keyPressed == 54) {// 6
         layer().shapeType = 'polygon';
         layer().polygonSize = 6;
-
     }
 
     if (keyPressed == 55) {// 7
         layer().shapeType = 'polygon';
         layer().polygonSize = 7;
-
     }
 
 
@@ -106,6 +98,9 @@ function handleKeyDown(event) {
     if (keyPressed == 83) {// S
     }
 
+    if (keyPressed == 84) {// T
+    }
+
     if (keyPressed == 67) {// C
     }
 
@@ -118,9 +113,11 @@ function handleKeyDown(event) {
         let gridSize =  layer().gridSize;
 
         let clonedShapes = [...layer().shapes];
+
+        // order by color name
         clonedShapes.sort((a, b) => {
-            const nameA = a.c.toUpperCase(); // ignore upper and lowercase
-            const nameB = b.c.toUpperCase(); // ignore upper and lowercase
+            const nameA = a.c.toUpperCase();
+            const nameB = b.c.toUpperCase();
             if (nameA < nameB) {
                 return -1;
             }
@@ -132,8 +129,9 @@ function handleKeyDown(event) {
             return 0;
         });
 
-        let usedColors = [];
+        let usedColors = [];        
         layer().shapes = [];
+
         let x = 0;
         let y = 0;
 
@@ -153,7 +151,6 @@ function handleKeyDown(event) {
         }
 
         // drawHexagonGrid(toolsCanvas.width,toolsCanvas.height, 30, usedColors);
-
     }
 
     if (keyPressed == 37) { // ArrowLeft
