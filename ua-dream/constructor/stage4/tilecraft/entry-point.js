@@ -1,11 +1,10 @@
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
-canvas.style.border = '5px solid blue';
+//canvas.style.border = '2px solid blue';
 
 const toolsCanvas = document.getElementById("tools");
-toolsCanvas.style.border = '5px solid green';
+//toolsCanvas.style.border = '2px solid green';
 const ctx2 = toolsCanvas.getContext("2d");
-
 
 function main() {
 
@@ -16,13 +15,15 @@ function main() {
     draw();
     if (gridOn) drawGrid(ctx);
 
-    if (help)
-        drawHelp();
-    else
-        drawLayers();
     // PoC
-    //drawHexagonGrid(canvas.width,canvas.height);
-
+    if (hexPalettte) {
+        drawHexagonGrid(toolsCanvas.width, toolsCanvas.height, 20, paletteColors);
+    } else {
+        if (help)
+            drawHelp();
+        else
+            drawLayers();
+    }
     const t1 = performance.now();
     // console.log(`Call to main: ${t1 - t0} ms.`);
 }

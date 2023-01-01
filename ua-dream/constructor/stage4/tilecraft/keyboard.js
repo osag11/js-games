@@ -17,18 +17,15 @@ function handleKeyDown(event) {
         }
     }
 
-    if (keyPressed == 107) {// +
+    if (keyPressed == 107 || keyPressed == 187) {// +
         layer().gridSize++;
         initGrid(layer().gridSize * (layer().zoom ?? 1));
     }
 
-    if (keyPressed == 109) {// -
+    if (keyPressed == 109 || keyPressed == 189) {// -
         layer().gridSize--;
         initGrid(layer().gridSize * (layer().zoom ?? 1));
     }
-
-    // keyPressed: 83 KeyS
-    // keyPressed: 67 KeyC
 
     if (keyPressed == 71) {// G
         gridOn = !gridOn;
@@ -42,17 +39,14 @@ function handleKeyDown(event) {
         }
     }
 
-    if (keyPressed == 69) {// E
+    if (keyPressed == 69 || keyPressed == 32) {// E or Space
         layer().edit_mode = !layer().edit_mode;
     }
-
 
     if (keyPressed == 82) {// R
         randomColor = !randomColor;
         randomColorState(randomColor);
     }
-
-    // let shapeType= layer().shapeType;
 
     if (keyPressed == 49) {// 1
         layer().shapeType = 'square'
@@ -110,7 +104,7 @@ function handleKeyDown(event) {
         else {
             xLock = mouseEditor.x;
         }
-
+        yLock = null;
     }
 
     if (keyPressed == 89) {// Y
@@ -120,6 +114,29 @@ function handleKeyDown(event) {
         else {
             yLock = mouseEditor.y;
         }
+        xLock = null;
+    }
+
+    if (keyPressed == 66) {// B
+        // backround: black, white, custom
+        if (event.ctrlKey) {//add
+            model.background.push(pickerModel.rgbaColor);
+            model.backgroundIdx = model.background.length-1;            
+        } else if(event.shiftKey){//remove
+            model.background.splice(model.backgroundIdx, 1);
+            model.backgroundIdx = 0;        }      
+        else {//rotate
+            model.backgroundIdx++;
+            if (model.backgroundIdx > model.background.length - 1) model.backgroundIdx = 0;
+            canvas.style.background = model.background[model.backgroundIdx] ?? 'black';
+        }
+        canvas.style.background = model.background[model.backgroundIdx] ?? 'black';
+
+        console.log(JSON.stringify(model.background));
+    }
+
+    if (keyPressed == 80) {// P
+        hexPalettte = !hexPalettte;
     }
 
 
@@ -128,8 +145,6 @@ function handleKeyDown(event) {
 
     if (keyPressed == 84) {// T
     }
-
-
 
     // 39 ArrowRight
     // 37 ArrowLeft
@@ -156,7 +171,8 @@ function handleKeyDown(event) {
             return 0;
         });
 
-        let usedColors = [];
+        paletteColors = [];
+        layer().shapesHistory = [...layer().shapes]; // make backup
         layer().shapes = [];
 
         let x = 0;
@@ -164,8 +180,8 @@ function handleKeyDown(event) {
 
         for (let cS of clonedShapes) {
 
-            if (usedColors.indexOf(cS.c) < 0) {
-                usedColors.push(cS.c);
+            if (paletteColors.indexOf(cS.c) < 0) {
+                paletteColors.push(cS.c);
 
                 layer().shapes.unshift({ x: x, y: y, c: cS.c });
                 x += gridSize;
@@ -176,18 +192,14 @@ function handleKeyDown(event) {
                 }
             }
         }
-
-        // drawHexagonGrid(toolsCanvas.width,toolsCanvas.height, 30, usedColors);
     }
 
     if (keyPressed == 37) { // ArrowLeft
-
         let s = shapes.pop();
         if (s) shapesHistory.push(s);
     }
 
     if (keyPressed == 39) { // ArrowRight
-
         let s = shapesHistory.pop();
         if (s) shapes.push(s);
     }

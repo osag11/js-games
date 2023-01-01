@@ -6,6 +6,8 @@ let is_dragging, move_mode = false;
 
 const model = {
     activeLayer: 0,
+    backgroundIdx: 0,
+    background: [ 'black', 'white' ],
     layers: [
         {
             visible: true,
@@ -165,7 +167,7 @@ function drawPointer() {
     ctx.lineTo((mouseEditor.x + gridSize / 2) * zoom, canvas.height);
 
     ctx.moveTo(0, (mouseEditor.y + gridSize / 2) * zoom);
-    ctx.lineTo(canvas.width , (mouseEditor.y + gridSize / 2) * zoom);
+    ctx.lineTo(canvas.width, (mouseEditor.y + gridSize / 2) * zoom);
     ctx.rect(mouseEditor.x * zoom, mouseEditor.y * zoom, gridSize * zoom, gridSize * zoom);
     ctx.stroke();
 }

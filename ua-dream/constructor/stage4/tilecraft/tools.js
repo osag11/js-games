@@ -36,9 +36,9 @@ function drawLayers() {
 
     for (let l of model.layers) {
 
-        ctx2.fillStyle = 'beige';
+        ctx2.fillStyle = '#FCC178';
         if (model.layers.indexOf(l) === model.activeLayer) {
-            ctx2.fillStyle = 'rgba(188,69,69,1)';
+            ctx2.fillStyle = '#ED5B6D';
         }
         ctx2.fillRect(0, layerHeight * counter + margin, toolsCanvas.width, layerHeight - 50 + margin);
 
@@ -143,8 +143,8 @@ let helpContent = [
     'Hot keys',
     ' [R] : random color',
     ' [G] : grid on/off',
-    ' [+] : make grid larger',
-    ' [-] : make grid smaller',
+    ' [+] or [NumPadPlus] : make grid larger',
+    ' [-] or [NumPadMinus] : make grid smaller',
     ' ',
 
     '1,2,3,4,5,6,7,8,9 : shapes selection, where',
@@ -154,8 +154,9 @@ let helpContent = [
     ' [9] : double size circle',
     ' ',
 
-    ' [Esc] : clean active visible layer from shapes',
-    ' [E] : edit mode',
+    ' [Del] : remove last created shape (tile)',
+    ' [Esc] : clean active visible layer from shapes (tiles)',
+    ' [E] or [Space] : edit mode',
     ' Edit mode allows to select shape,',
     '  drag and drop selected shape to move,',
     '  take color from selected shape',
@@ -164,6 +165,14 @@ let helpContent = [
     ' [left arrow] : replay back shapes creation',
     ' [right arrow] : replay forth shapes creation',
     ' ',
+    ' [X] : lock X coordinate to draw perfect vertical line',
+    ' [Y] : lock Y coordinate to draw perfect horizontal line',
+    ' [C] : shapes will be copied (cloned) from active layer to new created',
+    '  see [+] "add layer" button on layer panel',
+  
+
+    ' ',
+    
     ' [H]: show help',
 
 ];
@@ -208,8 +217,8 @@ function mouseEvents(e) {
             }
 
             if (
-                l.posY > mouse.y - 20
-                && l.posY < mouse.y + 20
+                l.posY > mouse.y - 45
+                && l.posY < mouse.y + 25
             ) {
                 console.log(l);
                 let idx = model.layers.indexOf(l);
@@ -228,6 +237,8 @@ function mouseEvents(e) {
 ["mousedown"].forEach(name => document.addEventListener(name, mouseEvents));
 
 // https://eperezcosano.github.io/hex-grid/
+let hexPalettte = false;
+let paletteColors = ['red', 'green', 'blue'];
 function drawHexagonGrid(width, height, r, colors = ['red', 'green', 'blue']) {
     let idx = -1;
     const a = 2 * Math.PI / 6;
