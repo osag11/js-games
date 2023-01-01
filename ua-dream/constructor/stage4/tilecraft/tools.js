@@ -13,7 +13,7 @@ function generateColor() {
 let layerCloneMode = false;
 const layerHeight = 75;
 const lineHeight = 20;
-const lineHeight2 = 40;
+const lineHeight2 = 45;
 const margin = 40;
 
 function drawLayers() {
@@ -55,7 +55,7 @@ function drawLayers() {
         ctx2.fillText(l.polygonSize, 220, layerHeight * counter + lineHeight2 + margin);
 
         ctx2.font = "10px serif";
-        ctx2.fillText("zoom      count                     grid     shape                      corners    visible", 0, layerHeight * counter + 52 + margin);
+        ctx2.fillText("zoom      count                     grid     shape                      corners    visible", 0, layerHeight * counter + 58 + margin);
 
 
         ctx2.fillStyle = l.visible ? 'green' : 'red';
@@ -141,6 +141,7 @@ function removeLayer() {
 let help = false;
 let helpContent = [
     'Hot keys',
+    ' [S] : save project to file',
     ' [R] : random color',
     ' [G] : grid on/off',
     ' [+] or [NumPadPlus] : make grid larger',
@@ -169,10 +170,13 @@ let helpContent = [
     ' [Y] : lock Y coordinate to draw perfect horizontal line',
     ' [C] : shapes will be copied (cloned) from active layer to new created',
     '  see [+] "add layer" button on layer panel',
-  
+    ' ',
+    ' [B] : switch backround',
+    ' [Ctrl + B] : add new backround',
+    ' [Shift + B] : remove current backround',
 
     ' ',
-    
+
     ' [H]: show help',
 
 ];
@@ -235,6 +239,32 @@ function mouseEvents(e) {
 }
 
 ["mousedown"].forEach(name => document.addEventListener(name, mouseEvents));
+
+let namingInProgress = false;
+
+function nameFocusHandler(event) {
+    namingInProgress = event.type === 'focusin' ? true : false;
+}
+
+function download(content, fileName, contentType) {
+    let a = document.createElement("a");
+    let file = new Blob([content], { type: contentType });
+    a.href = URL.createObjectURL(file);
+    a.download = fileName;
+    a.click();
+}
+
+var openFile = function (event) {
+    var input = event.target;
+    var reader = new FileReader();
+
+    reader.onload = function () {
+        var text = reader.result;
+        model.layers = JSON.parse(text).layers;
+    };
+    reader.readAsText(input.files[0]);
+};
+
 
 // https://eperezcosano.github.io/hex-grid/
 let hexPalettte = false;

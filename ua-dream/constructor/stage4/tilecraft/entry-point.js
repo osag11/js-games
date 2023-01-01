@@ -1,10 +1,11 @@
 const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d");
-//canvas.style.border = '2px solid blue';
+const ctx = canvas.getContext("2d",{ willReadFrequently: true });
 
 const toolsCanvas = document.getElementById("tools");
+const ctx2 = toolsCanvas.getContext("2d",{ willReadFrequently: true });
+
+//canvas.style.border = '2px solid blue';
 //toolsCanvas.style.border = '2px solid green';
-const ctx2 = toolsCanvas.getContext("2d");
 
 function main() {
 

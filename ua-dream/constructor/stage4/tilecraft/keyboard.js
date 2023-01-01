@@ -4,6 +4,9 @@ function handleKeyDown(event) {
     const keyPressed = event.keyCode;
     console.log(`keyPressed: ${keyPressed} ${event.code}`)
 
+    // ignore if layer name editing
+    if (namingInProgress) return;
+
     let shapes = layer().shapes;
     let shapesHistory = layer().shapesHistory;
 
@@ -121,17 +124,19 @@ function handleKeyDown(event) {
         // backround: black, white, custom
         if (event.ctrlKey) {//add
             model.background.push(pickerModel.rgbaColor);
-            model.backgroundIdx = model.background.length-1;            
-        } else if(event.shiftKey){//remove
+            model.backgroundIdx = model.background.length - 1;
+        }
+        else if (event.shiftKey) {//remove
             model.background.splice(model.backgroundIdx, 1);
-            model.backgroundIdx = 0;        }      
+            model.backgroundIdx = 0;
+        }
         else {//rotate
             model.backgroundIdx++;
             if (model.backgroundIdx > model.background.length - 1) model.backgroundIdx = 0;
             canvas.style.background = model.background[model.backgroundIdx] ?? 'black';
         }
         canvas.style.background = model.background[model.backgroundIdx] ?? 'black';
-
+        canvas.style.backgroundSize = 'contain';
         console.log(JSON.stringify(model.background));
     }
 
@@ -141,6 +146,7 @@ function handleKeyDown(event) {
 
 
     if (keyPressed == 83) {// S
+        download(JSON.stringify(model), `tiles-${new Date().toISOString().split('T')[0]}.json`, 'text/plain');
     }
 
     if (keyPressed == 84) {// T

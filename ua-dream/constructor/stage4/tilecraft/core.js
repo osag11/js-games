@@ -7,7 +7,7 @@ let is_dragging, move_mode = false;
 const model = {
     activeLayer: 0,
     backgroundIdx: 0,
-    background: [ 'black', 'white' ],
+    background: ['black', 'white', 'url("./images/horse-run.png")'],
     layers: [
         {
             visible: true,
@@ -207,7 +207,8 @@ function randomColorState(enabled) {
     console.log(enabled);
     randomColor = enabled;
     colorLabel.style.backgroundColor = enabled ? 'white' : pickerModel.rgbaColor;
-    colorLabel.children[0].textContent = enabled ? 'random' : '';
+    // colorLabel.children[0].textContent = enabled ? 'random' : '';
+    colorLabel.children[0].style.display = enabled ? 'block' : 'none';
 }
 
 
