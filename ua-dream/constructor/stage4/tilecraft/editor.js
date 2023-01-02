@@ -40,8 +40,15 @@ function mouse_down(event) {
         startX = parseInt(event.touches[0].clientX - offset_x)
         startY = parseInt(event.touches[0].clientY - offset_y)
 
-        mouseEditor.x =startX;
-        mouseEditor.y =startY;    
+        // touch specific
+        mouseEditor.x = startX;
+        mouseEditor.y = startY;
+
+        if (gridOn) {
+            mouseEditor.x = roundNearest(mouseEditor.x, gridSize);
+            mouseEditor.y = roundNearest(mouseEditor.y, gridSize);
+        }
+        touchstart();
     }
     if (layer().edit_mode)
         selectShape();
@@ -67,6 +74,24 @@ function mouse_out(event) {
     is_dragging = false;
 }
 
+let timer;
+let touchduration = 1000; 
+
+function touchstart() {
+    timer = setTimeout(onlongtouch, touchduration); 
+}
+
+function touchend() {
+    if (timer)
+        clearTimeout(timer); // clearTimeout, not cleartimeout..
+}
+
+function onlongtouch() { 
+    popup.style.top = "100px";
+    popup.style.left = "200px";
+    popup.style.display = "block";
+ };
+
 
 function mouse_move(event) {
     let gridSize = layer().gridSize;
@@ -77,6 +102,7 @@ function mouse_move(event) {
     if (event.touches && event.touches.length > 0) {
         mouseEditor.x = parseInt(event.touches[0].clientX - offset_x) - gridSize / 2;
         mouseEditor.y = parseInt(event.touches[0].clientY - offset_y) - gridSize / 2;
+        touchend();
     }
     if (xLock) {
         mouseEditor.x = xLock;
@@ -99,7 +125,7 @@ function mouse_move(event) {
         let mouseX = parseInt(event.clientX - offset_x);
         let mouseY = parseInt(event.clientY - offset_y);
 
-        if (event.touches&&event.touches.length > 0) {
+        if (event.touches && event.touches.length > 0) {
             mouseX = parseInt(event.touches[0].clientX - offset_x);
             mouseY = parseInt(event.touches[0].clientY - offset_y);
         }
@@ -118,7 +144,7 @@ function mouse_move(event) {
 
                 layer().current_shape.x += dx;
                 layer().current_shape.y += dy;
-                
+
                 if (gridOn) {
                     layer().current_shape.x = roundNearest(layer().current_shape.x, gridSize);
                     layer().current_shape.y = roundNearest(layer().current_shape.y, gridSize);
@@ -147,8 +173,9 @@ canvas.onmouseup = mouse_up;
 canvas.onmousemove = mouse_move;
 canvas.onmouseout = mouse_out;
 
+// touch device
 canvas.ontouchstart = mouse_down;
 canvas.ontouchmove = mouse_move;
-canvas.ontouchend = mouse_down;
+canvas.ontouchend = mouse_out;
 
 

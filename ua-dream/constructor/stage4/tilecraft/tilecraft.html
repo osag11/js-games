@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+
   <style>
     .container {
       display: flex;
@@ -52,6 +53,20 @@
       right: -30px;
       position: absolute;
     }
+
+    #virtual_keyboard button {
+      width: 100px;
+      height: 50px;
+    }
+
+    .vbtn-delete {
+      background: 'red',
+    }
+
+    .vbtn-save {
+      background: 'blue',
+    }
+
   </style>
 
 </head>
@@ -67,11 +82,10 @@
     </div>
 
     <div id="tool-panel">
-
-      <button type="button" onclick="helpEnable()">?</button>
-      <button type="button" onclick="paletteEnable()">colors</button>
-      <input type="input" style="max-width:60px;" id="layerName" onfocusin="nameFocusHandler(event)" onfocusout="nameFocusHandler(event)" onchange="onLayerNameChanged(this.value)"
-        value="palette">
+      <button type="button" onclick="help_switch_command()">?</button>
+      <button type="button" onclick="hex_palette_switch_command()">colors</button>
+      <input type="input" style="max-width:60px;" id="layerName" onfocusin="nameFocusHandler(event)"
+        onfocusout="nameFocusHandler(event)" onchange="onLayerNameChanged(this.value)" value="palette">
       <button type="button" onclick="addLayer()">+</button>
       <button type="button" onclick="removeLayer()">-</button>
       <select name="activeLayer" id="activeLayer" style="max-width:60px;"
@@ -88,18 +102,85 @@
       <canvas id="color-strip" height="180" width="45"></canvas>
     </div>
 
-    
+  </div>
+
+ <!--<button id="btn_popup">popup</button>-->
+  <div id="popup"
+    style="display:block;background-color:green;position:absolute;top:100px;left:300px;z-index:9999;box-shadow: 6px 6px 5px #888888;border-radius:6px;border:1px solid #4f4f4f;">
+    <div id="popup_bar"
+      style="width:100%;background-color:#aaff66;position:relative;top:0;border-radius:6px 6px 0 0; text-align:center;height:24px;cursor:move">
+      Virtual keyboard (touch hold to open)<span id="btn_close" style="float:right;cursor:pointer;padding-right:6px;">[X]</span></div>
+    <table id="virtual_keyboard">
+      <tr>
+        <th></th>
+        <th></th>
+        <th></th>
+      </tr>
+      <tr>
+        <td><button onclick="grid_switch_command()">Grid On/Off [G]</button></td>
+        <td><button onclick="grid_plus_command()">Grid plus [+]</button></td>
+        <td><button onclick="grid_minus_command()">Grid minus [-]</button></td>
+      </tr>
+      <tr>
+        <td><button onclick="hex_palette_switch_command()">Palette On/Off [P]</button></td>
+        <td><button onclick="palette_import_layer_colors_command()">Colors up [Up Arrow]</button></td>
+        <td><button onclick="palette_add_color_command()">Colors down [Down Arrow]</button></td>
+      </tr>
+      <tr>
+        <td><button onclick="help_switch_command()">Help [H]</button></td>
+        <td><button onclick="save_file_command()" class="vbtn-save">Save to file [S]</button></td>
+        <td><button onclick="delete_previous_shape_command()" class="vbtn-delete">Remove last [Del]</button></td>
+      </tr>
+      <tr>
+        <td><button onclick="edit_mode_switch_command()">Edit mode [E]</button></td>
+        <td><button onclick="history_back_command()">History back [Left Arrow]</button></td>
+        <td><button onclick="history_forward_command()">History forth [Right Arrow]</button></td>
+      </tr>
+      <tr>
+        <td><button onclick="shape_apply_command('square')">square [1]</button></td>
+        <td><button onclick="shape_apply_command('circle')">circle [2]</button></td>
+        <td><button onclick="shape_polygon_apply_command(3)">triangle [3]</button></td>
+      </tr>
+      <tr>
+        <td><button onclick="shape_polygon_apply_command(4)">romb [4]</button></td>
+        <td><button onclick="shape_polygon_apply_command(5)">pentagon [5]</button></td>
+        <td><button onclick="shape_polygon_apply_command(6)">hexagon [6]</button></td>
+      </tr>
+      <tr>
+        <td><button onclick="shape_polygon_apply_command(7)">heptagon [7]</button></td>
+        <td><button onclick="shape_polygon_apply_command(8)">octagon [8]</button></td>
+        <td><button onclick="shape_apply_command('circle2x')">circle 2x [9]</button></td>
+      </tr>
+      <tr>
+        <td><button onclick="background_command('rotate')">switch background [B]</button></td>
+        <td><button onclick="background_command('add')">add background [Ctrl + B]</button></td>
+        <td><button onclick="background_command('remove')">remove background [Shift + B]</button></td>
+      </tr>
+      <tr>
+        <td><button onclick="x_lock_command()">lock X axis [X]</button></td>
+        <td><button onclick="y_lock_command()">lock Y axis [Y]</button></td>
+        <td><button onclick="layer_clone_mode_switch_command()">layer shapes clone mode [C]</button></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td><button onclick="clear_layer_shapes_command()" class="vbtn-delete">Clear [Esc]</button></td>
+        <td></td>
+      </tr>
+    </table>
   </div>
 
   <script type="text/javascript" src="grid.js"></script>
   <script type="text/javascript" src="tools.js"></script>
   <script type="text/javascript" src="core.js"></script>
-
   <script type="text/javascript" src="editor.js"></script>
+  <script type="text/javascript" src="commands.js"></script>
   <script type="text/javascript" src="keyboard.js"></script>
 
   <script type="text/javascript" src="color-picker.js"></script>
   <script type="text/javascript" src="entry-point.js"></script>
+
+  <script type="text/javascript" src="pop-window.js"></script>
+
 </body>
 
 </html>

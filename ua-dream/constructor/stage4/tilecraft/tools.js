@@ -20,7 +20,7 @@ function drawLayersUI() {
     let counter = 0;
 
     ctx2.font = "16px serif";
-    ctx2.fillStyle = layerCloneMode ? 'red' : 'green';
+    ctx2.fillStyle = layerCloneMode ? 'red' : 'lime';
 
     ctx2.fillText(`layer clone: ${layerCloneMode}`, 5, 25);
 
@@ -188,24 +188,15 @@ let helpContent = [
 function drawHelp() {
     let counter = 0;
 
-    ctx2.font = "16px serif";
+    ctx2.font = "14px serif";
     ctx2.fillStyle = 'lime';
 
     for (let h of helpContent) {
-        ctx2.fillText(h, 5, 18 * counter + 20);
+        ctx2.fillText(h, 5, 16 * counter + 18);
         counter++;
     }
 }
 
-function helpEnable() {
-    help = !help;
-    hexPalette = false;
-}
-
-function paletteEnable() {
-    hexPalette = !hexPalette;
-    help = false;
-}
 
 function mouseEvents(e) {
 
