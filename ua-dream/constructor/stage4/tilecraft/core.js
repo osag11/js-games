@@ -1,4 +1,3 @@
-let current_shape = null;
 const mouseEditor = { x: 0, y: 0 };
 
 let randomColor = false;
@@ -46,6 +45,7 @@ const model = {
         },
     ]
 }
+
 let layer = function () {
     return model.layers[model.activeLayer];
 }
@@ -59,12 +59,12 @@ function selectShape() {
     let existing = findShape(pX, pY);
 
     if (existing) {
-        current_shape = existing;
-        pick(existing.c);
+        layer().current_shape = existing;
+        injectColor(existing.c);
         randomColorState(false);
 
     } else {
-        current_shape = null;
+        layer().current_shape = null;
     }
 }
 
@@ -89,7 +89,7 @@ function addShape() {
 
     } else {
 
-        current_shape = existing;
+        layer().current_shape = existing;
         console.log('skip:' + JSON.stringify(newShape));
     }
 
@@ -123,7 +123,11 @@ function draw() {
             }
 
             if (shapeType === 'polygon') {
-                drawPolygon((s.x + gridSize / 2) * zoom, (s.y + gridSize / 2) * zoom, (Math.abs(gridSize / 2)) * zoom, s.c, layer.polygonSize);
+                drawPolygon(ctx, (s.x + gridSize / 2) * zoom, (s.y + gridSize / 2) * zoom, (Math.abs(gridSize / 2)) * zoom, s.c, layer.polygonSize);
+            }
+
+            if (shapeType === 'polyline') {
+                // TODO:
             }
 
 
@@ -132,8 +136,8 @@ function draw() {
             // ctx.fillRect(s.x, s.y, 2, 2);
         }
     }
-
-    drawPointer();
+    if (!screenshot_mode)
+        drawPointer();
 }
 
 
@@ -153,10 +157,10 @@ function drawPointer() {
         ctx.fillRect((mouseEditor.x + gridSize - size) * zoom, (mouseEditor.y + gridSize - size) * zoom, size, size);
 
         // current shape selection
-        if (current_shape) {
+        if (layer().current_shape) {
             ctx.strokeStyle = "red"
             ctx.lineWidth = 2;
-            ctx.strokeRect(current_shape.x * zoom, current_shape.y * zoom, gridSize * zoom, gridSize * zoom);
+            ctx.strokeRect(layer().current_shape.x * zoom, layer().current_shape.y * zoom, gridSize * zoom, gridSize * zoom);
         }
     }
     // big cross
@@ -212,7 +216,7 @@ function randomColorState(enabled) {
 }
 
 
-function drawPolygon(x, y, r, color, corners = 6) {
+function drawPolygon(ctx, x, y, r, color, corners = 6) {
     const a = 2 * Math.PI / corners;
     ctx.fillStyle = color;
 
@@ -223,3 +227,4 @@ function drawPolygon(x, y, r, color, corners = 6) {
     ctx.closePath();
     ctx.fill();
 }
+

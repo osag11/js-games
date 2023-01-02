@@ -12,22 +12,30 @@ function handleKeyDown(event) {
 
     if (keyPressed == 46) { // Del
 
-        if (current_shape) {
-            let idx = shapes.indexOf(current_shape)
+        if (layer().current_shape) {
+            let idx = shapes.indexOf(layer().current_shape)
             shapes.splice(idx, 1);
-            current_shape = shapes[idx - 1];
+            layer().current_shape = shapes[idx - 1];
             console.log(`deleted #${idx} from ${shapes.length}`)
         }
     }
 
     if (keyPressed == 107 || keyPressed == 187) {// +
-        layer().gridSize++;
-        initGrid(layer().gridSize * (layer().zoom ?? 1));
+        if (layer().gridSize < 1) {
+            layer().gridSize += 0.1
+        } else {
+            layer().gridSize++;
+            initGrid(layer().gridSize < 2 ? 2 : layer().gridSize * (layer().zoom ?? 1));//do not let be grid size less than 2
+        }
     }
 
     if (keyPressed == 109 || keyPressed == 189) {// -
-        layer().gridSize--;
-        initGrid(layer().gridSize * (layer().zoom ?? 1));
+        if (layer().gridSize <= 1) {
+            layer().gridSize -= 0.1
+        } else {
+            layer().gridSize--;
+            initGrid(layer().gridSize < 2 ? 2 : layer().gridSize * (layer().zoom ?? 1));//do not let be grid size less than 2
+        }
     }
 
     if (keyPressed == 71) {// G
@@ -35,6 +43,7 @@ function handleKeyDown(event) {
     }
     if (keyPressed == 72) {// H
         help = !help;
+        hexPalette = false;
     }
     if (keyPressed == 27) {// Esc
         if (layer().visible) {
@@ -141,12 +150,13 @@ function handleKeyDown(event) {
     }
 
     if (keyPressed == 80) {// P
-        hexPalettte = !hexPalettte;
+        hexPalette = !hexPalette;
+        help = false;
     }
 
-
     if (keyPressed == 83) {// S
-        download(JSON.stringify(model), `tiles-${new Date().toISOString().split('T')[0]}.json`, 'text/plain');
+        let date = new Date().toISOString().split('T')[0];
+        download(JSON.stringify(model), `tiles-${date}.json`, 'text/plain');
     }
 
     if (keyPressed == 84) {// T
@@ -208,5 +218,8 @@ function handleKeyDown(event) {
     if (keyPressed == 39) { // ArrowRight
         let s = shapesHistory.pop();
         if (s) shapes.push(s);
+    }    
+    if (keyPressed == 40) { // ArrowDown
+        paletteColors.push(generateColor());
     }
 }

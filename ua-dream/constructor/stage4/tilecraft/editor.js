@@ -23,10 +23,16 @@ window.onresize = function () {
 
 canvas.onresize = function () { get_offset(); }
 
-
+let screenshot_mode = false;
 function mouse_down(event) {
     event.preventDefault();
-
+    if (event.which === 3)
+    {     
+        screenshot_mode =true;   
+        return;
+    }
+    screenshot_mode =false;
+    
     startX = parseInt(event.clientX - offset_x)
     startY = parseInt(event.clientY - offset_y)
 
@@ -92,13 +98,13 @@ function mouse_move(event) {
 
         if (layer().edit_mode) {
 
-            if (current_shape) {
+            if (layer().current_shape) {
 
-                current_shape.x += dx;
-                current_shape.y += dy;
+                layer().current_shape.x += dx;
+                layer().current_shape.y += dy;
                 if (gridOn) {
-                    current_shape.x = roundNearest(current_shape.x, gridSize);
-                    current_shape.y = roundNearest(current_shape.y, gridSize);
+                    layer().current_shape.x = roundNearest(layer().current_shape.x, gridSize);
+                    layer().current_shape.y = roundNearest(layer().current_shape.y, gridSize);
                 }
             }
 

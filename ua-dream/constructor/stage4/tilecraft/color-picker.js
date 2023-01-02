@@ -32,7 +32,7 @@ function initPicker() {
     ctxColorStrip.fill();
 }
 
-function pick(color) {
+function injectColor(color) {
     pickerModel.rgbaColor = color;
     colorLabel.style.backgroundColor = pickerModel.rgbaColor;
     fillGradient();

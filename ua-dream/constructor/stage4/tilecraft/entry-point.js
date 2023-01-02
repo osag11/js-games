@@ -17,13 +17,13 @@ function main() {
     if (gridOn) drawGrid(ctx);
 
     // PoC
-    if (hexPalettte) {
+    if (hexPalette) {
         drawHexagonGrid(toolsCanvas.width, toolsCanvas.height, 20, paletteColors);
     } else {
         if (help)
             drawHelp();
         else
-            drawLayers();
+            drawLayersUI();
     }
     const t1 = performance.now();
     // console.log(`Call to main: ${t1 - t0} ms.`);

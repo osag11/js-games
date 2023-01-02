@@ -16,7 +16,7 @@ const lineHeight = 20;
 const lineHeight2 = 45;
 const margin = 40;
 
-function drawLayers() {
+function drawLayersUI() {
     let counter = 0;
 
     ctx2.font = "16px serif";
@@ -50,12 +50,14 @@ function drawLayers() {
 
         ctx2.fillText(l.zoom ?? 1, 5, layerHeight * counter + lineHeight2 + margin);
         ctx2.fillText(l.shapes.length, 40, layerHeight * counter + lineHeight2 + margin);
-        ctx2.fillText(l.gridSize, 110, layerHeight * counter + lineHeight2 + margin);
-        ctx2.fillText(l.shapeType, 140, layerHeight * counter + lineHeight2 + margin);
-        ctx2.fillText(l.polygonSize, 220, layerHeight * counter + lineHeight2 + margin);
+        ctx2.fillText(l.gridSize > 1 ? l.gridSize : l.gridSize.toFixed(1), 110, layerHeight * counter + lineHeight2 + margin);
+        ctx2.fillText(l.shapeType, 150, layerHeight * counter + lineHeight2 + margin);
+        if (l.shapeType === 'polygon') {
+            ctx2.fillText(l.polygonSize, 230, layerHeight * counter + lineHeight2 + margin);
+        }
 
         ctx2.font = "10px serif";
-        ctx2.fillText("zoom      count                     grid     shape                      corners    visible", 0, layerHeight * counter + 58 + margin);
+        ctx2.fillText("zoom      count                     grid         shape                      edges   visible", 0, layerHeight * counter + 58 + margin);
 
 
         ctx2.fillStyle = l.visible ? 'green' : 'red';
@@ -140,15 +142,16 @@ function removeLayer() {
 
 let help = false;
 let helpContent = [
-    'Hot keys',
+    'Tools and keys',
     ' [S] : save project to file',
-    ' [R] : random color',
+    ' [R] : random color on/off',
+    ' [P] : palette with colors generated previously by [up arrow]',
     ' [G] : grid on/off',
     ' [+] or [NumPadPlus] : make grid larger',
     ' [-] or [NumPadMinus] : make grid smaller',
     ' ',
 
-    '1,2,3,4,5,6,7,8,9 : shapes selection, where',
+    '1,2,3,4,5,6,7,8,9 : shape selection, where',
     ' [1] : square',
     ' [2] : circle',
     ' [3-8] : polygons from triangle to octagon',
@@ -162,21 +165,21 @@ let helpContent = [
     '  drag and drop selected shape to move,',
     '  take color from selected shape',
     ' ',
+
     ' [up arrow] : extract all colors to palette',
     ' [left arrow] : replay back shapes creation',
     ' [right arrow] : replay forth shapes creation',
     ' ',
+
     ' [X] : lock X coordinate to draw perfect vertical line',
     ' [Y] : lock Y coordinate to draw perfect horizontal line',
     ' [C] : shapes will be copied (cloned) from active layer to new created',
     '  see [+] "add layer" button on layer panel',
     ' ',
+
     ' [B] : switch backround',
     ' [Ctrl + B] : add new backround',
     ' [Shift + B] : remove current backround',
-
-    ' ',
-
     ' [H]: show help',
 
 ];
@@ -209,31 +212,47 @@ function mouseEvents(e) {
 
         console.log(mouse);
 
-        for (let l of model.layers) {
-            if (l.posX > mouse.x - 15
-                && l.posX < mouse.x + 15
-                && l.posY > mouse.y - 15
-                && l.posY < mouse.y + 15
-            ) {
-                console.log(l);
-                l.visible = !l.visible;
-                break;
-            }
-
-            if (
-                l.posY > mouse.y - 45
-                && l.posY < mouse.y + 25
-            ) {
-                console.log(l);
-                let idx = model.layers.indexOf(l);
-
-                if (idx >= 0) {
-                    model.activeLayer = idx;
-                    updateLayersList();
-                    onActiveLayerChanged(idx);
+        if (hexPalette) {
+            for (let hg of hexaGridData) {
+                if (hg.x > mouse.x - hg.r
+                    && hg.x < mouse.x + hg.r
+                    && hg.y > mouse.y - hg.r
+                    && hg.y < mouse.y + hg.r
+                ) {
+                    console.log(hg.c);
+                    randomColorState(false);
+                    injectColor(hg.c);
+                    break;
                 }
             }
+        }
+        else {
 
+            for (let l of model.layers) {
+                if (l.posX > mouse.x - 15
+                    && l.posX < mouse.x + 15
+                    && l.posY > mouse.y - 15
+                    && l.posY < mouse.y + 15
+                ) {
+                    console.log(l);
+                    l.visible = !l.visible;
+                    break;
+                }
+
+                if (
+                    l.posY > mouse.y - 45
+                    && l.posY < mouse.y + 25
+                ) {
+                    console.log(l);
+                    let idx = model.layers.indexOf(l);
+
+                    if (idx >= 0) {
+                        model.activeLayer = idx;
+                        updateLayersList();
+                        onActiveLayerChanged(idx);
+                    }
+                }
+            }
         }
     }
 }
@@ -243,7 +262,7 @@ function mouseEvents(e) {
 let namingInProgress = false;
 
 function nameFocusHandler(event) {
-    namingInProgress = event.type === 'focusin' ? true : false;
+    namingInProgress = event.type === 'focusin' ? true : false;// focusin or focusout
 }
 
 function download(content, fileName, contentType) {
@@ -267,31 +286,22 @@ var openFile = function (event) {
 
 
 // https://eperezcosano.github.io/hex-grid/
-let hexPalettte = false;
-let paletteColors = ['red', 'green', 'blue'];
+let hexPalette = false;
+let paletteColors = ['red', 'green', 'blue', 'white', 'grey', 'black', 'cyan', 'magenta', 'yellow'];
+let hexaGridData = [];
 function drawHexagonGrid(width, height, r, colors = ['red', 'green', 'blue']) {
     let idx = -1;
     const a = 2 * Math.PI / 6;
-
+    hexaGridData = [];
     for (let y = r; y + r * Math.sin(a) < height; y += r * Math.sin(a)) {
         for (let x = r, j = 0; x + r * (1 + Math.cos(a)) < width; x += r * (1 + Math.cos(a)), y += (-1) ** j++ * r * Math.sin(a)) {
             idx++;
             if (idx > colors.length - 1) idx = 0;
 
             let color = colors[idx];
-            drawPolygonCtx2(x, y, r, color);
+            hexaGridData.push({ x: x, y: y, r: r, c: color });
+            drawPolygon(ctx2, x, y, r, color);
         }
     }
 }
 
-function drawPolygonCtx2(x, y, r, color, corners = 6) {
-    const a = 2 * Math.PI / corners;
-    ctx2.fillStyle = color;
-
-    ctx2.beginPath();
-    for (var i = 0; i < corners; i++) {
-        ctx2.lineTo(x + r * Math.cos(a * i), y + r * Math.sin(a * i));
-    }
-    ctx2.closePath();
-    ctx2.fill();
-}
