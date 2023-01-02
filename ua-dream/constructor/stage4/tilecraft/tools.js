@@ -166,7 +166,8 @@ let helpContent = [
     '  take color from selected shape',
     ' ',
 
-    ' [up arrow] : extract all colors to palette',
+    ' [up arrow] : extract all colors from layer to palette',
+    ' [down arrow] : add new random color to palette',
     ' [left arrow] : replay back shapes creation',
     ' [right arrow] : replay forth shapes creation',
     ' ',
@@ -198,6 +199,12 @@ function drawHelp() {
 
 function helpEnable() {
     help = !help;
+    hexPalette = false;
+}
+
+function paletteEnable() {
+    hexPalette = !hexPalette;
+    help = false;
 }
 
 function mouseEvents(e) {
@@ -257,7 +264,7 @@ function mouseEvents(e) {
     }
 }
 
-["mousedown"].forEach(name => document.addEventListener(name, mouseEvents));
+["mousedown", "touchstart "].forEach(name => document.addEventListener(name, mouseEvents));
 
 let namingInProgress = false;
 
