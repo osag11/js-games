@@ -94,18 +94,25 @@ function addShape() {
     }
 
 }
-
 function draw() {
-
     for (let layer of model.layers) {
         if (!layer.visible) { continue; }
+
+        let alfa = alfaChannel(layer.transparency);
 
         let gridSize = layer.gridSize;
         let shapeType = layer.shapeType;
         let zoom = layer.zoom ?? 1;
 
         for (let s of layer.shapes) {
-            ctx.fillStyle = s.c;
+
+            let color = s.c;
+            if (alfa) {
+                color = s.c + alfa;
+            }
+            
+            ctx.fillStyle = color;
+
             if (shapeType === 'square') {
                 ctx.fillRect(s.x * zoom, s.y * zoom, gridSize * zoom, gridSize * zoom);
             }
@@ -123,7 +130,7 @@ function draw() {
             }
 
             if (shapeType === 'polygon') {
-                drawPolygon(ctx, (s.x + gridSize / 2) * zoom, (s.y + gridSize / 2) * zoom, (Math.abs(gridSize / 2)) * zoom, s.c, layer.polygonSize);
+                drawPolygon(ctx, (s.x + gridSize / 2) * zoom, (s.y + gridSize / 2) * zoom, (Math.abs(gridSize / 2)) * zoom, color, layer.polygonSize);
             }
 
             if (shapeType === 'polyline') {
@@ -211,10 +218,14 @@ function randomColorState(enabled) {
     console.log(enabled);
     randomColor = enabled;
     colorLabel.style.backgroundColor = enabled ? 'white' : pickerModel.rgbaColor;
-    // colorLabel.children[0].textContent = enabled ? 'random' : '';
+
+    colorLabel.children[1].style.color = contrastColor(rgba2hex(pickerModel.rgbaColor));
+    colorLabel.children[1].style.display = enabled ? 'none' : 'block';
+    colorLabel.children[1].textContent = rgba2hex(pickerModel.rgbaColor).toLowerCase();
     colorLabel.children[0].style.display = enabled ? 'block' : 'none';
 }
 
+const contrastColor = c => ["black", "white"][~~([1, 3, 5].map(p => parseInt(c.substr(p, 2), 16)).reduce((r, v, i) => [.299, .587, .114][i] * v + r, 0) < 128)];
 
 function drawPolygon(ctx, x, y, r, color, corners = 6) {
     const a = 2 * Math.PI / corners;
@@ -228,3 +239,30 @@ function drawPolygon(ctx, x, y, r, color, corners = 6) {
     ctx.fill();
 }
 
+function alfaChannel(transparency) {
+    if (transparency && transparency < 255)
+        return (transparency + 0x10000).toString(16).substr(-2).toUpperCase();
+    else
+        return null;
+}
+
+function rgba2hex(orig) {
+    var a, isPercent,
+        rgb = orig.replace(/\s/g, '').match(/^rgba?\((\d+),(\d+),(\d+),?([^,\s)]+)?/i),
+        alpha = (rgb && rgb[4] || "").trim(),
+        hex = rgb ?
+            (rgb[1] | 1 << 8).toString(16).slice(1) +
+            (rgb[2] | 1 << 8).toString(16).slice(1) +
+            (rgb[3] | 1 << 8).toString(16).slice(1) : orig;
+
+    // if (alpha !== "") {
+    //     a = alpha;
+    // } else {
+    //     a = 01;
+    // }
+    // // multiply before convert to HEX
+    // a = ((a * 255) | 1 << 8).toString(16).slice(1)
+    // hex = hex + a;
+
+    return hex;
+}

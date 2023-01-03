@@ -48,8 +48,8 @@ function mouse_down(event) {
             mouseEditor.x = roundNearest(mouseEditor.x, gridSize);
             mouseEditor.y = roundNearest(mouseEditor.y, gridSize);
         }
-        // touchstart();
     }
+
     if (layer().edit_mode)
         selectShape();
     else

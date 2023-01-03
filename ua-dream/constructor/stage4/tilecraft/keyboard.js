@@ -19,6 +19,14 @@ function handleKeyDown(event) {
         grid_minus_command();
     }
 
+    if (keyPressed == 111) {// NumpadDivide
+        transparency_minus_command();
+    }
+
+    if (keyPressed == 106) {// NumpadMultiply
+        transparency_plus_command();
+    }
+
     if (keyPressed == 71) {// G
         grid_switch_command();
     }
@@ -113,8 +121,8 @@ function handleKeyDown(event) {
     }
 
 
-    if (keyPressed == 38) { // ArrowUp
-        palette_import_layer_colors_command();
+    if (keyPressed == 38) { // ArrowUp  
+        palette_import_layer_colors_command(event.ctrlKey ? true : false);
     }
 
     if (keyPressed == 37) { // ArrowLeft

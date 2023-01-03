@@ -7,6 +7,12 @@ function delete_previous_shape_command() {
     }
 }
 
+function grid_switch_command(callback) {
+    gridOn = !gridOn;
+    callback =gridOn;
+    return gridOn;
+}
+
 function grid_plus_command() {
     if (layer().gridSize < 1) {
         layer().gridSize += 0.1
@@ -25,16 +31,24 @@ function grid_minus_command() {
     }
 }
 
+function transparency_minus_command() {
+    if(!layer().transparency)layer().transparency = 255;
+    layer().transparency--;    
+    if(layer().transparency<=1) layer().transparency = 1;
+}
+
+function transparency_plus_command() {
+    if(!layer().transparency)layer().transparency = 255;
+    layer().transparency++;    
+    if(layer().transparency>255) layer().transparency = 255;
+}
+
 function hex_palette_switch_command() {
     help = false;
     hexPalette = !hexPalette;
     return hexPalette;
 }
 
-function grid_switch_command() {
-    gridOn = !gridOn;
-    return gridOn;
-}
 
 function help_switch_command() {
     hexPalette = false;
@@ -74,7 +88,7 @@ function x_lock_command() {
         xLock = mouseEditor.x;
     }
     yLock = null;
-    return  xLock;
+    return xLock;
 }
 
 function y_lock_command() {
@@ -85,7 +99,7 @@ function y_lock_command() {
         yLock = mouseEditor.y;
     }
     xLock = null;
-    return  yLock;
+    return yLock;
 }
 
 function layer_clone_mode_switch_command() {
@@ -119,7 +133,7 @@ function save_file_command() {
     download(JSON.stringify(model), `tiles-${date}-${Date.now()}.json`, 'text/plain');
 }
 
-function palette_import_layer_colors_command() {
+function palette_import_layer_colors_command(destroy) {
     let gridSize = layer().gridSize;
     let clonedShapes = [...layer().shapes];
     hexPalette = true;
@@ -139,8 +153,11 @@ function palette_import_layer_colors_command() {
     });
 
     paletteColors = [];
-    layer().shapesHistory = [...layer().shapes]; // make backup
-    layer().shapes = [];
+
+    if (destroy) {
+        layer().shapesHistory = [...layer().shapes]; // make backup
+        layer().shapes = [];
+    }
 
     let x = 0;
     let y = 0;
@@ -150,12 +167,14 @@ function palette_import_layer_colors_command() {
         if (paletteColors.indexOf(cS.c) < 0) {
             paletteColors.push(cS.c);
 
-            layer().shapes.unshift({ x: x, y: y, c: cS.c });
-            x += gridSize;
-            
-            if (x > canvas.width) {
-                x = 0;
-                y += gridSize;
+            if (destroy) {
+                layer().shapes.unshift({ x: x, y: y, c: cS.c });
+                x += gridSize;
+
+                if (x > canvas.width) {
+                    x = 0;
+                    y += gridSize;
+                }
             }
         }
     }
@@ -173,4 +192,12 @@ function history_forward_command() {
 
 function palette_add_color_command() {
     paletteColors.push(generateColor());
+}
+
+
+function all_layers_visible_command(visible){
+
+}
+function clean_all_layers_command(visible){
+
 }

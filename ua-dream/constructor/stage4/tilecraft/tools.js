@@ -48,7 +48,8 @@ function drawLayersUI() {
         ctx2.fillText(l.name ?? layerNames[l.id], 5, layerHeight * counter + lineHeight + margin);
 
 
-        ctx2.fillText(l.zoom ?? 1, 5, layerHeight * counter + lineHeight2 + margin);
+        // ctx2.fillText(l.zoom ?? 1, 5, layerHeight * counter + lineHeight2 + margin);
+        ctx2.fillText(l.transparency ?? 255, 5, layerHeight * counter + lineHeight2 + margin);
         ctx2.fillText(l.shapes.length, 40, layerHeight * counter + lineHeight2 + margin);
         ctx2.fillText(l.gridSize > 1 ? l.gridSize : l.gridSize.toFixed(1), 110, layerHeight * counter + lineHeight2 + margin);
         ctx2.fillText(l.shapeType, 150, layerHeight * counter + lineHeight2 + margin);
@@ -57,7 +58,7 @@ function drawLayersUI() {
         }
 
         ctx2.font = "10px serif";
-        ctx2.fillText(" zoom      tiles                      grid         shape                                 visible", 0, layerHeight * counter + 58 + margin);
+        ctx2.fillText(" opacity   tiles                      grid         shape                                 visible", 0, layerHeight * counter + 58 + margin);
 
 
         ctx2.fillStyle = l.visible ? 'green' : 'red';
@@ -67,7 +68,7 @@ function drawLayersUI() {
         ctx2.fill();
         ctx2.closePath();
 
-        // remember 'visible' button position
+        // remember 'visible' button position for mouse handler
         l.posX = 270;
         l.posY = layerHeight * counter + 25 + margin;
 
@@ -75,6 +76,7 @@ function drawLayersUI() {
     }
 }
 
+// TBD: layer renamer to v-keyboard
 function onLayerNameChanged(val) {
     layer().name = val;
     updateLayersList();
@@ -89,6 +91,7 @@ function onActiveLayerChanged(val) {
 
 function updateLayersList() {
     let activeLayerEl = document.getElementById('activeLayer');
+    //TBD: move active layer selector to VirtualKeyboard
     activeLayerEl.innerHTML = "";
 
     for (let l of model.layers) {
@@ -120,6 +123,7 @@ function addLayer() {
             gridSize: layer().gridSize,
         }
     );
+
     model.activeLayer = 0;
 
     updateLayersList();
@@ -145,31 +149,37 @@ let helpContent = [
     'Tools and keys',
     ' [S] : save project to file',
     ' [R] : random color on/off',
-    ' [P] : palette with colors generated previously by [up arrow]',
+    ' [P] : palette with colors (generated previously by [up arrow])',
     ' [G] : grid on/off',
     ' [+] or [NumPadPlus] : make grid larger',
     ' [-] or [NumPadMinus] : make grid smaller',
+    //' [M] - move tool',
+    //' [Z] - zoom',
+    //' [Space] - selection tool',
+    //' [T] - transparancy tool'
     ' ',
 
-    '1,2,3,4,5,6,7,8,9 : shape selection, where',
+    '1,2,3,4,5,6,7,8,9 : tile shape selection, where',
     ' [1] : square',
     ' [2] : circle',
     ' [3-8] : polygons from triangle to octagon',
     ' [9] : double size circle',
+    //' [0] : polyline',
     ' ',
 
-    ' [Del] : remove last created shape (tile)',
-    ' [Esc] : clean active visible layer from shapes (tiles)',
+    ' [Del] : remove last created tile',
+    ' [Esc] : clean active visible layer from tiles',
     ' [E] or [Space] : edit mode',
     ' Edit mode allows to select shape,',
     '  drag and drop selected shape to move,',
     '  take color from selected shape',
     ' ',
 
-    ' [up arrow] : extract all colors from layer to palette',
-    ' [down arrow] : add new random color to palette',
-    ' [left arrow] : replay back shapes creation',
-    ' [right arrow] : replay forth shapes creation',
+    ' [UP arrow] : extract all colors from layer to palette',
+    ' [Ctrl + up arrow] : transform layer tiles to palette',
+    ' [DOWN arrow] : add new random color to palette',
+    ' [LEFT arrow] : replay back tiles creation',
+    ' [RIGHT arrow] : replay forth tiles creation',
     ' ',
 
     ' [X] : lock X coordinate to draw perfect vertical line',
@@ -182,7 +192,6 @@ let helpContent = [
     ' [Ctrl + B] : add new backround',
     ' [Shift + B] : remove current backround',
     ' [H]: show help',
-
 ];
 
 function drawHelp() {
@@ -294,7 +303,7 @@ var openFile = function (event) {
     reader.readAsText(input.files[0]);
 };
 
-
+// with respect to eperezcosano
 // https://eperezcosano.github.io/hex-grid/
 let hexPalette = false;
 let paletteColors = ['red', 'green', 'blue', 'white', 'grey', 'black', 'cyan', 'magenta', 'yellow'];

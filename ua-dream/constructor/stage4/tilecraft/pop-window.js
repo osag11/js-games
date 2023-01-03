@@ -111,11 +111,12 @@ function touchend() {
         timer = null;
         console.log('touch');
         if(btn_tap_action) btn_tap_action.call();
+        // TODO: refesh btn state
         btn_tap_action = null;
         btn_hold_action = null;
-        ignoreMouseEvents = false;
-    }    
-
+    }
+     
+    ignoreMouseEvents = false;
     holdInProgress=false;
 }
 
@@ -150,4 +151,8 @@ function btnTouchStart(btn) {
 function btnMouseHoldStart(btn){
     btn_hold_action = btn.onclick;
     btn_tap_action = null;
+}
+
+function refreshBtnState(){
+    
 }
