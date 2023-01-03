@@ -7,9 +7,6 @@ function handleKeyDown(event) {
     // ignore if layer name editing
     if (namingInProgress) return;
 
-    let shapes = layer().shapes;
-    let shapesHistory = layer().shapesHistory;
-
     if (keyPressed == 46) { // Del
         delete_previous_shape_command();
     }
@@ -115,8 +112,6 @@ function handleKeyDown(event) {
         save_file_command();
     }
 
-    if (keyPressed == 84) {// T
-    }
 
     if (keyPressed == 38) { // ArrowUp
         palette_import_layer_colors_command();

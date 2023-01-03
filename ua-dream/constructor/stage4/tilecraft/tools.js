@@ -102,7 +102,7 @@ function updateLayersList() {
     activeLayerEl.selectedIndex = model.activeLayer;
 }
 
-const layerNames = ['palette', 'first layer', 'second layer', 'third layer', 'fourth layer', 'fifth layer', 'sixth layer', 'seventh layer', 'eighth layer', 'ninth layer', 'tenth layer'];
+const layerNames = ['backstage', 'first layer', 'second layer', 'third layer', 'fourth layer', 'fifth layer', 'sixth layer', 'seventh layer', 'eighth layer', 'ninth layer', 'tenth layer'];
 
 function addLayer() {
     if (model.layers.length >= 11) {
@@ -199,7 +199,8 @@ function drawHelp() {
 
 
 function mouseEvents(e) {
-
+    e.preventDefault();
+    let handled = false;
     const bounds = toolsCanvas.getBoundingClientRect();
     mouse.x = e.pageX - bounds.left - window.scrollX - markRadius;
     mouse.y = e.pageY - bounds.top - window.scrollY - markRadius;
@@ -220,6 +221,7 @@ function mouseEvents(e) {
                     console.log(hg.c);
                     randomColorState(false);
                     injectColor(hg.c);
+                    handled = true;
                     break;
                 }
             }
@@ -227,6 +229,7 @@ function mouseEvents(e) {
         else {
 
             for (let l of model.layers) {
+
                 if (l.posX > mouse.x - 15
                     && l.posX < mouse.x + 15
                     && l.posY > mouse.y - 15
@@ -234,6 +237,7 @@ function mouseEvents(e) {
                 ) {
                     console.log(l);
                     l.visible = !l.visible;
+                    handled = true;
                     break;
                 }
 
@@ -248,9 +252,15 @@ function mouseEvents(e) {
                         model.activeLayer = idx;
                         updateLayersList();
                         onActiveLayerChanged(idx);
+                        handled = true;
+                        return;
                     }
                 }
             }
+        }
+        if (!handled) {
+            virtualKeyboard = !virtualKeyboard;
+            popVirtualKeyboard();
         }
     }
 }

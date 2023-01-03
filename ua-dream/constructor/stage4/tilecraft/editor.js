@@ -48,7 +48,7 @@ function mouse_down(event) {
             mouseEditor.x = roundNearest(mouseEditor.x, gridSize);
             mouseEditor.y = roundNearest(mouseEditor.y, gridSize);
         }
-        touchstart();
+        // touchstart();
     }
     if (layer().edit_mode)
         selectShape();
@@ -74,25 +74,6 @@ function mouse_out(event) {
     is_dragging = false;
 }
 
-let timer;
-let touchduration = 1000; 
-
-function touchstart() {
-    timer = setTimeout(onlongtouch, touchduration); 
-}
-
-function touchend() {
-    if (timer)
-        clearTimeout(timer); // clearTimeout, not cleartimeout..
-}
-
-function onlongtouch() { 
-    popup.style.top = "100px";
-    popup.style.left = "200px";
-    popup.style.display = "block";
- };
-
-
 function mouse_move(event) {
     let gridSize = layer().gridSize;
 
@@ -102,7 +83,8 @@ function mouse_move(event) {
     if (event.touches && event.touches.length > 0) {
         mouseEditor.x = parseInt(event.touches[0].clientX - offset_x) - gridSize / 2;
         mouseEditor.y = parseInt(event.touches[0].clientY - offset_y) - gridSize / 2;
-        touchend();
+        
+        // touchend(mouseEditor.x, mouseEditor.y);
     }
     if (xLock) {
         mouseEditor.x = xLock;
