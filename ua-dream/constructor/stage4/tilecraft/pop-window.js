@@ -21,19 +21,21 @@ window.addEventListener('touchend', mouseUp, false);
 function mouseUp() {
     window.removeEventListener('mousemove', popupMove, true);
     window.removeEventListener('touchmove', popupMove, true);
+
     touchend();
 }
 
 function mouseDown(e) {
+    // e.preventDefault();
+
     offset.x = e.clientX - popup.offsetLeft;
     offset.y = e.clientY - popup.offsetTop;
 
     if (e.touches && e.touches.length > 0) {
         offset.x = e.touches[0].clientX - popup.offsetLeft;
         offset.y = e.touches[0].clientY - popup.offsetTop;
-
-        // touchstart(e);
     }
+
     touchstart(e);
 
     window.addEventListener('mousemove', popupMove, true);
@@ -67,10 +69,11 @@ window.onkeydown = function (e) {
     }
 }
 
-// btn_close.onclick = function (e) {
-//     virtualKeyboard = false;
-//     popVirtualKeyboard();
-// }
+function toggleVirtualKeyboard()
+{
+    virtualKeyboard = !virtualKeyboard;
+    popVirtualKeyboard();
+}
 
 function closeVirtualKeyboard()
 {
@@ -86,7 +89,6 @@ function popVirtualKeyboard() {
 
 popVirtualKeyboard();
 
-
 // long touch hold button
 var onlongtouch;
 var timer;
@@ -94,6 +96,9 @@ var touchduration = 800; //length of time we want the user to touch before we do
 let holdInProgress = false;
 function touchstart(e) {
     e.preventDefault();
+
+    ignoreMouseEvents = true;
+
     if (!timer) {
         timer = setTimeout(onlongtouch, touchduration);
     }
@@ -106,7 +111,9 @@ function touchend() {
         timer = null;
         console.log('touch');
         if(btn_tap_action) btn_tap_action.call();
-
+        btn_tap_action = null;
+        btn_hold_action = null;
+        ignoreMouseEvents = false;
     }    
 
     holdInProgress=false;
@@ -119,7 +126,10 @@ onlongtouch = function () {
 
     setTimeout(function onTick() {
         console.log('hold');
-        if(btn_hold_action) btn_hold_action.call();
+        if(btn_hold_action) {
+            btn_hold_action.call();
+        }
+        btn_tap_action = null;
         if(holdInProgress) onlongtouch();
     }, 100)
 };
@@ -129,19 +139,15 @@ let btn_tap_action=null;
 
 function btnHoldStart(btn) {
     btn_hold_action = btn.onclick;
-    console.log(btn);
+    btn_tap_action = btn.onclick;
 }
 
 function btnTouchStart(btn) {
     btn_tap_action = btn.onclick;
     btn_hold_action = null;
-    console.log(btn);
 }
 
 function btnMouseHoldStart(btn){
     btn_hold_action = btn.onclick;
-}
-
-function btnMouseStart(btn){
-    btn_hold_action = null;
+    btn_tap_action = null;
 }

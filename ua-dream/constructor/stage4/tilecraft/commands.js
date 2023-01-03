@@ -26,17 +26,20 @@ function grid_minus_command() {
 }
 
 function hex_palette_switch_command() {
-    hexPalette = !hexPalette;
     help = false;
+    hexPalette = !hexPalette;
+    return hexPalette;
 }
 
 function grid_switch_command() {
     gridOn = !gridOn;
+    return gridOn;
 }
 
 function help_switch_command() {
-    help = !help;
     hexPalette = false;
+    help = !help;
+    return help;
 }
 
 function clear_layer_shapes_command() {
@@ -71,6 +74,7 @@ function x_lock_command() {
         xLock = mouseEditor.x;
     }
     yLock = null;
+    return  xLock;
 }
 
 function y_lock_command() {
@@ -81,10 +85,12 @@ function y_lock_command() {
         yLock = mouseEditor.y;
     }
     xLock = null;
+    return  yLock;
 }
 
 function layer_clone_mode_switch_command() {
     layerCloneMode = !layerCloneMode;
+    return layerCloneMode;
 }
 
 function background_command(action) {
@@ -110,13 +116,13 @@ function background_command(action) {
 
 function save_file_command() {
     let date = new Date().toISOString().split('T')[0];
-    download(JSON.stringify(model), `tiles-${date}.json`, 'text/plain');
+    download(JSON.stringify(model), `tiles-${date}-${Date.now()}.json`, 'text/plain');
 }
 
 function palette_import_layer_colors_command() {
     let gridSize = layer().gridSize;
     let clonedShapes = [...layer().shapes];
-
+    hexPalette = true;
     // order by color name
     clonedShapes.sort((a, b) => {
         const nameA = a.c.toUpperCase();
@@ -146,8 +152,8 @@ function palette_import_layer_colors_command() {
 
             layer().shapes.unshift({ x: x, y: y, c: cS.c });
             x += gridSize;
+            
             if (x > canvas.width) {
-
                 x = 0;
                 y += gridSize;
             }

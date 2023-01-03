@@ -53,11 +53,11 @@ function drawLayersUI() {
         ctx2.fillText(l.gridSize > 1 ? l.gridSize : l.gridSize.toFixed(1), 110, layerHeight * counter + lineHeight2 + margin);
         ctx2.fillText(l.shapeType, 150, layerHeight * counter + lineHeight2 + margin);
         if (l.shapeType === 'polygon') {
-            ctx2.fillText(l.polygonSize, 230, layerHeight * counter + lineHeight2 + margin);
+            ctx2.fillText(l.polygonSize, 225, layerHeight * counter + lineHeight2 + margin);
         }
 
         ctx2.font = "10px serif";
-        ctx2.fillText("zoom      count                     grid         shape                      edges   visible", 0, layerHeight * counter + 58 + margin);
+        ctx2.fillText(" zoom      tiles                      grid         shape                                 visible", 0, layerHeight * counter + 58 + margin);
 
 
         ctx2.fillStyle = l.visible ? 'green' : 'red';
@@ -197,9 +197,11 @@ function drawHelp() {
     }
 }
 
-
+let ignoreMouseEvents = false;
 function mouseEvents(e) {
     e.preventDefault();
+    if(ignoreMouseEvents) return;
+
     let handled = false;
     const bounds = toolsCanvas.getBoundingClientRect();
     mouse.x = e.pageX - bounds.left - window.scrollX - markRadius;
@@ -227,13 +229,14 @@ function mouseEvents(e) {
             }
         }
         else {
+            let touchRadius = 15 + 10;
 
             for (let l of model.layers) {
 
-                if (l.posX > mouse.x - 15
-                    && l.posX < mouse.x + 15
-                    && l.posY > mouse.y - 15
-                    && l.posY < mouse.y + 15
+                if (l.posX > mouse.x - touchRadius
+                    && l.posX < mouse.x + touchRadius
+                    && l.posY > mouse.y - touchRadius
+                    && l.posY < mouse.y + touchRadius
                 ) {
                     console.log(l);
                     l.visible = !l.visible;
@@ -259,8 +262,7 @@ function mouseEvents(e) {
             }
         }
         if (!handled) {
-            virtualKeyboard = !virtualKeyboard;
-            popVirtualKeyboard();
+            toggleVirtualKeyboard();
         }
     }
 }
