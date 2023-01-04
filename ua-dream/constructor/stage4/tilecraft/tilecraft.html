@@ -95,7 +95,7 @@
     </div>
 
     <div id="tool-panel">
-      <button type="button" onclick="toggleVirtualKeyboard()">menu</button>
+      <button type="button" onclick="toggleVirtualKeyboard()">pop-menu</button>
       <button type="button" onclick="help_switch_command()">?</button>
       <button type="button" onclick="hex_palette_switch_command()">palette</button>
       <input type="input" style="max-width:60px;" id="layerName" 
@@ -128,7 +128,7 @@
       style="width:100%;background-color:#aaff66;position:relative;top:0;border-radius:6px 6px 0 0; text-align:center;height:30px;cursor:move">
       Virtual keyboard (touch right panel to open)
       <span id="btn_close" onclick="closeVirtualKeyboard()" onmousedown="closeVirtualKeyboard()"
-        ontouchstart="btnTouchStart(this)" style="float:right;cursor:pointer;padding-right:6px;">[X]</span></div>
+        ontouchstart="btnTouchStart(this)" style="float:right;cursor:pointer;padding-right:6px;">⌧</span></div>
     <!--
 TODO: tabs
 edit/history/save/layer  palette/background  grid/tiles  clean about
@@ -142,11 +142,11 @@ duplicate some commands according  context. refresh should rely on element names
           </button></td>
         <td><button onclick="grid_plus_command()" onmousedown="btnMouseHoldStart(this)"
             ontouchstart="btnHoldStart(this)">
-            <p>+</p>Grid size plus
+            <p>＋</p>Grid size plus
           </button></td>
         <td><button onclick="grid_minus_command()" onmousedown="btnMouseHoldStart(this)"
             ontouchstart="btnHoldStart(this)">
-            <p>-</p>Grid size minus
+            <p>‒</p>Grid size minus
           </button></td>
       </tr>
 
@@ -157,11 +157,11 @@ duplicate some commands according  context. refresh should rely on element names
           </button></td>
         <td><button onclick="transparency_plus_command()" onmousedown="btnMouseHoldStart(this)"
             ontouchstart="btnHoldStart(this)">
-            <p>[*]</p>Layer transparency plus
+            <p>✱</p>Layer transparency plus
           </button></td>
         <td><button onclick="transparency_minus_command()" onmousedown="btnMouseHoldStart(this)"
             ontouchstart="btnHoldStart(this)">
-            <p>[/]</p>Layer transparency minus
+            <p>／</p>Layer transparency minus
           </button></td>
       </tr>
 
@@ -210,15 +210,15 @@ duplicate some commands according  context. refresh should rely on element names
       <tr>
         <td><button name="shape_state_square" class="vbtn-shape" onclick="shape_apply_command('square')" onmousedown="btnMouseHoldStart(this)"
             ontouchstart="btnTouchStart(this)">
-            <p>1</p>square tiles [1]
+            <p>1</p>square tiles
           </button></td>
         <td><button name="shape_state_circle" class="vbtn-shape" onclick="shape_apply_command('circle')" onmousedown="btnMouseHoldStart(this)"
             ontouchstart="btnTouchStart(this)">
-            <p>2</p>circle tiles [2]
+            <p>2</p>circle tiles
           </button></td>
         <td><button name="shape_state_polygon3" class="vbtn-shape" onclick="shape_polygon_apply_command(3)" onmousedown="btnMouseHoldStart(this)"
             ontouchstart="btnTouchStart(this)">
-            <p>3</p>triangle tiles [3]
+            <p>3</p>triangle tiles
           </button></td>
       </tr>
       <tr>
@@ -293,7 +293,7 @@ duplicate some commands according  context. refresh should rely on element names
           </button></td>
         <td><button onclick="closeVirtualKeyboard()" onmousedown="closeVirtualKeyboard()"
             ontouchstart="btnTouchStart(this)">
-            <p>[X]</p>close
+            <p>⌧</p>close
           </button></td>
       </tr>
     </table>

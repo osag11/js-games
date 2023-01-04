@@ -24,6 +24,7 @@ function mouseUp() {
     touchend();
 }
 
+let debugInfo = [];
 function mouseDown(e) {
 
     offset.x = e.clientX - popup.offsetLeft;
@@ -32,6 +33,8 @@ function mouseDown(e) {
     if (e.touches && e.touches.length > 0) {
         offset.x = e.touches[0].clientX - popup.offsetLeft;
         offset.y = e.touches[0].clientY - popup.offsetTop;
+        debugInfo[0] = e.touches.length;
+
     }
 
     touchstart(e);
@@ -50,6 +53,8 @@ function popupMove(e) {
     if (e.touches && e.touches.length > 0) {
         top = parseInt(e.touches[0].clientY - offset.y)
         left = parseInt(e.touches[0].clientX - offset.x)
+        debugInfo[1] = e.touches.length;
+
     }
     popupStyle.top = top;
     popupStyle.left = left;
@@ -62,27 +67,24 @@ function popupMove(e) {
     btn_tap_action = null;
 }
 
-//-- / let the popup make draggable & movable.
 window.onkeydown = function (e) {
     if (e.keyCode == 27) { // if ESC key pressed
         closeVirtualKeyboard();
     }
 }
 
-function toggleVirtualKeyboard()
-{
+function toggleVirtualKeyboard() {
     virtualKeyboard = !virtualKeyboard;
     popVirtualKeyboard();
 }
 
-function closeVirtualKeyboard()
-{
+function closeVirtualKeyboard() {
     virtualKeyboard = false;
     popVirtualKeyboard();
 }
 
 function popVirtualKeyboard() {
-    popup.style.top = popupStyle.top + "px";//canvas.height - popup.clientHeight;
+    popup.style.top = popupStyle.top + "px";
     popup.style.left = popupStyle.left + "px";
     popup.style.display = virtualKeyboard ? "block" : "none";
 }
@@ -110,37 +112,43 @@ function touchend() {
         clearTimeout(timer);
         timer = null;
         console.log('touch');
-        if(btn_tap_action) btn_tap_action.call();
-        // TODO: refesh btn state by name
+        if (btn_tap_action) btn_tap_action.call();
+        refreshBtnState();
+        
         btn_tap_action = null;
         btn_hold_action = null;
     }
-     
+
     ignoreMouseEvents = false;
-    holdInProgress=false;
+    holdInProgress = false;
 }
 
 
 let longTouchRepeatInterval = 100;
+
 onlongtouch = function () {
+
     timer = null;
-    holdInProgress=true;
-    longTouchRepeatInterval-=2;
-    if(longTouchRepeatInterval<20)longTouchRepeatInterval=20;
+    holdInProgress = true;
+    longTouchRepeatInterval -= 2;
+
+    if (longTouchRepeatInterval < 20) longTouchRepeatInterval = 20;
 
     setTimeout(function onTick() {
-        console.log('hold: '+ longTouchRepeatInterval);
+        console.log('hold: ' + longTouchRepeatInterval);
 
-        if(btn_hold_action) {
+        if (btn_hold_action) {
             btn_hold_action.call();
         }
+
         btn_tap_action = null;
-        if(holdInProgress) onlongtouch();
+        if (holdInProgress) onlongtouch();
+
     }, longTouchRepeatInterval)
 };
 
-let btn_hold_action=null;
-let btn_tap_action=null;
+let btn_hold_action = null;
+let btn_tap_action = null;
 
 function btnHoldStart(btn) {
     btn_hold_action = btn.onclick;
@@ -152,11 +160,12 @@ function btnTouchStart(btn) {
     btn_hold_action = null;
 }
 
-function btnMouseHoldStart(btn){
+function btnMouseHoldStart(btn) {
     btn_hold_action = btn.onclick;
     btn_tap_action = null;
 }
 
-function refreshBtnState(){
+function refreshBtnState() {
+   // TODO: refesh btn state by name
 
 }

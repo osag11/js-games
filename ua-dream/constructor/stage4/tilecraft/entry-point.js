@@ -48,11 +48,10 @@ main();
 
 
 function setup() {
-    gridOn = true;
+    gridOn = false;
     gridSize = 50;
     randomColor = true;
     initGrid(layer().gridSize);
-
     // layer().zoom =0.7; 
     initGrid(layer().gridSize * (layer().zoom ?? 1));
 

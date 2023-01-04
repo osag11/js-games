@@ -49,8 +49,8 @@ function drawLayersUI() {
 
 
         // ctx2.fillText(l.zoom ?? 1, 5, layerHeight * counter + lineHeight2 + margin);
-        ctx2.fillText(l.transparency ?? 255, 5, layerHeight * counter + lineHeight2 + margin);
-        ctx2.fillText(l.shapes.length, 40, layerHeight * counter + lineHeight2 + margin);
+        ctx2.fillText(l.shapes.length, 5, layerHeight * counter + lineHeight2 + margin);
+        ctx2.fillText(l.transparency ?? 255, 60, layerHeight * counter + lineHeight2 + margin);
         ctx2.fillText(l.gridSize > 1 ? l.gridSize : l.gridSize.toFixed(1), 110, layerHeight * counter + lineHeight2 + margin);
         ctx2.fillText(l.shapeType, 150, layerHeight * counter + lineHeight2 + margin);
         if (l.shapeType === 'polygon') {
@@ -58,19 +58,19 @@ function drawLayersUI() {
         }
 
         ctx2.font = "10px serif";
-        ctx2.fillText(" opacity   tiles                      grid         shape                                 visible", 0, layerHeight * counter + 58 + margin);
+        ctx2.fillText(" tiles                opacity          grid         shape                                 visible", 0, layerHeight * counter + 58 + margin);
 
 
         ctx2.fillStyle = l.visible ? 'green' : 'red';
 
         ctx2.beginPath();
-        ctx2.arc(270, layerHeight * counter + 25 + margin, 15, 0, 2 * Math.PI, 0);
+        ctx2.arc(270, layerHeight * counter + 30 + margin, 15, 0, 2 * Math.PI, 0);
         ctx2.fill();
         ctx2.closePath();
 
         // remember 'visible' button position for mouse handler
         l.posX = 270;
-        l.posY = layerHeight * counter + 25 + margin;
+        l.posY = layerHeight * counter + 30 + margin;
 
         counter++;
     }
@@ -318,7 +318,7 @@ function drawHexagonGrid(width, height, r, colors = ['red', 'green', 'blue']) {
             idx++;
             if (idx > colors.length - 1) idx = 0;
             let color = colors[idx];
-            
+
             if (!colors[idx].startsWith('#')) { color = '#' + colorByName(colors[idx]); }
 
             hexaGridData.push({ x: x, y: y, r: r, c: color });

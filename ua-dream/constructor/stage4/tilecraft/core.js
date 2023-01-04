@@ -12,18 +12,10 @@ const model = {
             visible: true,
             shapes: [],
             shapesHistory: [],
-            shapeType: 'circle',
-            polygonSize: 6,
-            gridSize: 50,
-        },
-
-        {
-            visible: true,
-            shapes: [],
-            shapesHistory: [],
             shapeType: 'square',
             polygonSize: 6,
-            gridSize: 10,
+            gridSize: 50,
+            transparency: 105
         },
 
         {
@@ -39,9 +31,37 @@ const model = {
             visible: true,
             shapes: [],
             shapesHistory: [],
-            shapeType: 'polygon',
+            shapeType: 'circle',
             polygonSize: 6,
+            gridSize: 30,
+            transparency: 125
+        },
+
+        {
+            visible: true,
+            shapes: [],
+            shapesHistory: [],
+            shapeType: 'polygon',
+            polygonSize: 8,
             gridSize: 20,
+        },
+
+        {
+            visible: true,
+            shapes: [],
+            shapesHistory: [],
+            shapeType: 'polygon',
+            polygonSize: 5,
+            gridSize: 40,
+        },
+
+        {
+            visible: true,
+            shapes: [],
+            shapesHistory: [],
+            shapeType: 'polyline',
+            polygonSize: 3,
+            gridSize: 40,
         },
     ]
 }
@@ -140,7 +160,7 @@ function draw() {
             }
 
             if (shapeType === 'polyline') {
-                ctx.lineWidth = gridSize / 4;
+                ctx.lineWidth = gridSize;
                 ctx.strokeStyle = color;
 
                 if (polylinePrevious.color !== color) {
@@ -197,6 +217,12 @@ function draw() {
             // ctx.font = "12px serif";
             // ctx.fillStyle = "white";
             // ctx.fillText(s.c,s.x, s.y);
+
+            for (let i = 0; i < debugInfo.length; i++) {
+                ctx.fillStyle = "white";
+                ctx.font = "12px serif";
+                ctx.fillText(debugInfo[i], 20, 20 * i);
+            }
 
         }// for each shape end
 
