@@ -5,7 +5,6 @@ https://gist.github.com/akirattii/9165836
 let virtualKeyboard = true;
 let popupStyle = { top: 40, left: 200 };
 
-// var btn_popup = document.getElementById("btn_popup");
 let popup = document.getElementById("popup");
 let popup_bar = document.getElementById("popup_bar");
 let btn_close = document.getElementById("btn_close");
@@ -26,7 +25,6 @@ function mouseUp() {
 }
 
 function mouseDown(e) {
-    // e.preventDefault();
 
     offset.x = e.clientX - popup.offsetLeft;
     offset.y = e.clientY - popup.offsetTop;
@@ -45,8 +43,6 @@ function mouseDown(e) {
 
 function popupMove(e) {
 
-    //e.preventDefault();
-
     popup.style.position = 'absolute';
     var top = e.clientY - offset.y;
     var left = e.clientX - offset.x;
@@ -60,6 +56,10 @@ function popupMove(e) {
 
     popup.style.top = popupStyle.top + 'px';
     popup.style.left = popupStyle.left + 'px';
+
+    // prevent commands long touch execution
+    btn_hold_action = null;
+    btn_tap_action = null;
 }
 
 //-- / let the popup make draggable & movable.
@@ -96,7 +96,7 @@ var touchduration = 800; //length of time we want the user to touch before we do
 let holdInProgress = false;
 function touchstart(e) {
     e.preventDefault();
-
+    longTouchRepeatInterval = 100;
     ignoreMouseEvents = true;
 
     if (!timer) {
@@ -111,7 +111,7 @@ function touchend() {
         timer = null;
         console.log('touch');
         if(btn_tap_action) btn_tap_action.call();
-        // TODO: refesh btn state
+        // TODO: refesh btn state by name
         btn_tap_action = null;
         btn_hold_action = null;
     }
@@ -120,19 +120,23 @@ function touchend() {
     holdInProgress=false;
 }
 
+
+let longTouchRepeatInterval = 100;
 onlongtouch = function () {
     timer = null;
     holdInProgress=true;
-    console.log('hold');
+    longTouchRepeatInterval-=2;
+    if(longTouchRepeatInterval<20)longTouchRepeatInterval=20;
 
     setTimeout(function onTick() {
-        console.log('hold');
+        console.log('hold: '+ longTouchRepeatInterval);
+
         if(btn_hold_action) {
             btn_hold_action.call();
         }
         btn_tap_action = null;
         if(holdInProgress) onlongtouch();
-    }, 100)
+    }, longTouchRepeatInterval)
 };
 
 let btn_hold_action=null;
@@ -154,5 +158,5 @@ function btnMouseHoldStart(btn){
 }
 
 function refreshBtnState(){
-    
+
 }

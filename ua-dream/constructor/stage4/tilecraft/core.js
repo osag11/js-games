@@ -76,7 +76,7 @@ function addShape() {
 
     let shapes = layer().shapes;
 
-    let color = randomColor ? generateColor() : pickerModel.rgbaColor;
+    let color = randomColor ? generateColor() : rgba2hex(pickerModel.rgbaColor);
     let newShape = { x: mouseEditor.x, y: mouseEditor.y, c: color };
 
     let existing = shapes.find(el =>
@@ -94,6 +94,9 @@ function addShape() {
     }
 
 }
+
+let polylinePrevious = { color: null, action: null };
+
 function draw() {
     for (let layer of model.layers) {
         if (!layer.visible) { continue; }
@@ -103,6 +106,9 @@ function draw() {
         let gridSize = layer.gridSize;
         let shapeType = layer.shapeType;
         let zoom = layer.zoom ?? 1;
+        if (shapeType === 'polyline') {
+            polylinePrevious = { color: null, action: null };
+        }
 
         for (let s of layer.shapes) {
 
@@ -110,7 +116,7 @@ function draw() {
             if (alfa) {
                 color = s.c + alfa;
             }
-            
+
             ctx.fillStyle = color;
 
             if (shapeType === 'square') {
@@ -134,14 +140,72 @@ function draw() {
             }
 
             if (shapeType === 'polyline') {
-                // TODO:
+                ctx.lineWidth = gridSize / 4;
+                ctx.strokeStyle = color;
+
+                if (polylinePrevious.color !== color) {
+
+                    if (polylinePrevious.action === null) {
+                        // start new path
+                        ctx.beginPath();
+                        ctx.moveTo((s.x + gridSize / 2) * zoom, (s.y + gridSize / 2) * zoom);
+                        polylinePrevious.action = 'mt';
+                        polylinePrevious.color = color;
+
+                        continue;
+                    }
+
+                    if (polylinePrevious.action === 'mt') {
+                        // draw and close
+                        ctx.lineTo((s.x + gridSize / 2) * zoom, (s.y + gridSize / 2) * zoom);
+                        polylinePrevious.action = 'lt';
+                        polylinePrevious.color = color;
+                        ctx.stroke();
+                        ctx.closePath();
+                        continue;
+                    }
+
+
+                    if (polylinePrevious.action === 'lt') {
+                        // close previous path
+                        ctx.strokeStyle = polylinePrevious.color;
+                        ctx.stroke();
+                        ctx.closePath();
+                        // begin new path
+                        ctx.beginPath();
+                        ctx.moveTo((s.x + gridSize / 2) * zoom, (s.y + gridSize / 2) * zoom);
+                        polylinePrevious.action = 'mt';
+                        polylinePrevious.color = color;
+
+                        continue;
+                    }
+                }
+                else {
+
+                    ctx.lineTo((s.x + gridSize / 2) * zoom, (s.y + gridSize / 2) * zoom);
+                    polylinePrevious.action = 'lt';
+                    polylinePrevious.color = color;
+
+                    continue;
+                }
             }
-
-
-            // center
+            // debug info drawing:
+            // mark tile origin point
             // ctx.fillStyle = "red";
             // ctx.fillRect(s.x, s.y, 2, 2);
+            // mark tile color name
+            // ctx.font = "12px serif";
+            // ctx.fillStyle = "white";
+            // ctx.fillText(s.c,s.x, s.y);
+
+        }// for each shape end
+
+        if (shapeType === 'polyline') {
+            // close last polyline path
+            ctx.stroke();
+            ctx.closePath();
         }
+
     }
     if (!screenshot_mode)
         drawPointer();
@@ -225,7 +289,6 @@ function randomColorState(enabled) {
     colorLabel.children[0].style.display = enabled ? 'block' : 'none';
 }
 
-const contrastColor = c => ["black", "white"][~~([1, 3, 5].map(p => parseInt(c.substr(p, 2), 16)).reduce((r, v, i) => [.299, .587, .114][i] * v + r, 0) < 128)];
 
 function drawPolygon(ctx, x, y, r, color, corners = 6) {
     const a = 2 * Math.PI / corners;
@@ -237,32 +300,4 @@ function drawPolygon(ctx, x, y, r, color, corners = 6) {
     }
     ctx.closePath();
     ctx.fill();
-}
-
-function alfaChannel(transparency) {
-    if (transparency && transparency < 255)
-        return (transparency + 0x10000).toString(16).substr(-2).toUpperCase();
-    else
-        return null;
-}
-
-function rgba2hex(orig) {
-    var a, isPercent,
-        rgb = orig.replace(/\s/g, '').match(/^rgba?\((\d+),(\d+),(\d+),?([^,\s)]+)?/i),
-        alpha = (rgb && rgb[4] || "").trim(),
-        hex = rgb ?
-            (rgb[1] | 1 << 8).toString(16).slice(1) +
-            (rgb[2] | 1 << 8).toString(16).slice(1) +
-            (rgb[3] | 1 << 8).toString(16).slice(1) : orig;
-
-    // if (alpha !== "") {
-    //     a = alpha;
-    // } else {
-    //     a = 01;
-    // }
-    // // multiply before convert to HEX
-    // a = ((a * 255) | 1 << 8).toString(16).slice(1)
-    // hex = hex + a;
-
-    return hex;
 }

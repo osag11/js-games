@@ -191,7 +191,9 @@ function history_forward_command() {
 }
 
 function palette_add_color_command() {
-    paletteColors.push(generateColor());
+    let color = generateColor();
+    paletteColors.push(color);
+    injectColor(color);
 }
 
 

@@ -33,12 +33,12 @@ function mouse_down(event) {
     }
     screenshot_mode = false;
 
-    startX = parseInt(event.clientX - offset_x)
-    startY = parseInt(event.clientY - offset_y)
+    startX = parseInt(event.clientX - offset_x - gridSize / 2)
+    startY = parseInt(event.clientY - offset_y - gridSize / 2)
 
     if (event.touches && event.touches.length > 0) {
-        startX = parseInt(event.touches[0].clientX - offset_x)
-        startY = parseInt(event.touches[0].clientY - offset_y)
+        startX = parseInt(event.touches[0].clientX - offset_x - gridSize / 2)
+        startY = parseInt(event.touches[0].clientY - offset_y - gridSize / 2)
 
         // touch specific
         mouseEditor.x = startX;
@@ -82,9 +82,7 @@ function mouse_move(event) {
 
     if (event.touches && event.touches.length > 0) {
         mouseEditor.x = parseInt(event.touches[0].clientX - offset_x) - gridSize / 2;
-        mouseEditor.y = parseInt(event.touches[0].clientY - offset_y) - gridSize / 2;
-        
-        // touchend(mouseEditor.x, mouseEditor.y);
+        mouseEditor.y = parseInt(event.touches[0].clientY - offset_y) - gridSize / 2;        
     }
     if (xLock) {
         mouseEditor.x = xLock;

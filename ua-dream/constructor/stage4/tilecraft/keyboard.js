@@ -19,11 +19,11 @@ function handleKeyDown(event) {
         grid_minus_command();
     }
 
-    if (keyPressed == 111) {// NumpadDivide
+    if (keyPressed == 111 || keyPressed == 188 ) {// NumpadDivide or <
         transparency_minus_command();
     }
 
-    if (keyPressed == 106) {// NumpadMultiply
+    if (keyPressed == 106 || keyPressed == 190) {// NumpadMultiply or >
         transparency_plus_command();
     }
 
@@ -81,6 +81,10 @@ function handleKeyDown(event) {
 
     if (keyPressed == 57) {// 9
         shape_apply_command('circle2x');
+    }
+
+    if (keyPressed == 48) {// 0
+        shape_apply_command('polyline');
     }
 
     if (keyPressed == 67) {// C

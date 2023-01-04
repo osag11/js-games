@@ -156,7 +156,8 @@ let helpContent = [
     //' [M] - move tool',
     //' [Z] - zoom',
     //' [Space] - selection tool',
-    //' [T] - transparancy tool'
+    ' [*] - transparency plus',
+    ' [/] - transparency minus',
     ' ',
 
     '1,2,3,4,5,6,7,8,9 : tile shape selection, where',
@@ -164,7 +165,7 @@ let helpContent = [
     ' [2] : circle',
     ' [3-8] : polygons from triangle to octagon',
     ' [9] : double size circle',
-    //' [0] : polyline',
+    ' [0] : polyline',
     ' ',
 
     ' [Del] : remove last created tile',
@@ -209,7 +210,7 @@ function drawHelp() {
 let ignoreMouseEvents = false;
 function mouseEvents(e) {
     e.preventDefault();
-    if(ignoreMouseEvents) return;
+    if (ignoreMouseEvents) return;
 
     let handled = false;
     const bounds = toolsCanvas.getBoundingClientRect();
@@ -230,8 +231,8 @@ function mouseEvents(e) {
                     && hg.y < mouse.y + hg.r
                 ) {
                     console.log(hg.c);
-                    randomColorState(false);
                     injectColor(hg.c);
+                    randomColorState(false);
                     handled = true;
                     break;
                 }
@@ -316,8 +317,10 @@ function drawHexagonGrid(width, height, r, colors = ['red', 'green', 'blue']) {
         for (let x = r, j = 0; x + r * (1 + Math.cos(a)) < width; x += r * (1 + Math.cos(a)), y += (-1) ** j++ * r * Math.sin(a)) {
             idx++;
             if (idx > colors.length - 1) idx = 0;
-
             let color = colors[idx];
+            
+            if (!colors[idx].startsWith('#')) { color = '#' + colorByName(colors[idx]); }
+
             hexaGridData.push({ x: x, y: y, r: r, c: color });
             drawPolygon(ctx2, x, y, r, color);
         }
