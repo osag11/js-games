@@ -34,6 +34,8 @@ function mouse_down(event) {
     }
     screenshot_mode = false;
 
+    let gridSize = layer().gridSize;
+
     startX = parseInt(event.clientX - offset_x - gridSize / 2)
     startY = parseInt(event.clientY - offset_y - gridSize / 2)
 
@@ -50,6 +52,14 @@ function mouse_down(event) {
             mouseEditor.y = roundNearest(mouseEditor.y, gridSize);
         }
     }
+
+    if (typeof xLock == 'number') {
+        mouseEditor.x = xLock;
+    }
+    if (typeof yLock == 'number') {
+        mouseEditor.y = yLock;
+    }
+
 
     if (layer().edit_mode)
         selectShape();
@@ -85,10 +95,10 @@ function mouse_move(event) {
         mouseEditor.x = parseInt(event.touches[0].clientX - offset_x) - gridSize / 2;
         mouseEditor.y = parseInt(event.touches[0].clientY - offset_y) - gridSize / 2;        
     }
-    if (xLock) {
+    if (typeof xLock == 'number') {
         mouseEditor.x = xLock;
     }
-    if (yLock) {
+    if (typeof yLock == 'number') {
         mouseEditor.y = yLock;
     }
 

@@ -24,12 +24,12 @@ function drawLayersUI() {
 
     ctx2.fillText(`layer clone: ${layerCloneMode}`, 5, 25);
 
-    if (xLock) {
+    if (typeof xLock == 'number') {
         ctx2.fillStyle = 'red';
         ctx2.fillText(`xLock: ${xLock}`, 200, 25);
     }
 
-    if (yLock) {
+    if (typeof yLock == 'number') {
         ctx2.fillStyle = 'red';
         ctx2.fillText(`yLock: ${yLock}`, 200, 25);
     }
@@ -84,25 +84,25 @@ function onLayerNameChanged(val) {
 
 function onActiveLayerChanged(val) {
     model.activeLayer = parseInt(val);
-    let layerNameEl = document.getElementById('layerName');
-    layerNameEl.value = layer().name ?? layerNames[model.activeLayer];
+    let layerNameEl = document.getElementsByName('layerName');
+    layerNameEl.forEach(x=>x.value = layer().name ?? layerNames[model.activeLayer]);
     initGrid(layer().gridSize * (layer().zoom ?? 1));
 }
 
 function updateLayersList() {
-    let activeLayerEl = document.getElementById('activeLayer');
+    let activeLayerEl = document.getElementsByName('activeLayer');
     //TBD: move active layer selector to VirtualKeyboard
-    activeLayerEl.innerHTML = "";
+    activeLayerEl.forEach(x=>x.innerHTML = "");
 
     for (let l of model.layers) {
         l.id = model.layers.indexOf(l);
         var option = document.createElement("option");
         option.text = l.name ?? layerNames[l.id];
         option.value = l.id;
-        activeLayerEl.options.add(option);
+        activeLayerEl.forEach(x=>x.options.add(option));
     }
 
-    activeLayerEl.selectedIndex = model.activeLayer;
+    activeLayerEl.forEach(x=>x.selectedIndex = model.activeLayer);
 }
 
 const layerNames = ['backstage', 'first layer', 'second layer', 'third layer', 'fourth layer', 'fifth layer', 'sixth layer', 'seventh layer', 'eighth layer', 'ninth layer', 'tenth layer'];

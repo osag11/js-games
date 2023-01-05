@@ -2,19 +2,24 @@
 with respect to akirattii
 https://gist.github.com/akirattii/9165836 
 */
-let virtualKeyboard = true;
+let virtualKeyboard = false;
 let popupStyle = { top: 40, left: 200 };
+let offset = { x: 0, y: 0 };
 
 let popup = document.getElementById("popup");
 let popup_bar = document.getElementById("popup_bar");
 let btn_close = document.getElementById("btn_close");
 
-let offset = { x: 0, y: 0 };
+document.getElementsByName("virtual_keyboard")
+.forEach(kb =>{ 
+    kb.addEventListener('mousedown', mouseDown, false);
+    kb.addEventListener('touchstart', mouseDown, false);
+});
 
-popup.addEventListener('mousedown', mouseDown, false);
+popup_bar.addEventListener('mousedown', mouseDown, false);
 window.addEventListener('mouseup', mouseUp, false);
 
-popup.addEventListener('touchstart', mouseDown, false);
+popup_bar.addEventListener('touchstart', mouseDown, false);
 window.addEventListener('touchend', mouseUp, false);
 
 function mouseUp() {
@@ -40,7 +45,8 @@ function mouseDown(e) {
     window.addEventListener('touchmove', popupMove, true);
 }
 
-let previousMouseMove = { x: 0, y: 0, diff: 0 };
+let touchTremorInfo = { x: 0, y: 0, diff: 0 };
+
 function popupMove(e) {
 
     popup.style.position = 'absolute';
@@ -50,10 +56,10 @@ function popupMove(e) {
     if (e.touches && e.touches.length > 0) {
         left = parseInt(e.touches[0].clientX - offset.x);
         top = parseInt(e.touches[0].clientY - offset.y);
-
-        let diff = (Math.abs(previousMouseMove.x - left) + Math.abs(previousMouseMove.y - top));
-        previousMouseMove = { x: left, y: top, diff: diff };
     }
+
+    let diff = (Math.abs(touchTremorInfo.x - left) + Math.abs(touchTremorInfo.y - top));
+    touchTremorInfo = { x: left, y: top, diff: diff };
 
     popupStyle.top = top;
     popupStyle.left = left;
@@ -62,14 +68,13 @@ function popupMove(e) {
     popup.style.left = popupStyle.left + 'px';
 
     // prevent commands long touch execution
-    if (previousMouseMove.diff > 2) {
+    if (touchTremorInfo.diff > 2) {
         btn_hold_action = null;
         btn_tap_action = null;
-        console.log('hold aborted');
+        console.log('hold action aborted');
     }
 
-    debugInfo[0]=JSON.stringify(previousMouseMove);
-
+    debugInfo[0] = JSON.stringify(touchTremorInfo);
 }
 
 window.onkeydown = function (e) {

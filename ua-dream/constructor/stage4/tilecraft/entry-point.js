@@ -49,7 +49,6 @@ main();
 
 function setup() {
     gridOn = false;
-    gridSize = 50;
     randomColor = true;
     initGrid(layer().gridSize);
     // layer().zoom =0.7; 

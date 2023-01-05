@@ -88,7 +88,19 @@ function handleKeyDown(event) {
     }
 
     if (keyPressed == 67) {// C
-        layerCloneMode = !layerCloneMode;
+        layer_clone_mode_switch_command();
+    }
+
+    if (keyPressed == 76) {// L
+        layer_remove_command();
+    }
+
+    if (keyPressed == 75) {// K
+        layer_remove_command();
+    }
+
+    if (keyPressed == 68) {// D
+        debug_mode_switch_command();
     }
 
     if (keyPressed == 88) {// X

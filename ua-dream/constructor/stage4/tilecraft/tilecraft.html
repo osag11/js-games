@@ -3,6 +3,8 @@
 
 <head>
 
+  <link rel="stylesheet" href="tabs.css">
+
   <style>
     body {
       overscroll-behavior: contain;
@@ -98,20 +100,17 @@
       <button type="button" onclick="toggleVirtualKeyboard()">pop-menu</button>
       <button type="button" onclick="help_switch_command()">?</button>
       <button type="button" onclick="hex_palette_switch_command()">palette</button>
-      <input type="input" style="max-width:60px;" id="layerName" 
-      onfocusin="nameFocusHandler(event)"
-      onfocusout="nameFocusHandler(event)" 
-      onchange="onLayerNameChanged(this.value)" value="backstage">
+      <input type="input" style="max-width:60px;" name="layerName" onfocusin="nameFocusHandler(event)"
+        onfocusout="nameFocusHandler(event)" onchange="onLayerNameChanged(this.value)" value="backstage">
       <button type="button" onclick="addLayer()">+</button>
       <button type="button" onclick="removeLayer()">-</button>
-      <!--TODO: move to virtual keyboard layers tab -->
-      <select name="activeLayer" id="activeLayer" style="max-width:60px;display:none"
+      <select name="activeLayer" style="max-width:60px;display:none"
         onchange="onActiveLayerChanged(this.value)"></select>
     </div>
 
     <input type="checkbox" id="color-input" onclick="randomColorState(this.checked)" checked>
     <div id="color-picker">
-      <label for="color-input" id="color-label" style="background-color: white">      
+      <label for="color-input" id="color-label" style="background-color: white">
         <img src="images/random-color.png" height="180" width="70">
         <p style="margin:6px;"></p>
       </label>
@@ -123,9 +122,9 @@
   </div>
 
   <div id="popup"
-    style="display:none;background-color:green;position:absolute;z-index:9999;box-shadow: 6px 6px 5px #888888;border-radius:6px;border:1px solid #4f4f4f;">
+    style="display:none;background:black;position:absolute;z-index:9999;box-shadow: 6px 6px 5px #888888;border-radius:6px;border:1px solid #4f4f4f;">
     <div id="popup_bar"
-      style="width:100%;background-color:#aaff66;position:relative;top:0;border-radius:6px 6px 0 0; text-align:center;height:30px;cursor:move">
+      style="width:100%;color:white;position:relative;top:0;border-radius:6px 6px 0 0; text-align:center;height:30px;cursor:move">
       Virtual keyboard (touch right panel to open)
       <span id="btn_close" onclick="closeVirtualKeyboard()" onmousedown="closeVirtualKeyboard()"
         ontouchstart="btnTouchStart(this)" style="float:right;cursor:pointer;padding-right:6px;">&#8864;</span></div>
@@ -134,6 +133,285 @@ TODO: tabs
 edit/history/save/layer  palette/background  grid/tiles  clean about
 duplicate some commands according  context. refresh should rely on element names not ids
 -->
+
+    <div class="tabset">
+      <!-- Tab 1 -->
+      <input type="radio" name="tabset" id="tab1" aria-controls="edit" checked>
+      <label for="tab1">Edit</label>
+      <!-- Tab 2 -->
+      <input type="radio" name="tabset" id="tab2" aria-controls="colors-grid">
+      <label for="tab2">Grid/Colors</label>
+      <!-- Tab 3 -->
+      <input type="radio" name="tabset" id="tab3" aria-controls="tiles">
+      <label for="tab3">Tiles</label>
+      <!-- Tab 4 -->
+      <input type="radio" name="tabset" id="tab4" aria-controls="layers">
+      <label for="tab4">Layers</label>
+
+      <div id="virtual_keyboard" class="tab-panels">
+        <section id="edit" class="tab-panel">
+          <table name="virtual_keyboard">
+            <tr>
+              <td><button id="edit_mode_state" onclick="edit_mode_switch_command()"
+                  onmousedown="btnMouseHoldStart(this)" ontouchstart="btnTouchStart(this)">
+                  <p>E</p>Edit mode
+                </button></td>
+
+              <td><button onclick="delete_previous_shape_command()" onmousedown="btnMouseHoldStart(this)"
+                  ontouchstart="btnHoldStart(this)">
+                  <p>Del</p>Remove selected tile
+                </button></td>
+
+              <td><button name="x_lock_state" onclick="x_lock_command()" onmousedown="btnMouseHoldStart(this)"
+                  ontouchstart="btnTouchStart(this)">
+                  <p>X</p>lock X axis
+                </button></td>
+            </tr>
+
+            <tr>
+              <td><button onclick="history_back_command()" onmousedown="btnMouseHoldStart(this)"
+                  ontouchstart="btnHoldStart(this)">
+                  <p>Left Arrow</p>History 1 step back
+                </button></td>
+              <td><button onclick="history_forward_command()" onmousedown="btnMouseHoldStart(this)"
+                  ontouchstart="btnHoldStart(this)">
+                  <p>Right Arrow</p>History 1 step forth
+                </button></td>
+              <td><button name="y_lock_state" onclick="y_lock_command()" onmousedown="btnMouseHoldStart(this)"
+                  ontouchstart="btnTouchStart(this)">
+                  <p>Y</p>lock Y axis
+                </button></td>
+            </tr>
+
+            <tr>
+
+              <td><button onclick="hex_palette_switch_command()" onmousedown="btnMouseHoldStart(this)"
+                  ontouchstart="btnTouchStart(this)">
+                  <p>P</p>Palette On/Off
+                </button></td>
+
+              <td><button onclick="help_switch_command()" onmousedown="btnMouseHoldStart(this)"
+                  ontouchstart="btnTouchStart(this)">
+                  <p>H</p>Help
+                </button></td>
+
+              <td><button class="vbtn-save" onclick="save_file_command()" onmousedown="btnMouseHoldStart(this)"
+                  ontouchstart="btnTouchStart(this)">
+                  <p>S</p>Save to file
+                </button></td>
+
+            </tr>
+          </table>
+        </section>
+
+        <section id="colors-grid" class="tab-panel">
+          <table name="virtual_keyboard">
+
+            <tr>
+
+              <td><button onclick="grid_plus_command()" onmousedown="btnMouseHoldStart(this)"
+                  ontouchstart="btnHoldStart(this)">
+                  <p>+</p>Grid size plus
+                </button></td>
+
+              <td><button onclick="transparency_plus_command()" onmousedown="btnMouseHoldStart(this)"
+                  ontouchstart="btnHoldStart(this)">
+                  <p>&#8727;</p>Layer transparency plus
+                </button></td>
+
+              <td><button onclick="palette_import_layer_colors_command()" onmousedown="btnMouseHoldStart(this)"
+                  ontouchstart="btnTouchStart(this)">
+                  <p>Up Arrow</p>Tiles colors to palette
+                </button></td>
+            </tr>
+
+            <tr>
+
+              <td><button onclick="grid_minus_command()" onmousedown="btnMouseHoldStart(this)"
+                  ontouchstart="btnHoldStart(this)">
+                  <p>&#8722;</p>Grid size minus
+                </button></td>
+              <td><button onclick="transparency_minus_command()" onmousedown="btnMouseHoldStart(this)"
+                  ontouchstart="btnHoldStart(this)">
+                  <p>&#8725;</p>Layer transparency minus
+                </button></td>
+
+              <td><button onclick="palette_add_color_command()" onmousedown="btnMouseHoldStart(this)"
+                  ontouchstart="btnHoldStart(this)">
+                  <p>Down Arrow</p>Add random color to palette
+                </button></td>
+            </tr>
+
+            <tr>
+              <td><button name="grid_state" onclick="grid_switch_command()" onmousedown="btnMouseHoldStart(this)"
+                  ontouchstart="btnTouchStart(this)">
+                  <p>G</p>Grid On/Off
+                </button></td>
+
+              <td><button onclick="hex_palette_switch_command()" onmousedown="btnMouseHoldStart(this)"
+                  ontouchstart="btnTouchStart(this)">
+                  <p>P</p>Palette On/Off
+                </button></td>
+
+              <td><button name="random_color_state" onclick="random_color_switch_command()"
+                  onmousedown="btnMouseHoldStart(this)" ontouchstart="btnTouchStart(this)">
+                  <p>R</p>Random color
+                </button></td>
+            </tr>
+
+          </table>
+
+        </section>
+
+        <section id="tiles" class="tab-panel">
+          <table name="virtual_keyboard">
+
+            <tr>
+              <td><button name="shape_state_square" class="vbtn-shape" onclick="shape_apply_command('square')"
+                  onmousedown="btnMouseHoldStart(this)" ontouchstart="btnTouchStart(this)">
+                  <p>1</p>square tiles
+                </button></td>
+              <td><button name="shape_state_circle" class="vbtn-shape" onclick="shape_apply_command('circle')"
+                  onmousedown="btnMouseHoldStart(this)" ontouchstart="btnTouchStart(this)">
+                  <p>2</p>circle tiles
+                </button></td>
+              <td><button name="shape_state_polygon3" class="vbtn-shape" onclick="shape_polygon_apply_command(3)"
+                  onmousedown="btnMouseHoldStart(this)" ontouchstart="btnTouchStart(this)">
+                  <p>3</p>triangle tiles
+                </button></td>
+            </tr>
+
+            <tr>
+              <td><button name="shape_state_polygon4" class="vbtn-shape" onclick="shape_polygon_apply_command(4)"
+                  onmousedown="btnMouseHoldStart(this)" ontouchstart="btnTouchStart(this)">
+                  <p>4</p>romb tiles
+                </button></td>
+              <td><button name="shape_state_polygon5" class="vbtn-shape" onclick="shape_polygon_apply_command(5)"
+                  onmousedown="btnMouseHoldStart(this)" ontouchstart="btnTouchStart(this)">
+                  <p>5</p>pentagon tiles
+                </button></td>
+              <td><button name="shape_state_polygon6" class="vbtn-shape" onclick="shape_polygon_apply_command(6)"
+                  onmousedown="btnMouseHoldStart(this)" ontouchstart="btnTouchStart(this)">
+                  <p>6</p>hexagon tiles
+                </button></td>
+            </tr>
+
+            <tr>
+              <td><button name="shape_state_polygon7" class="vbtn-shape" onclick="shape_polygon_apply_command(7)"
+                  onmousedown="btnMouseHoldStart(this)" ontouchstart="btnTouchStart(this)">
+                  <p>7</p>heptagon tiles
+                </button></td>
+              <td><button name="shape_state_polygon8" class="vbtn-shape" onclick="shape_polygon_apply_command(8)"
+                  onmousedown="btnMouseHoldStart(this)" ontouchstart="btnTouchStart(this)">
+                  <p>8</p>octagon tiles
+                </button></td>
+              <td><button name="shape_state_circle2x" class="vbtn-shape" onclick="shape_apply_command('circle2x')"
+                  onmousedown="btnMouseHoldStart(this)" ontouchstart="btnTouchStart(this)">
+                  <p>9</p>circle 2x tiles
+                </button></td>
+            </tr>
+
+            <tr>
+              <td><button onclick="grid_plus_command()" onmousedown="btnMouseHoldStart(this)"
+                  ontouchstart="btnHoldStart(this)">
+                  <p>+</p>Grid size plus
+                </button></td>
+
+              <td><button name="shape_state_polyline" class="vbtn-shape" onclick="shape_apply_command('polyline')"
+                  onmousedown="btnMouseHoldStart(this)" ontouchstart="btnTouchStart(this)">
+                  <p>0</p>polyline
+                </button></td>
+
+              <td><button onclick="grid_minus_command()" onmousedown="btnMouseHoldStart(this)"
+                  ontouchstart="btnHoldStart(this)">
+                  <p>&#8722;</p>Grid size minus
+                </button></td>
+            </tr>
+
+          </table>
+        </section>
+
+        <section id="layers" class="tab-panel">
+          <table>
+            <tr>
+              <td> <input type="input" style="max-width:160px;" name="layerName" onfocusin="nameFocusHandler(event)"
+                  onfocusout="nameFocusHandler(event)" onchange="onLayerNameChanged(this.value)" value="backstage"></td>
+
+              <td> <select name="activeLayer" style="max-width:160px;"
+                  onchange="onActiveLayerChanged(this.value)"></select></td>
+            </tr>
+          </table>
+
+          <table name="virtual_keyboard">
+
+            <tr>
+
+              <td><button onclick="background_command('rotate')" onmousedown="btnMouseHoldStart(this)"
+                  ontouchstart="btnHoldStart(this)">
+                  <p>B</p>switch background
+                </button></td>
+
+              <td><button onclick="layer_clone_mode_switch_command()" onmousedown="btnMouseHoldStart(this)"
+                  ontouchstart="btnTouchStart(this)">
+                  <p>C</p>layer tiles clone mode
+                </button></td>
+
+              <td><button class="vbtn-delete" onclick="clear_layer_shapes_command()"
+                  onmousedown="btnMouseHoldStart(this)" ontouchstart="btnTouchStart(this)">
+                  <p>Esc</p>Clear layer tiles
+                </button></td>
+
+            </tr>
+
+            <tr>
+
+              <td><button onclick="background_command('add')" onmousedown="btnMouseHoldStart(this)"
+                  ontouchstart="btnTouchStart(this)">
+                  <p>Ctrl + B</p>add background
+                </button></td>
+
+              <td><button onclick="layer_add_command()" onmousedown="btnMouseHoldStart(this)"
+                  ontouchstart="btnTouchStart(this)">
+                  <p>L</p>add layer
+                </button></td>
+
+              <td><button onclick="palette_import_layer_colors_command(true)" onmousedown="btnMouseHoldStart(this)"
+                  ontouchstart="btnTouchStart(this)">
+                  <p>Ctrl + Up Arrow</p>Transform layer tiles to palette
+                </button></td>
+
+            </tr>
+
+            <tr>
+              <td><button onclick="background_command('remove')" onmousedown="btnMouseHoldStart(this)"
+                  ontouchstart="btnTouchStart(this)">
+                  <p>Shift + B</p>remove background
+                </button></td>
+
+              <td><button onclick="layer_remove_command()" onmousedown="btnMouseHoldStart(this)"
+                  ontouchstart="btnTouchStart(this)">
+                  <p>K</p>remove layer
+                </button></td>
+
+              <td><button class="vbtn-save" onclick="save_file_command()" onmousedown="btnMouseHoldStart(this)"
+                  ontouchstart="btnTouchStart(this)">
+                  <p>S</p>Save to file
+                </button></td>
+            </tr>
+
+          </table>
+        </section>
+
+        <button style="margin:3px;" onclick="closeVirtualKeyboard()" onmousedown="closeVirtualKeyboard()"
+          ontouchstart="btnTouchStart(this)">
+          <p>&#8864;</p>close
+        </button>
+
+      </div>
+
+    </div>
+    <!--
+
     <table id="virtual_keyboard">
 
         <td><button name="grid_state" onclick="grid_switch_command()" onmousedown="btnMouseHoldStart(this)"
@@ -276,12 +554,7 @@ duplicate some commands according  context. refresh should rely on element names
           </button></td>
       </tr>
       <tr>
-        <!--
-        <td><button onclick="closeVirtualKeyboard()" onmousedown="closeVirtualKeyboard()"
-            ontouchstart="btnTouchStart(this)">
-            <p>[X]</p>close
-          </button></td>
-        -->
+ 
         <td><button name="shape_state_polyline" class="vbtn-shape" onclick="shape_apply_command('polyline')" onmousedown="btnMouseHoldStart(this)"
             ontouchstart="btnTouchStart(this)">
             <p>0</p>polyline
@@ -296,6 +569,7 @@ duplicate some commands according  context. refresh should rely on element names
           </button></td>
       </tr>
     </table>
+        -->
   </div>
 
   <script type="text/javascript" src="grid.js"></script>

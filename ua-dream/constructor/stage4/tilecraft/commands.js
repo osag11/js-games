@@ -81,7 +81,7 @@ function shape_polygon_apply_command(size) {
 }
 
 function x_lock_command() {
-    if (xLock) {
+    if (typeof xLock == 'number') {
         xLock = null;
     }
     else {
@@ -92,7 +92,7 @@ function x_lock_command() {
 }
 
 function y_lock_command() {
-    if (yLock) {
+    if (typeof yLock == 'number') {
         yLock = null;
     }
     else {
@@ -100,6 +100,18 @@ function y_lock_command() {
     }
     xLock = null;
     return yLock;
+}
+
+function layer_add_command() {
+    addLayer();
+}
+
+function layer_remove_command() {
+    removeLayer();
+}
+
+function debug_mode_switch_command() {
+    debugOn = !debugOn;
 }
 
 function layer_clone_mode_switch_command() {

@@ -106,15 +106,14 @@ function addShape() {
 
     if (!existing) {
         shapes.push(newShape);
-
     } else {
-
         layer().current_shape = existing;
         console.log('skip:' + JSON.stringify(newShape));
     }
 }
 
 let polylinePrevious = { color: null, action: null };
+let debugOn = false;
 let debugInfo = [];
 
 function draw() {
@@ -217,23 +216,27 @@ function draw() {
             // ctx.font = "12px serif";
             // ctx.fillStyle = "white";
             // ctx.fillText(s.c,s.x, s.y);
+
         }// for each shape end
 
         if (shapeType === 'polyline') {
             // close last polyline path
             ctx.stroke();
-            ctx.closePath();
+            //ctx.closePath();
         }
-
     }
+
     if (!screenshot_mode) {
         drawPointer();
     }
 
-    for (let i = 0; i < debugInfo.length; i++) {
+    if (debugOn) {
         ctx.fillStyle = "white";
         ctx.font = "12px serif";
-        ctx.fillText(debugInfo[i], 20, 20 * (i + 1));
+        for (let i = 0; i < debugInfo.length; i++) {
+            ctx.fillText(debugInfo[i], 20, 20 * (i + 1));
+        }
+        ctx.fillText(`${mouseEditor.x} : ${mouseEditor.y}`, canvas.width - 60, 20);
     }
 }
 
@@ -308,7 +311,8 @@ function randomColorState(enabled) {
     console.log(enabled);
     randomColor = enabled;
     colorLabel.style.backgroundColor = enabled ? 'white' : pickerModel.rgbaColor;
-
+    randomColorSwitch.checked =enabled;
+    
     colorLabel.children[1].style.color = contrastColor(rgba2hex(pickerModel.rgbaColor));
     colorLabel.children[1].style.display = enabled ? 'none' : 'block';
     colorLabel.children[1].textContent = rgba2hex(pickerModel.rgbaColor).toLowerCase();
