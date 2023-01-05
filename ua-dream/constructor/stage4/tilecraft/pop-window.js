@@ -24,7 +24,6 @@ function mouseUp() {
     touchend();
 }
 
-let debugInfo = [];
 function mouseDown(e) {
 
     offset.x = e.clientX - popup.offsetLeft;
@@ -33,8 +32,6 @@ function mouseDown(e) {
     if (e.touches && e.touches.length > 0) {
         offset.x = e.touches[0].clientX - popup.offsetLeft;
         offset.y = e.touches[0].clientY - popup.offsetTop;
-        debugInfo[0] = e.touches.length;
-
     }
 
     touchstart(e);
@@ -43,19 +40,21 @@ function mouseDown(e) {
     window.addEventListener('touchmove', popupMove, true);
 }
 
-
+let previousMouseMove = { x: 0, y: 0, diff: 0 };
 function popupMove(e) {
 
     popup.style.position = 'absolute';
-    var top = e.clientY - offset.y;
     var left = e.clientX - offset.x;
+    var top = e.clientY - offset.y;
 
     if (e.touches && e.touches.length > 0) {
-        top = parseInt(e.touches[0].clientY - offset.y)
-        left = parseInt(e.touches[0].clientX - offset.x)
-        debugInfo[1] = e.touches.length;
+        left = parseInt(e.touches[0].clientX - offset.x);
+        top = parseInt(e.touches[0].clientY - offset.y);
 
+        let diff = (Math.abs(previousMouseMove.x - left) + Math.abs(previousMouseMove.y - top));
+        previousMouseMove = { x: left, y: top, diff: diff };
     }
+
     popupStyle.top = top;
     popupStyle.left = left;
 
@@ -63,8 +62,14 @@ function popupMove(e) {
     popup.style.left = popupStyle.left + 'px';
 
     // prevent commands long touch execution
-    btn_hold_action = null;
-    btn_tap_action = null;
+    if (previousMouseMove.diff > 2) {
+        btn_hold_action = null;
+        btn_tap_action = null;
+        console.log('hold aborted');
+    }
+
+    debugInfo[0]=JSON.stringify(previousMouseMove);
+
 }
 
 window.onkeydown = function (e) {
@@ -114,7 +119,7 @@ function touchend() {
         console.log('touch');
         if (btn_tap_action) btn_tap_action.call();
         refreshBtnState();
-        
+
         btn_tap_action = null;
         btn_hold_action = null;
     }
@@ -166,6 +171,6 @@ function btnMouseHoldStart(btn) {
 }
 
 function refreshBtnState() {
-   // TODO: refesh btn state by name
+    // TODO: refesh btn state by name
 
 }

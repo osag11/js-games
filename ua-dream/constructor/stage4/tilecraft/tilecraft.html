@@ -128,7 +128,7 @@
       style="width:100%;background-color:#aaff66;position:relative;top:0;border-radius:6px 6px 0 0; text-align:center;height:30px;cursor:move">
       Virtual keyboard (touch right panel to open)
       <span id="btn_close" onclick="closeVirtualKeyboard()" onmousedown="closeVirtualKeyboard()"
-        ontouchstart="btnTouchStart(this)" style="float:right;cursor:pointer;padding-right:6px;">⌧</span></div>
+        ontouchstart="btnTouchStart(this)" style="float:right;cursor:pointer;padding-right:6px;">&#8864;</span></div>
     <!--
 TODO: tabs
 edit/history/save/layer  palette/background  grid/tiles  clean about
@@ -142,11 +142,11 @@ duplicate some commands according  context. refresh should rely on element names
           </button></td>
         <td><button onclick="grid_plus_command()" onmousedown="btnMouseHoldStart(this)"
             ontouchstart="btnHoldStart(this)">
-            <p>＋</p>Grid size plus
+            <p>+</p>Grid size plus
           </button></td>
         <td><button onclick="grid_minus_command()" onmousedown="btnMouseHoldStart(this)"
             ontouchstart="btnHoldStart(this)">
-            <p>‒</p>Grid size minus
+            <p>&#8722;</p>Grid size minus
           </button></td>
       </tr>
 
@@ -157,11 +157,11 @@ duplicate some commands according  context. refresh should rely on element names
           </button></td>
         <td><button onclick="transparency_plus_command()" onmousedown="btnMouseHoldStart(this)"
             ontouchstart="btnHoldStart(this)">
-            <p>✱</p>Layer transparency plus
+            <p>&#8727;</p>Layer transparency plus
           </button></td>
         <td><button onclick="transparency_minus_command()" onmousedown="btnMouseHoldStart(this)"
             ontouchstart="btnHoldStart(this)">
-            <p>／</p>Layer transparency minus
+            <p>&#8725;</p>Layer transparency minus
           </button></td>
       </tr>
 
@@ -286,14 +286,13 @@ duplicate some commands according  context. refresh should rely on element names
             ontouchstart="btnTouchStart(this)">
             <p>0</p>polyline
           </button></td>
-
         <td><button class="vbtn-delete" onclick="clear_layer_shapes_command()" onmousedown="btnMouseHoldStart(this)"
             ontouchstart="btnTouchStart(this)">
             <p>Esc</p>Clear layer tiles
           </button></td>
         <td><button onclick="closeVirtualKeyboard()" onmousedown="closeVirtualKeyboard()"
             ontouchstart="btnTouchStart(this)">
-            <p>⌧</p>close
+            <p>&#8864;</p>close
           </button></td>
       </tr>
     </table>

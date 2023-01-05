@@ -112,10 +112,10 @@ function addShape() {
         layer().current_shape = existing;
         console.log('skip:' + JSON.stringify(newShape));
     }
-
 }
 
 let polylinePrevious = { color: null, action: null };
+let debugInfo = [];
 
 function draw() {
     for (let layer of model.layers) {
@@ -160,7 +160,7 @@ function draw() {
             }
 
             if (shapeType === 'polyline') {
-                ctx.lineWidth = gridSize;
+                ctx.lineWidth = gridSize / 2;
                 ctx.strokeStyle = color;
 
                 if (polylinePrevious.color !== color) {
@@ -217,13 +217,6 @@ function draw() {
             // ctx.font = "12px serif";
             // ctx.fillStyle = "white";
             // ctx.fillText(s.c,s.x, s.y);
-
-            for (let i = 0; i < debugInfo.length; i++) {
-                ctx.fillStyle = "white";
-                ctx.font = "12px serif";
-                ctx.fillText(debugInfo[i], 20, 20 * i);
-            }
-
         }// for each shape end
 
         if (shapeType === 'polyline') {
@@ -233,8 +226,15 @@ function draw() {
         }
 
     }
-    if (!screenshot_mode)
+    if (!screenshot_mode) {
         drawPointer();
+    }
+
+    for (let i = 0; i < debugInfo.length; i++) {
+        ctx.fillStyle = "white";
+        ctx.font = "12px serif";
+        ctx.fillText(debugInfo[i], 20, 20 * (i + 1));
+    }
 }
 
 
