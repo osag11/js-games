@@ -9,7 +9,7 @@ function delete_previous_shape_command() {
 
 function grid_switch_command(callback) {
     gridOn = !gridOn;
-    callback =gridOn;
+    callback = gridOn;
     return gridOn;
 }
 
@@ -32,15 +32,15 @@ function grid_minus_command() {
 }
 
 function transparency_minus_command() {
-    if(!layer().transparency)layer().transparency = 255;
-    layer().transparency--;    
-    if(layer().transparency<=1) layer().transparency = 1;
+    if (!layer().transparency) layer().transparency = 255;
+    layer().transparency--;
+    if (layer().transparency <= 1) layer().transparency = 1;
 }
 
 function transparency_plus_command() {
-    if(!layer().transparency)layer().transparency = 255;
-    layer().transparency++;    
-    if(layer().transparency>255) layer().transparency = 255;
+    if (!layer().transparency) layer().transparency = 255;
+    layer().transparency++;
+    if (layer().transparency > 255) layer().transparency = 255;
 }
 
 function hex_palette_switch_command() {
@@ -64,20 +64,24 @@ function clear_layer_shapes_command() {
 
 function edit_mode_switch_command() {
     layer().edit_mode = !layer().edit_mode;
+    return !layer().edit_mode;
 }
 
 function random_color_switch_command() {
     randomColor = !randomColor;
     randomColorState(randomColor);
+    return randomColor;
 }
 
 function shape_apply_command(shape) {
     layer().shapeType = shape;
+    return shape;
 }
 
 function shape_polygon_apply_command(size) {
     layer().shapeType = 'polygon';
     layer().polygonSize = size;
+    return size;
 }
 
 function x_lock_command() {
@@ -112,6 +116,7 @@ function layer_remove_command() {
 
 function debug_mode_switch_command() {
     debugOn = !debugOn;
+    return debugOn;
 }
 
 function layer_clone_mode_switch_command() {
@@ -147,6 +152,7 @@ function save_file_command() {
 
 function palette_import_layer_colors_command(destroy) {
     let gridSize = layer().gridSize;
+    if(layer().shapes.length==0)return;
     let clonedShapes = [...layer().shapes];
     hexPalette = true;
     // order by color name
@@ -208,10 +214,18 @@ function palette_add_color_command() {
     injectColor(color);
 }
 
+function getActiveShape() {
+    if (layer().shapeType === 'polygon') {
+        return layer().shapeType + layer().polygonSize;
+    } else {
+        return layer().shapeType;
+    }
+}
 
-function all_layers_visible_command(visible){
+
+function all_layers_visible_command(visible) {
 
 }
-function clean_all_layers_command(visible){
+function clean_all_layers_command(visible) {
 
 }

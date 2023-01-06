@@ -66,6 +66,16 @@
       font-size: 14px;
     }
 
+    #virtual_keyboard button:active
+    {
+      background-color: lightgreen;
+    }
+
+    #virtual_keyboard button.enabled
+    {
+      border:4px dotted red;
+    }
+
     #virtual_keyboard button>p {
       font-size: 18px;
       margin: 6px;
@@ -152,7 +162,7 @@ duplicate some commands according  context. refresh should rely on element names
         <section id="edit" class="tab-panel">
           <table name="virtual_keyboard">
             <tr>
-              <td><button id="edit_mode_state" onclick="edit_mode_switch_command()"
+              <td><button name="edit_mode_state" onclick="edit_mode_switch_command()"
                   onmousedown="btnMouseHoldStart(this)" ontouchstart="btnTouchStart(this)">
                   <p>E</p>Edit mode
                 </button></td>
@@ -185,12 +195,12 @@ duplicate some commands according  context. refresh should rely on element names
 
             <tr>
 
-              <td><button onclick="hex_palette_switch_command()" onmousedown="btnMouseHoldStart(this)"
+              <td><button name="palette_state" onclick="hex_palette_switch_command()" onmousedown="btnMouseHoldStart(this)"
                   ontouchstart="btnTouchStart(this)">
                   <p>P</p>Palette On/Off
                 </button></td>
 
-              <td><button onclick="help_switch_command()" onmousedown="btnMouseHoldStart(this)"
+              <td><button name="help_state" onclick="help_switch_command()" onmousedown="btnMouseHoldStart(this)"
                   ontouchstart="btnTouchStart(this)">
                   <p>H</p>Help
                 </button></td>
@@ -248,7 +258,7 @@ duplicate some commands according  context. refresh should rely on element names
                   <p>G</p>Grid On/Off
                 </button></td>
 
-              <td><button onclick="hex_palette_switch_command()" onmousedown="btnMouseHoldStart(this)"
+              <td><button name="palette_state" onclick="hex_palette_switch_command()" onmousedown="btnMouseHoldStart(this)"
                   ontouchstart="btnTouchStart(this)">
                   <p>P</p>Palette On/Off
                 </button></td>
@@ -334,8 +344,10 @@ duplicate some commands according  context. refresh should rely on element names
         <section id="layers" class="tab-panel">
           <table>
             <tr>
-              <td> <input type="input" style="max-width:160px;" name="layerName" onfocusin="nameFocusHandler(event)"
-                  onfocusout="nameFocusHandler(event)" onchange="onLayerNameChanged(this.value)" value="backstage"></td>
+              <td> <input type="input" style="max-width:160px;" name="layerName" 
+              onfocusin="nameFocusHandler(event)"
+              onfocusout="nameFocusHandler(event)" 
+                  onchange="onLayerNameChanged(this.value)" value="backstage"></td>
 
               <td> <select name="activeLayer" style="max-width:160px;"
                   onchange="onActiveLayerChanged(this.value)"></select></td>
@@ -351,7 +363,7 @@ duplicate some commands according  context. refresh should rely on element names
                   <p>B</p>switch background
                 </button></td>
 
-              <td><button onclick="layer_clone_mode_switch_command()" onmousedown="btnMouseHoldStart(this)"
+              <td><button name="layer_clone_mode_state" onclick="layer_clone_mode_switch_command()" onmousedown="btnMouseHoldStart(this)"
                   ontouchstart="btnTouchStart(this)">
                   <p>C</p>layer tiles clone mode
                 </button></td>
@@ -364,7 +376,8 @@ duplicate some commands according  context. refresh should rely on element names
             </tr>
 
             <tr>
-
+<!-- all_layers_visible_command(visible)
+clean_all_layers_command(visible) -->
               <td><button onclick="background_command('add')" onmousedown="btnMouseHoldStart(this)"
                   ontouchstart="btnTouchStart(this)">
                   <p>Ctrl + B</p>add background
@@ -396,6 +409,12 @@ duplicate some commands according  context. refresh should rely on element names
               <td><button class="vbtn-save" onclick="save_file_command()" onmousedown="btnMouseHoldStart(this)"
                   ontouchstart="btnTouchStart(this)">
                   <p>S</p>Save to file
+                </button></td>
+            </tr>
+            <tr>            
+              <td><button name="debug_mode_state" onclick="debug_mode_switch_command()" onmousedown="btnMouseStart(this)"
+                  ontouchstart="btnTouchStart(this)">
+                  <p>D</p>debug info
                 </button></td>
             </tr>
 

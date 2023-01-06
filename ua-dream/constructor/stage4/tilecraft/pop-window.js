@@ -10,11 +10,27 @@ let popup = document.getElementById("popup");
 let popup_bar = document.getElementById("popup_bar");
 let btn_close = document.getElementById("btn_close");
 
+let btn_hold_action = null;
+let btn_tap_action = null;
+
+const btnState = {
+    help_state: "help",
+    palette_state: "hexPalette",
+    edit_mode_state: "layer().edit_mode",
+    x_lock_state: "xLock",
+    y_lock_state: "yLock",
+    grid_state: "gridOn",
+    random_color_state: "randomColor",
+    layer_clone_mode_state: "layerCloneMode",
+    debug_mode_state: "debugOn",
+}
+const enabledBtnBorder = '5px solid #00cfff';
+
 document.getElementsByName("virtual_keyboard")
-.forEach(kb =>{ 
-    kb.addEventListener('mousedown', mouseDown, false);
-    kb.addEventListener('touchstart', mouseDown, false);
-});
+    .forEach(kb => {
+        kb.addEventListener('mousedown', mouseDown, false);
+        kb.addEventListener('touchstart', mouseDown, false);
+    });
 
 popup_bar.addEventListener('mousedown', mouseDown, false);
 window.addEventListener('mouseup', mouseUp, false);
@@ -46,6 +62,12 @@ function mouseDown(e) {
 }
 
 let touchTremorInfo = { x: 0, y: 0, diff: 0 };
+// long touch hold button
+var onlongtouch;
+var timer;
+var touchduration = 800; //length of time we want the user to touch before we do something
+let holdInProgress = false;
+let longTouchRepeatInterval = 100;
 
 function popupMove(e) {
 
@@ -97,15 +119,11 @@ function popVirtualKeyboard() {
     popup.style.top = popupStyle.top + "px";
     popup.style.left = popupStyle.left + "px";
     popup.style.display = virtualKeyboard ? "block" : "none";
+    refreshBtnState();
 }
 
 popVirtualKeyboard();
 
-// long touch hold button
-var onlongtouch;
-var timer;
-var touchduration = 800; //length of time we want the user to touch before we do something
-let holdInProgress = false;
 function touchstart(e) {
     e.preventDefault();
     longTouchRepeatInterval = 100;
@@ -122,7 +140,11 @@ function touchend() {
         clearTimeout(timer);
         timer = null;
         console.log('touch');
-        if (btn_tap_action) btn_tap_action.call();
+        if (btn_tap_action) {
+            let res = eval(btn_tap_action);
+            console.log(`${btn_hold_action} => ${res}`);
+        }
+
         refreshBtnState();
 
         btn_tap_action = null;
@@ -132,9 +154,6 @@ function touchend() {
     ignoreMouseEvents = false;
     holdInProgress = false;
 }
-
-
-let longTouchRepeatInterval = 100;
 
 onlongtouch = function () {
 
@@ -148,7 +167,8 @@ onlongtouch = function () {
         console.log('hold: ' + longTouchRepeatInterval);
 
         if (btn_hold_action) {
-            btn_hold_action.call();
+            let res = eval(btn_hold_action);
+            console.log(`${btn_hold_action} => ${res}`);
         }
 
         btn_tap_action = null;
@@ -157,25 +177,54 @@ onlongtouch = function () {
     }, longTouchRepeatInterval)
 };
 
-let btn_hold_action = null;
-let btn_tap_action = null;
+
+function parseAction(btn) {
+    var action = btn.outerHTML.match(/onclick="[a-zA-Z_(\d)']*"/gm)[0]?.split('"')[1];
+    return action;
+}
 
 function btnHoldStart(btn) {
-    btn_hold_action = btn.onclick;
-    btn_tap_action = btn.onclick;
+    var action = parseAction(btn);
+    btn_hold_action = action;
+    btn_tap_action = action;
 }
 
 function btnTouchStart(btn) {
-    btn_tap_action = btn.onclick;
+    var action = parseAction(btn);
+    btn_tap_action = action;
     btn_hold_action = null;
+
 }
 
 function btnMouseHoldStart(btn) {
-    btn_hold_action = btn.onclick;
+    var action = parseAction(btn);
+    btn_hold_action = action;
     btn_tap_action = null;
 }
 
-function refreshBtnState() {
-    // TODO: refesh btn state by name
 
+function refreshBtnState() {
+    for (const property in btnState) {
+        document.getElementsByName(property)
+            .forEach(btn => {
+let state = eval(btnState[property]);
+                btn.style.border = state == true || typeof state == 'number'? enabledBtnBorder : ''
+            });
+    }
+
+    let activeShape = getActiveShape();
+
+    for (let shape of [
+        'square', 'circle', 'circle2x', 'polyline',
+        'polygon3', 'polygon4', 'polygon5', 'polygon6',
+        'polygon7', 'polygon8',
+    ]) {
+
+    document.getElementsByName('shape_state_' + shape)
+            .forEach(btn => {
+                btn.style.border = shape == activeShape ? enabledBtnBorder : '';
+            });
+    }
 }
+
+
