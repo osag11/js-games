@@ -17,6 +17,8 @@ const btnState = {
     help_state: "help",
     palette_state: "hexPalette",
     edit_mode_state: "layer().edit_mode",
+    move_mode_state: "layer().move_mode",
+    transparency_state: "!layer().transparency||layer().transparency===255",
     x_lock_state: "xLock",
     y_lock_state: "yLock",
     grid_state: "gridOn",
@@ -96,7 +98,7 @@ function popupMove(e) {
         console.log('hold action aborted');
     }
 
-    debugInfo[0] = JSON.stringify(touchTremorInfo);
+    // debugInfo[0] = JSON.stringify(touchTremorInfo);
 }
 
 window.onkeydown = function (e) {
@@ -207,12 +209,13 @@ function refreshBtnState() {
     for (const property in btnState) {
         document.getElementsByName(property)
             .forEach(btn => {
-let state = eval(btnState[property]);
-                btn.style.border = state == true || typeof state == 'number'? enabledBtnBorder : ''
+                let state = eval(btnState[property]);
+                console.log(`${property} ${btnState[property]} ${state}`);
+                btn.style.border = state == true || typeof state == 'number' ? enabledBtnBorder : ''
             });
     }
 
-    let activeShape = getActiveShape();
+    let activeShape = getActiveShapeName();
 
     for (let shape of [
         'square', 'circle', 'circle2x', 'polyline',
@@ -220,7 +223,7 @@ let state = eval(btnState[property]);
         'polygon7', 'polygon8',
     ]) {
 
-    document.getElementsByName('shape_state_' + shape)
+        document.getElementsByName('shape_state_' + shape)
             .forEach(btn => {
                 btn.style.border = shape == activeShape ? enabledBtnBorder : '';
             });

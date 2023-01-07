@@ -236,7 +236,7 @@ function draw() {
         for (let i = 0; i < debugInfo.length; i++) {
             ctx.fillText(debugInfo[i], 20, 20 * (i + 1));
         }
-        ctx.fillText(`${mouseEditor.x} : ${mouseEditor.y}`, canvas.width - 60, 20);
+        ctx.fillText(`x: ${mouseEditor.x} y: ${mouseEditor.y}`, canvas.width - 80, 20);
     }
 }
 
@@ -245,16 +245,24 @@ function drawPointer() {
     let gridSize = layer().gridSize;
     let zoom = layer().zoom ?? 1;
     let edit_mode = layer().edit_mode;
+    let move_mode = layer().move_mode;
 
     if (edit_mode) {
 
         // selected grid cell
         ctx.fillStyle = "blue";
-        let size = 5;
+        let size = gridSize / 8;
         ctx.fillRect(mouseEditor.x * zoom, mouseEditor.y * zoom, size, size);
         ctx.fillRect(mouseEditor.x * zoom, (mouseEditor.y + gridSize - size) * zoom, size, size);
         ctx.fillRect((mouseEditor.x + gridSize - size) * zoom, mouseEditor.y * zoom, size, size);
         ctx.fillRect((mouseEditor.x + gridSize - size) * zoom, (mouseEditor.y + gridSize - size) * zoom, size, size);
+
+
+        ctx.fillRect((mouseEditor.x + gridSize/2 - size/2) * zoom, mouseEditor.y * zoom, size, size);
+        ctx.fillRect((mouseEditor.x + gridSize/2 - size/2) * zoom, (mouseEditor.y + gridSize - size) * zoom, size, size);
+        ctx.fillRect(mouseEditor.x * zoom, (mouseEditor.y + gridSize/2 - size/2) * zoom, size, size);
+        ctx.fillRect((mouseEditor.x + gridSize - size) * zoom, (mouseEditor.y + gridSize/2 - size/2) * zoom, size, size);
+
 
         // current shape selection
         if (layer().current_shape) {
@@ -263,6 +271,18 @@ function drawPointer() {
             ctx.strokeRect(layer().current_shape.x * zoom, layer().current_shape.y * zoom, gridSize * zoom, gridSize * zoom);
         }
     }
+    if (move_mode) {
+        ctx.fillStyle = "white";
+        ctx.font = `${gridSize / 4}px serif`;
+        ctx.fillText(`MOVE`, (mouseEditor.x + gridSize / 10) * zoom, (mouseEditor.y + gridSize / 2) * zoom);
+
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = "white";
+        ctx.strokeRect(mouseEditor.x * zoom, mouseEditor.y * zoom, (gridSize + 2) * zoom, (gridSize + 2) * zoom);
+
+    }
+
+
     // big cross
     ctx.lineWidth = 0.5;
     ctx.strokeStyle = pickerModel.rgbaColor; // from picker
@@ -311,8 +331,8 @@ function randomColorState(enabled) {
     console.log(enabled);
     randomColor = enabled;
     colorLabel.style.backgroundColor = enabled ? 'white' : pickerModel.rgbaColor;
-    randomColorSwitch.checked =enabled;
-    
+    randomColorSwitch.checked = enabled;
+
     colorLabel.children[1].style.color = contrastColor(rgba2hex(pickerModel.rgbaColor));
     colorLabel.children[1].style.display = enabled ? 'none' : 'block';
     colorLabel.children[1].textContent = rgba2hex(pickerModel.rgbaColor).toLowerCase();

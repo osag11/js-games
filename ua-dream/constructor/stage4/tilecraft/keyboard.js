@@ -27,6 +27,10 @@ function handleKeyDown(event) {
         transparency_plus_command();
     }
 
+    if (keyPressed == 84) {// T
+        transparency_max_min_command();
+    }
+
     if (keyPressed == 71) {// G
         grid_switch_command();
     }
@@ -92,11 +96,23 @@ function handleKeyDown(event) {
     }
 
     if (keyPressed == 76) {// L
-        layer_remove_command();
+        layer_add_command();
     }
 
     if (keyPressed == 75) {// K
         layer_remove_command();
+    }
+
+    if (keyPressed == 77) {// M
+        move_mode_switch_command();
+    }
+
+    if (keyPressed == 73) {// I
+        all_layers_visible_command(false);
+    }
+
+    if (keyPressed == 86) {// V
+        all_layers_visible_command(true);
     }
 
     if (keyPressed == 68) {// D
@@ -135,7 +151,6 @@ function handleKeyDown(event) {
     if (keyPressed == 83) {// S
         save_file_command();
     }
-
 
     if (keyPressed == 38) { // ArrowUp  
         palette_import_layer_colors_command(event.ctrlKey ? true : false);

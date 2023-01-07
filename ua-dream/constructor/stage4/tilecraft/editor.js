@@ -60,11 +60,15 @@ function mouse_down(event) {
         mouseEditor.y = yLock;
     }
 
-
-    if (layer().edit_mode)
+    if (layer().edit_mode) {
         selectShape();
-    else
+    }
+    else if (layer().move_mode) {
+
+    }
+    else{
         addShape();
+    }
 
     is_dragging = true;
 }
@@ -93,7 +97,7 @@ function mouse_move(event) {
 
     if (event.touches && event.touches.length > 0) {
         mouseEditor.x = parseInt(event.touches[0].clientX - offset_x) - gridSize / 2;
-        mouseEditor.y = parseInt(event.touches[0].clientY - offset_y) - gridSize / 2;        
+        mouseEditor.y = parseInt(event.touches[0].clientY - offset_y) - gridSize / 2;
     }
     if (typeof xLock == 'number') {
         mouseEditor.x = xLock;
@@ -130,7 +134,7 @@ function mouse_move(event) {
         let dy = mouseY - startY;
 
         if (layer().edit_mode) {
-
+            
             if (layer().current_shape) {
 
                 layer().current_shape.x += dx;
@@ -142,6 +146,11 @@ function mouse_move(event) {
                 }
             }
 
+        } else if (layer().move_mode) {
+            for (let s of layer().shapes) {
+                s.x += dx;
+                s.y += dy;
+            }
         } else {
             addShape();
         }

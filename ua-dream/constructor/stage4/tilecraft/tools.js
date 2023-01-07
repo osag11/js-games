@@ -87,6 +87,7 @@ function onActiveLayerChanged(val) {
     let layerNameEl = document.getElementsByName('layerName');
     layerNameEl.forEach(x=>x.value = layer().name ?? layerNames[model.activeLayer]);
     initGrid(layer().gridSize * (layer().zoom ?? 1));
+    refreshBtnState();
 }
 
 function updateLayersList() {
