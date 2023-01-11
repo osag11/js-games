@@ -4,12 +4,9 @@ const ctx = canvas.getContext("2d",{ willReadFrequently: true });
 const toolsCanvas = document.getElementById("tools");
 const ctx2 = toolsCanvas.getContext("2d",{ willReadFrequently: true });
 
-//canvas.style.border = '2px solid blue';
-//toolsCanvas.style.border = '2px solid green';
-
 function main() {
 
-    const t0 = performance.now();
+    // const t0 = performance.now();
 
     window.requestAnimationFrame(main);
     clear();
@@ -25,7 +22,7 @@ function main() {
         else
             drawLayersUI();
     }
-    const t1 = performance.now();
+    // const t1 = performance.now();
     // console.log(`Call to main: ${t1 - t0} ms.`);
 }
 

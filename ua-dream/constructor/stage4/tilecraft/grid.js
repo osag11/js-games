@@ -1,6 +1,6 @@
 const gridImage = new Image();
 let gridOn = false;
-// let gridSize = 0;
+
 function initGrid(size = 10) {
     var data = `<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"> \
     <defs> \
@@ -14,19 +14,6 @@ function initGrid(size = 10) {
     </defs> \
     <rect width="100%" height="100%" fill="url(#grid)" /> \
 </svg>`;
-
-    // var data = '<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"> \
-    //     <defs> \
-    //         <pattern id="smallGrid" width="10" height="10" patternUnits="userSpaceOnUse"> \
-    //             <path d="M 10 0 L 0 0 0 10" fill="none" stroke="gray" stroke-width="0.5" /> \
-    //         </pattern> \
-    //         <pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse"> \
-    //             <rect width="100" height="100" fill="url(#smallGrid)" /> \
-    //             <path d="M 100 0 L 0 0 0 100" fill="none" stroke="gray" stroke-width="1" /> \
-    //         </pattern> \
-    //     </defs> \
-    //     <rect width="100%" height="100%" fill="url(#grid)" /> \
-    // </svg>';
 
     var DOMURL = window.URL || window.webkitURL || window;
     
@@ -46,3 +33,17 @@ function drawGrid(ctx) {
 function roundNearest(num, nearest = 10) {
     return Math.round(num / nearest) * nearest;
 }
+
+// origin
+// var data = '<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"> \
+//     <defs> \
+//         <pattern id="smallGrid" width="10" height="10" patternUnits="userSpaceOnUse"> \
+//             <path d="M 10 0 L 0 0 0 10" fill="none" stroke="gray" stroke-width="0.5" /> \
+//         </pattern> \
+//         <pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse"> \
+//             <rect width="100" height="100" fill="url(#smallGrid)" /> \
+//             <path d="M 100 0 L 0 0 0 100" fill="none" stroke="gray" stroke-width="1" /> \
+//         </pattern> \
+//     </defs> \
+//     <rect width="100%" height="100%" fill="url(#grid)" /> \
+// </svg>';

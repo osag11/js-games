@@ -77,6 +77,7 @@ function drawLayersUI() {
 }
 
 // TBD: layer renamer to v-keyboard
+// unblock mouse events
 function onLayerNameChanged(val) {
     layer().name = val;
     updateLayersList();
@@ -293,6 +294,14 @@ function download(content, fileName, contentType) {
     a.download = fileName;
     a.click();
 }
+
+function downloadPNG(filename) {
+    /// create an "off-screen" anchor tag
+    var a = document.createElement('a'), e;
+    a.href = canvas.toDataURL("image/png;base64");
+    a.download = filename;  
+    a.click();
+  }
 
 var openFile = function (event) {
     var input = event.target;

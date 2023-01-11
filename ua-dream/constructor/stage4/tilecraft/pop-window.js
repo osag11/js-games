@@ -146,11 +146,11 @@ function touchend() {
             let res = eval(btn_tap_action);
             console.log(`${btn_hold_action} => ${res}`);
         }
-
-        refreshBtnState();
-
+        
         btn_tap_action = null;
         btn_hold_action = null;
+
+        refreshBtnState();
     }
 
     ignoreMouseEvents = false;
@@ -172,16 +172,17 @@ onlongtouch = function () {
             let res = eval(btn_hold_action);
             console.log(`${btn_hold_action} => ${res}`);
         }
-
+        
         btn_tap_action = null;
         if (holdInProgress) onlongtouch();
+        refreshBtnState();
 
     }, longTouchRepeatInterval)
 };
 
 
 function parseAction(btn) {
-    var action = btn.outerHTML.match(/onclick="[a-zA-Z_(\d)']*"/gm)[0]?.split('"')[1];
+    var action = btn.outerHTML.match(/onclickaction="[a-zA-Z_(\d)']*"/gm)[0]?.split('"')[1];
     return action;
 }
 
@@ -201,7 +202,7 @@ function btnTouchStart(btn) {
 function btnMouseHoldStart(btn) {
     var action = parseAction(btn);
     btn_hold_action = action;
-    btn_tap_action = null;
+    btn_tap_action = action;
 }
 
 
@@ -211,7 +212,7 @@ function refreshBtnState() {
             .forEach(btn => {
                 let state = eval(btnState[property]);
                 console.log(`${property} ${btnState[property]} ${state}`);
-                btn.style.border = state == true || typeof state == 'number' ? enabledBtnBorder : ''
+                btn.style.border = (state === true || typeof state == 'number') ? enabledBtnBorder : ''
             });
     }
 

@@ -23,7 +23,6 @@ window.onresize = function () {
 
 canvas.onresize = function () { get_offset(); }
 
-
 let screenshot_mode = false;
 
 function mouse_down(event) {
@@ -32,6 +31,7 @@ function mouse_down(event) {
         screenshot_mode = true;
         return;
     }
+
     screenshot_mode = false;
 
     let gridSize = layer().gridSize;
@@ -64,7 +64,7 @@ function mouse_down(event) {
         selectShape();
     }
     else if (layer().move_mode) {
-
+        // do nothing
     }
     else{
         addShape();

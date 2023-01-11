@@ -152,10 +152,19 @@ function background_command(action) {
     console.log(JSON.stringify(model.background));
 }
 
-
 function save_file_command() {
     let date = new Date().toISOString().split('T')[0];
     download(JSON.stringify(model), `tiles-${date}-${Date.now()}.json`, 'text/plain');
+}
+
+function save_picture_command() {
+    screenshot_mode = true;    
+    let date = new Date().toISOString().split('T')[0];
+
+    setTimeout(function onTick() {
+          downloadPNG(`tiles-${date}-${Date.now()}.png`);
+          screenshot_mode = false;
+  }, 1000) 
 }
 
 function palette_import_layer_colors_command(destroy) {

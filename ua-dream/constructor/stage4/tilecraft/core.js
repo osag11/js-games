@@ -222,6 +222,7 @@ function draw() {
         if (shapeType === 'polyline') {
             // close last polyline path
             ctx.stroke();
+            // TODO: option closePolyline
             //ctx.closePath();
         }
     }
@@ -279,7 +280,6 @@ function drawPointer() {
         ctx.lineWidth = 2;
         ctx.strokeStyle = "white";
         ctx.strokeRect(mouseEditor.x * zoom, mouseEditor.y * zoom, (gridSize + 2) * zoom, (gridSize + 2) * zoom);
-
     }
 
 
