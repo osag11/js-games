@@ -19,6 +19,7 @@ const btnState = {
     edit_mode_state: "layer().edit_mode",
     move_mode_state: "layer().move_mode",
     transparency_state: "!layer().transparency||layer().transparency===255",
+    screenshot_mode_state: "screenshot_mode",
     x_lock_state: "xLock",
     y_lock_state: "yLock",
     grid_state: "gridOn",
@@ -196,7 +197,6 @@ function btnTouchStart(btn) {
     var action = parseAction(btn);
     btn_tap_action = action;
     btn_hold_action = null;
-
 }
 
 function btnMouseHoldStart(btn) {
@@ -204,7 +204,6 @@ function btnMouseHoldStart(btn) {
     btn_hold_action = action;
     btn_tap_action = action;
 }
-
 
 function refreshBtnState() {
     for (const property in btnState) {

@@ -134,7 +134,7 @@
     <div id="popup_bar"
       style="width:100%;color:white;position:relative;top:0;border-radius:6px 6px 0 0; text-align:center;height:30px;cursor:move">
       Virtual keyboard
-      <span id="btn_close" onclick="closeVirtualKeyboard()" onmousedown="closeVirtualKeyboard()"
+      <span id="btn_close" onclickaction="closeVirtualKeyboard()" onmousedown="closeVirtualKeyboard()"
         ontouchstart="btnTouchStart(this)"
         style="float:right;cursor:pointer;padding-right:6px;font-size:26px;">&#8864;</span></div>
     <!--
@@ -350,6 +350,16 @@ duplicate some commands according  context. refresh should rely on element names
                   <p>H</p>Help
                 </button></td>
 
+                <td><button  onclickaction="save_picture_command()" onmousedown="btnMouseHoldStart(this)"
+                  ontouchstart="btnTouchStart(this)">
+                  <p>Q</p>Save picture
+                </button></td>
+                
+                <td><button name="screenshot_mode_state" onclickaction="screenshot_mode_switch_command()" onmousedown="btnMouseHoldStart(this)"
+                  ontouchstart="btnTouchStart(this)">
+                  <p>Z</p>Hide pointer
+                </button></td>
+
             </tr>
           </table>
         </section>
@@ -445,7 +455,6 @@ duplicate some commands according  context. refresh should rely on element names
 
         <table name="virtual_keyboard">
           <tr>
-
             <td><button style="margin:3px;" onclickaction="closeVirtualKeyboard()" onmousedown="closeVirtualKeyboard()"
                 ontouchstart="btnTouchStart(this)">
                 <p style="font-size:26px;">&#8864;</p>close

@@ -49,6 +49,10 @@ function hex_palette_switch_command() {
     return hexPalette;
 }
 
+function screenshot_mode_switch_command() {
+    screenshot_mode = !screenshot_mode;
+    return screenshot_mode;
+}
 
 function help_switch_command() {
     hexPalette = false;

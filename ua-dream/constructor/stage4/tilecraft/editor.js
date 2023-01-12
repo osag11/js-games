@@ -31,7 +31,7 @@ function mouse_down(event) {
         screenshot_mode = true;
         return;
     }
-
+    
     screenshot_mode = false;
 
     let gridSize = layer().gridSize;
@@ -40,6 +40,10 @@ function mouse_down(event) {
     startY = parseInt(event.clientY - offset_y - gridSize / 2)
 
     if (event.touches && event.touches.length > 0) {
+        if (event.touches.length > 1) {
+            return;
+        }
+
         startX = parseInt(event.touches[0].clientX - offset_x - gridSize / 2)
         startY = parseInt(event.touches[0].clientY - offset_y - gridSize / 2)
 
@@ -66,7 +70,7 @@ function mouse_down(event) {
     else if (layer().move_mode) {
         // do nothing
     }
-    else{
+    else {
         addShape();
     }
 
@@ -90,6 +94,12 @@ function mouse_out(event) {
 }
 
 function mouse_move(event) {
+    let pinch = handlePinch(event);
+
+    if (pinch) {
+        return;
+    }
+
     let gridSize = layer().gridSize;
 
     mouseEditor.x = parseInt(event.clientX - offset_x) - gridSize / 2;
@@ -134,7 +144,7 @@ function mouse_move(event) {
         let dy = mouseY - startY;
 
         if (layer().edit_mode) {
-            
+
             if (layer().current_shape) {
 
                 layer().current_shape.x += dx;
@@ -178,4 +188,100 @@ canvas.ontouchstart = mouse_down;
 canvas.ontouchmove = mouse_move;
 canvas.ontouchend = mouse_out;
 
+// const distance = (x1, y1, x2, y2) => Math.hypot(x2 - x1, y2 - y1);
 
+canvas.onwheel = onwheel;
+
+function getPositionAlongTheLine(x1, y1, x2, y2, percentage) {
+    return { x: x1 * (1.0 - percentage) + x2 * percentage, y: y1 * (1.0 - percentage) + y2 * percentage };
+}
+
+const zoomIntensity = 0.2;
+
+function onwheel(event) {
+    event.preventDefault();
+
+    // Get mouse offset.
+    const mouseX = event.clientX - canvas.offsetLeft;
+    const mouseY = event.clientY - canvas.offsetTop;
+    // Normalize mouse wheel movement to +1 or -1 to avoid unusual jumps.
+    const wheel = event.deltaY < 0 ? 1 : -1;
+
+    // Compute zoom factor.
+    const zoom = wheel * zoomIntensity;
+
+    zoomLayerShapes(mouseX, mouseY, zoom);
+}
+
+function zoomLayerShapes(mouseX, mouseY, zoom) {
+    for (let shape of layer().shapes) {
+
+        let xy = getPositionAlongTheLine(shape.x, shape.y, mouseX, mouseY, zoom);
+        shape.x = xy.x;
+        shape.y = xy.y;
+    }
+}
+
+function getDistance(p1, p2) {
+    return Math.hypot(p2.x - p1.x, p2.y - p1.y);
+}
+
+function getCenter(p1, p2) {
+    return {
+        x: (p1.x + p2.x) / 2,
+        y: (p1.y + p2.y) / 2,
+    };
+}
+
+
+let lastDist, lastCenter;
+function handlePinch(evt) {
+
+    evt.preventDefault();
+
+    if (!evt.touches) return;
+
+    var touch1 = evt.touches[0];
+    var touch2 = evt.touches[1];
+
+    if (touch1 && touch2) {
+
+        var p1 = {
+            x: touch1.clientX,
+            y: touch1.clientY,
+        };
+
+        var p2 = {
+            x: touch2.clientX,
+            y: touch2.clientY,
+        };
+
+        debugInfo[0] = JSON.stringify(evt.touches);
+        debugInfo[1] = JSON.stringify({ p1: p1, p2: p2 });
+
+        if (!lastCenter) {
+            lastCenter = getCenter(p1, p2);
+            return;
+        }
+
+        var newCenter = getCenter(p1, p2);
+
+        var dist = getDistance(p1, p2);
+
+        if (!lastDist) {
+            lastDist = dist;
+        }
+
+        let zoom = zoomIntensity / 10;
+        if (dist > lastDist) zoom = -zoomIntensity / 10;
+
+        zoomLayerShapes(newCenter.x, newCenter.y, zoom);
+        // zoomLayerShapes(p1.x, p1.y, zoom);
+
+        lastDist = dist;
+
+        return true;
+    }
+
+    return false;
+}

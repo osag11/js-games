@@ -147,9 +147,9 @@ function handleKeyDown(event) {
     if (keyPressed == 80) {// P
         hex_palette_switch_command();
     }
-    
+
     if (keyPressed == 90) {// Z
-        screenshot_mode = !screenshot_mode;
+       screenshot_mode_switch_command();
     }
 
     if (keyPressed == 81) {// Q
