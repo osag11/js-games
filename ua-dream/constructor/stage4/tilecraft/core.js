@@ -1,7 +1,7 @@
 const mouseEditor = { x: 0, y: 0 };
 
 let randomColor = false;
-let is_dragging, move_mode = false;
+let is_dragging, move_mode, screenshot_mode = false;
 
 const model = {
     activeLayer: 0,

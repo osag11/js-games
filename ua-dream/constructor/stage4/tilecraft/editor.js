@@ -23,15 +23,13 @@ window.onresize = function () {
 
 canvas.onresize = function () { get_offset(); }
 
-let screenshot_mode = false;
-
 function mouse_down(event) {
     event.preventDefault();
     if (event.which === 3) {// right button click
         screenshot_mode = true;
         return;
     }
-    
+
     screenshot_mode = false;
 
     let gridSize = layer().gridSize;
