@@ -86,7 +86,7 @@ function onLayerNameChanged(val) {
 function onActiveLayerChanged(val) {
     model.activeLayer = parseInt(val);
     let layerNameEl = document.getElementsByName('layerName');
-    layerNameEl.forEach(x=>x.value = layer().name ?? layerNames[model.activeLayer]);
+    layerNameEl.forEach(x => x.value = layer().name ?? layerNames[model.activeLayer]);
     initGrid(layer().gridSize * (layer().zoom ?? 1));
     refreshBtnState();
 }
@@ -94,17 +94,17 @@ function onActiveLayerChanged(val) {
 function updateLayersList() {
     let activeLayerEl = document.getElementsByName('activeLayer');
     //TBD: move active layer selector to VirtualKeyboard
-    activeLayerEl.forEach(x=>x.innerHTML = "");
+    activeLayerEl.forEach(x => x.innerHTML = "");
 
     for (let l of model.layers) {
         l.id = model.layers.indexOf(l);
         var option = document.createElement("option");
         option.text = l.name ?? layerNames[l.id];
         option.value = l.id;
-        activeLayerEl.forEach(x=>x.options.add(option));
+        activeLayerEl.forEach(x => x.options.add(option));
     }
 
-    activeLayerEl.forEach(x=>x.selectedIndex = model.activeLayer);
+    activeLayerEl.forEach(x => x.selectedIndex = model.activeLayer);
 }
 
 const layerNames = ['backstage', 'first layer', 'second layer', 'third layer', 'fourth layer', 'fifth layer', 'sixth layer', 'seventh layer', 'eighth layer', 'ninth layer', 'tenth layer'];
@@ -114,10 +114,12 @@ function addLayer() {
         return;
     }
 
+    let shapesCopy = layerCloneMode ? layer().shapes.map((s) => ({ x: s.x, y: s.y, c: s.c })) : [];
+
     model.layers.push(
         {
             visible: true,
-            shapes: layerCloneMode ? [...layer().shapes] : [],
+            shapes: shapesCopy,
             shapesHistory: [],
 
             shapeType: layer().shapeType,
@@ -299,9 +301,9 @@ function downloadPNG(filename) {
     /// create an "off-screen" anchor tag
     var a = document.createElement('a'), e;
     a.href = canvas.toDataURL("image/png;base64");
-    a.download = filename;  
+    a.download = filename;
     a.click();
-  }
+}
 
 var openFile = function (event) {
     var input = event.target;
