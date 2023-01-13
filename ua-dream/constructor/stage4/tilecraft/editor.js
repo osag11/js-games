@@ -186,8 +186,6 @@ canvas.ontouchstart = mouse_down;
 canvas.ontouchmove = mouse_move;
 canvas.ontouchend = mouse_out;
 
-// const distance = (x1, y1, x2, y2) => Math.hypot(x2 - x1, y2 - y1);
-
 canvas.onwheel = onwheel;
 
 function getPositionAlongTheLine(x1, y1, x2, y2, percentage) {
@@ -219,18 +217,6 @@ function zoomLayerShapes(mouseX, mouseY, zoom) {
         shape.y = xy.y;
     }
 }
-
-function getDistance(p1, p2) {
-    return Math.hypot(p2.x - p1.x, p2.y - p1.y);
-}
-
-function getCenter(p1, p2) {
-    return {
-        x: (p1.x + p2.x) / 2,
-        y: (p1.y + p2.y) / 2,
-    };
-}
-
 
 let lastDist, lastCenter;
 function handlePinch(evt) {
@@ -270,8 +256,7 @@ function handlePinch(evt) {
             lastDist = dist;
         }
 
-        let zoom = zoomIntensity / 10;
-        if (dist > lastDist) zoom = -zoomIntensity / 10;
+        let zoom = dist > lastDist ? -zoomIntensity / 10 : zoomIntensity / 10;
 
         zoomLayerShapes(newCenter.x, newCenter.y, zoom);
         // zoomLayerShapes(p1.x, p1.y, zoom);
@@ -282,4 +267,15 @@ function handlePinch(evt) {
     }
 
     return false;
+}
+
+function getDistance(p1, p2) {
+    return Math.hypot(p2.x - p1.x, p2.y - p1.y);
+}
+
+function getCenter(p1, p2) {
+    return {
+        x: (p1.x + p2.x) / 2,
+        y: (p1.y + p2.y) / 2,
+    };
 }
