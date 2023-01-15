@@ -13,7 +13,10 @@ function main() {
     draw();
     if (gridOn) drawGrid(ctx);
 
-    // PoC
+    if(selectionToolModel.enabled){
+        selectionTool.draw();
+    }
+
     if (hexPalette) {
         drawHexagonGrid(toolsCanvas.width, toolsCanvas.height, 20, paletteColors);
     } else {
@@ -52,4 +55,6 @@ function setup() {
     initGrid(layer().gridSize * (layer().zoom ?? 1));
 
     updateLayersList();
+    canvas.style.cursor = selectionTool.cursor;
+
 }

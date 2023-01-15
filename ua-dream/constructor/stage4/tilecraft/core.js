@@ -1,7 +1,10 @@
 const mouseEditor = { x: 0, y: 0 };
 
 let randomColor = false;
-let is_dragging, move_mode, screenshot_mode = false;
+let is_dragging, screenshot_mode = false;
+
+let xLock = null;
+let yLock = null;
 
 const model = {
     activeLayer: 0,
@@ -88,8 +91,6 @@ function selectShape() {
     }
 }
 
-let xLock = null;
-let yLock = null;
 
 function addShape() {
     if (!layer().visible) return;
@@ -117,6 +118,7 @@ let debugOn = false;
 let debugInfo = [];
 
 function draw() {
+    const contrastBgColor = getContrastBgColor();
     for (let layer of model.layers) {
         if (!layer.visible) { continue; }
 
@@ -226,22 +228,34 @@ function draw() {
         }
     }
 
+    if (layer().selection) {
+        let gridSize = layer().gridSize;
+        ctx.strokeStyle = contrastBgColor;
+        ctx.lineWidth = 1;
+        for (let s of layer().selection) {
+            ctx.strokeRect(s.x, s.y, gridSize, gridSize);
+        }
+    }
+
     if (!screenshot_mode) {
         drawPointer();
     }
 
     if (debugOn) {
-        ctx.fillStyle = "white";
+        ctx.fillStyle = contrastBgColor;
         ctx.font = "12px serif";
+        const a = 0;
         for (let i = 0; i < debugInfo.length; i++) {
-            ctx.fillText(debugInfo[i], 20, 20 * (i + 1));
+            ctx.fillText(debugInfo[i], 20, 20 * (i + 1) + a);
         }
-        ctx.fillText(`x: ${mouseEditor.x} y: ${mouseEditor.y}`, canvas.width - 80, 20);
+        ctx.fillText(`x: ${mouseEditor.x} y: ${mouseEditor.y}`, canvas.width - 80, 20 + a);
     }
 }
 
 
 function drawPointer() {
+    ctx.lineWidth = 1;
+    const contrastBgColor = getContrastBgColor();
     let gridSize = layer().gridSize;
     let edit_mode = layer().edit_mode;
     let move_mode = layer().move_mode;
@@ -257,15 +271,15 @@ function drawPointer() {
         ctx.fillRect((mouseEditor.x + gridSize - size), (mouseEditor.y + gridSize - size), size, size);
 
 
-        ctx.fillRect((mouseEditor.x + gridSize/2 - size/2), mouseEditor.y, size, size);
-        ctx.fillRect((mouseEditor.x + gridSize/2 - size/2), (mouseEditor.y + gridSize - size), size, size);
-        ctx.fillRect(mouseEditor.x, (mouseEditor.y + gridSize/2 - size/2), size, size);
-        ctx.fillRect((mouseEditor.x + gridSize - size), (mouseEditor.y + gridSize/2 - size/2), size, size);
+        ctx.fillRect((mouseEditor.x + gridSize / 2 - size / 2), mouseEditor.y, size, size);
+        ctx.fillRect((mouseEditor.x + gridSize / 2 - size / 2), (mouseEditor.y + gridSize - size), size, size);
+        ctx.fillRect(mouseEditor.x, (mouseEditor.y + gridSize / 2 - size / 2), size, size);
+        ctx.fillRect((mouseEditor.x + gridSize - size), (mouseEditor.y + gridSize / 2 - size / 2), size, size);
 
 
         // current shape selection
         if (layer().current_shape) {
-            ctx.strokeStyle = "red"
+            ctx.strokeStyle = contrastBgColor;
             ctx.lineWidth = 2;
             ctx.strokeRect(layer().current_shape.x, layer().current_shape.y, gridSize, gridSize);
         }

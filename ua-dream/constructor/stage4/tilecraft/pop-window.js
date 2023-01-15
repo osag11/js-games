@@ -15,6 +15,7 @@ let btn_tap_action = null;
 
 const btnState = {
     help_state: "help",
+    inversed_selection_state: "inversedSelection",
     palette_state: "hexPalette",
     edit_mode_state: "layer().edit_mode",
     move_mode_state: "layer().move_mode",

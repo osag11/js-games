@@ -32,6 +32,11 @@ function mouse_down(event) {
 
     screenshot_mode = false;
 
+    if (selectionToolModel.enabled) {
+        handleMouseEvents(event);
+        return;
+    }
+
     let gridSize = layer().gridSize;
 
     startX = parseInt(event.clientX - offset_x - gridSize / 2)
@@ -98,6 +103,11 @@ function mouse_move(event) {
         return;
     }
 
+    if (selectionToolModel.enabled) {
+        handleMouseEvents(event);
+        return;
+    }
+
     let gridSize = layer().gridSize;
 
     mouseEditor.x = parseInt(event.clientX - offset_x) - gridSize / 2;
@@ -155,9 +165,32 @@ function mouse_move(event) {
             }
 
         } else if (layer().move_mode) {
-            for (let s of layer().shapes) {
-                s.x += dx;
-                s.y += dy;
+            if (layer().selection && layer().selection.length > 0) {
+
+                if (layer().move_selection_copy) {
+                    let deepCopy = layer().selection.map((s) => ({ x: s.x, y: s.y, c: s.c }))
+                    layer().shapes = layer().shapes.concat(deepCopy);
+                    layer().selection = [...deepCopy];
+
+                    for (let s of layer().selection) {
+                        s.x += dx;
+                        s.y += dy;
+                    }
+                    layer().move_selection_copy = false;
+
+                } else {
+
+                    for (let s of layer().selection) {
+                        s.x += dx;
+                        s.y += dy;
+                    }
+                }
+
+            } else {
+                for (let s of layer().shapes) {
+                    s.x += dx;
+                    s.y += dy;
+                }
             }
         } else {
             addShape();
@@ -197,16 +230,28 @@ const zoomIntensity = 0.2;
 function onwheel(event) {
     event.preventDefault();
 
-    // Get mouse offset.
     const mouseX = event.clientX - canvas.offsetLeft;
     const mouseY = event.clientY - canvas.offsetTop;
-    // Normalize mouse wheel movement to +1 or -1 to avoid unusual jumps.
-    const wheel = event.deltaY < 0 ? 1 : -1;
 
-    // Compute zoom factor.
+    const wheel = event.deltaY < 0 ? 1 : -1;
     const zoom = wheel * zoomIntensity;
 
+    if (event.ctrlKey) {
+        zoomSelectionToolShape(mouseX, mouseY, zoom);
+        return;
+    }
     zoomLayerShapes(mouseX, mouseY, zoom);
+}
+
+function zoomSelectionToolShape(mouseX, mouseY, zoom) {
+
+    for (let p of selectionTool.points) {
+
+        let xy = getPositionAlongTheLine(p.x, p.y, mouseX, mouseY, zoom);
+        p.x = xy.x;
+        p.y = xy.y;
+    }
+    selectionTool.center();
 }
 
 function zoomLayerShapes(mouseX, mouseY, zoom) {
@@ -215,6 +260,14 @@ function zoomLayerShapes(mouseX, mouseY, zoom) {
         let xy = getPositionAlongTheLine(shape.x, shape.y, mouseX, mouseY, zoom);
         shape.x = xy.x;
         shape.y = xy.y;
+    }
+    if (layer().selection && layer().selection.length > 0) {
+        for (let shape of layer().selection) {
+
+            let xy = getPositionAlongTheLine(shape.x, shape.y, mouseX, mouseY, zoom);
+            shape.x = xy.x;
+            shape.y = xy.y;
+        }
     }
 }
 
@@ -259,7 +312,6 @@ function handlePinch(evt) {
         let zoom = dist > lastDist ? -zoomIntensity / 10 : zoomIntensity / 10;
 
         zoomLayerShapes(newCenter.x, newCenter.y, zoom);
-        // zoomLayerShapes(p1.x, p1.y, zoom);
 
         lastDist = dist;
 

@@ -347,7 +347,7 @@ duplicate some commands according  context. refresh should rely on element names
 
               <td><button name="help_state" onclickaction="help_switch_command()" onmousedown="btnMouseHoldStart(this)"
                   ontouchstart="btnTouchStart(this)">
-                  <p>H</p>Help
+                  <p>?</p>Help
                 </button></td>
 
                 <td><button  onclickaction="save_picture_command()" onmousedown="btnMouseHoldStart(this)"
@@ -359,7 +359,18 @@ duplicate some commands according  context. refresh should rely on element names
                   ontouchstart="btnTouchStart(this)">
                   <p>Z</p>Hide pointer
                 </button></td>
+            </tr>
 
+            <tr>
+                <td><button name="inversed_selection_state" onclickaction="inversed_selection_switch_command()" onmousedown="btnMouseHoldStart(this)"
+                  ontouchstart="btnTouchStart(this)">
+                  <p>I</p>Inverse selection
+                </button></td>
+
+                 <td><button onclickaction="feel_tiles_grid_command()" onmousedown="btnMouseHoldStart(this)"
+                  ontouchstart="btnTouchStart(this)">
+                  <p>F</p>Fill tiles
+                </button></td>
             </tr>
           </table>
         </section>
@@ -445,7 +456,7 @@ duplicate some commands according  context. refresh should rely on element names
 
               <td><button onclickaction="all_layers_visible_command(false)" onmousedown="btnMouseHoldStart(this)"
                   ontouchstart="btnTouchStart(this)">
-                  <p>I</p>hide inactive layers
+                  <p>H</p>hide inactive layers
                 </button></td>
 
             </tr>
@@ -479,8 +490,10 @@ duplicate some commands according  context. refresh should rely on element names
   <script type="text/javascript" src="tools.js"></script>
   <script type="text/javascript" src="core.js"></script>
   <script type="text/javascript" src="commands.js"></script>
+  <script type="text/javascript" src="selection.js"></script>
   <script type="text/javascript" src="pop-window.js"></script>
   <script type="text/javascript" src="editor.js"></script>
+
   <script type="text/javascript" src="keyboard.js"></script>
 
   <script type="text/javascript" src="color-picker.js"></script>

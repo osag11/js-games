@@ -8,7 +8,12 @@ function handleKeyDown(event) {
     if (namingInProgress) return;
 
     if (keyPressed == 46) { // Del
-        delete_previous_shape_command();
+        if (selectionToolModel.enabled) {
+            delete_selection_active_point_command();
+        }
+        else {
+            delete_previous_shape_command();
+        }
     }
 
     if (keyPressed == 107 || keyPressed == 187) {// +
@@ -19,7 +24,7 @@ function handleKeyDown(event) {
         grid_minus_command();
     }
 
-    if (keyPressed == 111 || keyPressed == 188 ) {// NumpadDivide or <
+    if (keyPressed == 111 || keyPressed == 188) {// NumpadDivide or <
         transparency_minus_command();
     }
 
@@ -31,20 +36,43 @@ function handleKeyDown(event) {
         transparency_max_min_command();
     }
 
+    if (keyPressed == 70) {// F
+        feel_tiles_grid_command();
+    }
+
     if (keyPressed == 71) {// G
         grid_switch_command();
     }
 
-    if (keyPressed == 72) {// H
+    if (keyPressed == 191) {// ? slash
         help_switch_command();
     }
 
-    if (keyPressed == 27) {// Esc
-        clear_layer_shapes_command();
+    if (keyPressed == 72) {// H
+        all_layers_visible_command(false);
     }
 
-    if (keyPressed == 69 || keyPressed == 32) {// E or Space
+    if (keyPressed == 27) {// Esc
+        if (selectionToolModel.enabled) {
+            delete_selection_points_command();
+        } else {
+            clear_layer_shapes_command();
+        }
+    }
+
+    if (keyPressed == 69) {// E 
+        if (event.target == document.body) {
+            event.preventDefault();
+        }
         edit_mode_switch_command();
+    }
+
+    if (keyPressed == 32) {// Space
+        selection_tool_switch_command();
+    }
+
+    if (keyPressed == 13) {// Enter
+        apply_selection_command(inversedSelection);
     }
 
     if (keyPressed == 82) {// R
@@ -107,8 +135,12 @@ function handleKeyDown(event) {
         move_mode_switch_command();
     }
 
+    if (keyPressed == 78) {// N
+        move_mode_switch_command(true);
+    }
+
     if (keyPressed == 73) {// I
-        all_layers_visible_command(false);
+        inversed_selection_switch_command();
     }
 
     if (keyPressed == 86) {// V
@@ -149,7 +181,7 @@ function handleKeyDown(event) {
     }
 
     if (keyPressed == 90) {// Z
-       screenshot_mode_switch_command();
+        screenshot_mode_switch_command();
     }
 
     if (keyPressed == 81) {// Q

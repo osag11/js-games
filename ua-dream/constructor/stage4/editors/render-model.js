@@ -151,7 +151,7 @@ const RenderModel = (ctx) => ({
 
         this.ctxShapeColor(shape, p2d);
 
-        this.ctx.save();
+        //this.ctx.save();
     },
 
     drawCircle(obj) {
@@ -162,7 +162,7 @@ const RenderModel = (ctx) => ({
         this.ctx.lineWidth = 1;
         p2d.arc(shape.args[0], shape.args[1], shape.args[2], 0, 2 * Math.PI);
         this.ctxShapeColor(shape, p2d);
-        this.ctx.save();
+        //this.ctx.save();
 
     },
 
@@ -172,7 +172,7 @@ const RenderModel = (ctx) => ({
 
         p2d.rect(shape.args[0], shape.args[1], shape.args[2], shape.args[3]);
         this.ctxShapeColor(shape, p2d);
-        this.ctx.save();
+        //this.ctx.save();
 
     },
 
@@ -182,7 +182,7 @@ const RenderModel = (ctx) => ({
         p2d.moveTo(shape.args[0], shape.args[1]);
         p2d.arcTo(shape.args[2], shape.args[3], shape.args[4], shape.args[5], shape.args[6]);
         this.ctxShapeColor(shape, p2d);
-        this.ctx.save();
+        //this.ctx.save();
     },
 
     drawDemo(){

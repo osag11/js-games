@@ -15,30 +15,40 @@ const layerHeight = 75;
 const lineHeight = 20;
 const lineHeight2 = 45;
 const margin = 40;
+const alertColor = '#fffe00';
+const infoColor = 'lime';
+const activeLayerColor = '#ED5B6D';
+const layerColor = '#FCC178';
 
 function drawLayersUI() {
     let counter = 0;
 
     ctx2.font = "16px serif";
-    ctx2.fillStyle = layerCloneMode ? 'red' : 'lime';
 
-    ctx2.fillText(`layer clone: ${layerCloneMode}`, 5, 25);
+    if (selectionToolModel.enabled) {
+        ctx2.fillStyle = alertColor;
+        ctx2.fillText(`selection tool enabled`, 5, 25);
+
+    } else {
+        ctx2.fillStyle = layerCloneMode ? alertColor : infoColor;
+        ctx2.fillText(`layer clone: ${layerCloneMode}`, 5, 25);
+    }
 
     if (typeof xLock == 'number') {
-        ctx2.fillStyle = 'red';
+        ctx2.fillStyle = alertColor;
         ctx2.fillText(`xLock: ${xLock}`, 200, 25);
     }
 
     if (typeof yLock == 'number') {
-        ctx2.fillStyle = 'red';
+        ctx2.fillStyle = alertColor;
         ctx2.fillText(`yLock: ${yLock}`, 200, 25);
     }
 
     for (let l of model.layers) {
 
-        ctx2.fillStyle = '#FCC178';
+        ctx2.fillStyle = layerColor;
         if (model.layers.indexOf(l) === model.activeLayer) {
-            ctx2.fillStyle = '#ED5B6D';
+            ctx2.fillStyle = activeLayerColor;
         }
         ctx2.fillRect(0, layerHeight * counter + margin, toolsCanvas.width, layerHeight - 50 + margin);
 
@@ -324,6 +334,8 @@ let hexaGridData = [];
 function drawHexagonGrid(width, height, r, colors = ['red', 'green', 'blue']) {
     let idx = -1;
     const a = 2 * Math.PI / 6;
+    paletteColors = paletteColors.map(x => x.startsWith('#') ? x : '#' + colorByName(x));
+
     hexaGridData = [];
     for (let y = r; y + r * Math.sin(a) < height; y += r * Math.sin(a)) {
         for (let x = r, j = 0; x + r * (1 + Math.cos(a)) < width; x += r * (1 + Math.cos(a)), y += (-1) ** j++ * r * Math.sin(a)) {
@@ -331,7 +343,7 @@ function drawHexagonGrid(width, height, r, colors = ['red', 'green', 'blue']) {
             if (idx > colors.length - 1) idx = 0;
             let color = colors[idx];
 
-            if (!colors[idx].startsWith('#')) { color = '#' + colorByName(colors[idx]); }
+            // if (!colors[idx].startsWith('#')) { color = '#' + colorByName(colors[idx]); }
 
             hexaGridData.push({ x: x, y: y, r: r, c: color });
             drawPolygon(ctx2, x, y, r, color);

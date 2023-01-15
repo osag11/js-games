@@ -63,7 +63,7 @@ const poly = () => ({
         }
 
         ctx2.closePath();
-        ctx2.save();
+        // ctx2.save();
 
         // draw marks
         if (this.fill) ctx2.strokeStyle = "blue";

@@ -7,10 +7,69 @@ function delete_previous_shape_command() {
     }
 }
 
+function inversed_selection_switch_command() {
+    inversedSelection = !inversedSelection;
+}
+
+function delete_selection_active_point_command() {
+
+    let nextActivePoint = selectionTool.points[selectionTool.points.indexOf(selectionTool.activePoint) - 1];
+    selectionTool.deletePoint(selectionTool.activePoint);
+    selectionTool.activePoint = nextActivePoint;
+    selectionTool.hoverPoint = null;
+    selectionTool.center();
+}
+
+function delete_selection_points_command() {
+    selectionTool.points = [];
+    // do not delete selection here. it happen on layer cleanup command if shapes length equals to selection length
+    selectionTool.activePoint = null;
+    selectionTool.hoverPoint = null;
+    selectionToolModel.dragging = false;
+    selectionTool.center();
+}
+
 function grid_switch_command(callback) {
     gridOn = !gridOn;
     callback = gridOn;
     return gridOn;
+}
+
+const minTileSize = 8;
+function feel_tiles_grid_command() {
+
+    if (!layer().visible) return;
+
+    const gridSize = layer().gridSize > minTileSize ? layer().gridSize : minTileSize;
+    let x = 0, y = 0, idx = 0;
+
+    paletteColors = paletteColors.map(x => x.startsWith('#') ? x : '#' + colorByName(x));
+
+    while (y < canvas.height) {
+        let color;
+        if (hexPalette) {
+            idx++;
+            if (idx > paletteColors.length - 1) {
+                idx = 0;
+            }
+            color = paletteColors[idx];
+
+        } else {
+            color = generateColor();
+        }
+
+        if (inversedSelection)
+            layer().shapes.unshift({ x: x, y: y, c: color });
+        else
+            layer().shapes.push({ x: x, y: y, c: color });
+
+        x += gridSize;
+
+        if (x > canvas.width) {
+            x = 0;
+            y += gridSize;
+        }
+    }
 }
 
 function grid_plus_command() {
@@ -61,8 +120,66 @@ function help_switch_command() {
 }
 
 function clear_layer_shapes_command() {
-    if (layer().visible) {
-        layer().shapes = [];
+    if (layer().visible) { // if layer not activated - skip action
+
+        if (layer().selection && layer().selection.length > 0) {
+            if (layer().selection.length == layer().shapes.length) {
+                // cleanup selection if all shapes selected
+                layer().selection = [];
+            } else {
+                // cleanup non selected shapes
+                let deepCopy = layer().selection.map((s) => ({ x: s.x, y: s.y, c: s.c }))
+                layer().shapes = [...deepCopy];
+            }
+        } else {
+            // cleanup all shapes
+            layer().shapes = [];
+        }
+    }
+}
+
+function selection_tool_disable_command() {
+    selectionToolModel.enabled = false;
+    canvas.style.cursor = "crosshair";
+    selectionToolModel.dragging = false;
+    selectionTool.activePoint = null;
+    selectionTool.hoverPoint = null;
+}
+
+function selection_tool_switch_command() {
+    selectionToolModel.enabled = !selectionToolModel.enabled;
+    layer().move_mode = false;
+    if (!selectionToolModel.enabled) {
+        canvas.style.cursor = "crosshair";
+        selectionToolModel.dragging = false;
+    }
+}
+
+function apply_selection_command(inverted = false) {
+
+    if (!selectionToolModel.enabled) {
+        return;
+    }
+
+    let p2d = new Path2D();
+    ctx.strokeStyle = '#ffffff00';
+    let gridSize = layer().gridSize;
+    for (const p of selectionTool.points) {
+        p2d.lineTo(p.x, p.y);
+    }
+    ctx.stroke(p2d);
+    ctx.closePath();
+
+    layer().selection = [];
+
+    for (let s of layer().shapes) {
+        let pointInPath = ctx.isPointInPath(p2d, s.x + gridSize / 2, s.y + gridSize / 2);
+        if (inverted) pointInPath = !pointInPath;
+
+        if (pointInPath) {
+            layer().selection.push(s);
+            console.log(JSON.stringify(s));
+        }
     }
 }
 
@@ -72,10 +189,16 @@ function edit_mode_switch_command() {
     return layer().edit_mode;
 }
 
-function move_mode_switch_command() {
+function move_mode_switch_command(move_selection_copy = false) {
     layer().move_mode = !layer().move_mode;
-    layer().edit_mode = false;
 
+    if (selectionToolModel.enabled) {
+        layer().move_mode = true;
+        selection_tool_disable_command();
+    }
+
+    layer().move_selection_copy = move_selection_copy;
+    layer().edit_mode = false;
     return layer().move_mode;
 }
 
@@ -162,13 +285,13 @@ function save_file_command() {
 }
 
 function save_picture_command() {
-    screenshot_mode = true;    
+    screenshot_mode = true;
     let date = new Date().toISOString().split('T')[0];
 
     setTimeout(function onTick() {
-          downloadPNG(`tiles-${date}-${Date.now()}.png`);
-          screenshot_mode = false;
-  }, 1000) 
+        downloadPNG(`tiles-${date}-${Date.now()}.png`);
+        screenshot_mode = false;
+    }, 1000)
 }
 
 function palette_import_layer_colors_command(destroy) {
@@ -193,7 +316,7 @@ function palette_import_layer_colors_command(destroy) {
 
     paletteColors = [];
 
-    if (destroy) {
+    if (destroy) {//destroy layer tiles
         layer().shapesHistory = [...layer().shapes]; // make backup
         layer().shapes = [];
     }
@@ -260,7 +383,7 @@ function transparency_max_min_command() {
 
 function all_layers_visible_command(visible) {
     for (let l of model.layers) {
-        if (model.layers.indexOf(l) !==model.activeLayer)
+        if (model.layers.indexOf(l) !== model.activeLayer)
             l.visible = visible;
     }
 }
