@@ -2,9 +2,10 @@ const selectionToolModel = {
     x: 0, y: 0,
     lx: 0, ly: 0,
     button: 0,
+    hold: 0,
 
     enabled: false,
-    dragging: false,
+    //dragging: false,
     moving: false,
     inversed: false
 };
@@ -15,7 +16,6 @@ function handleMouseEvents(e) {
     const bounds = canvas.getBoundingClientRect();
     selectionToolModel.x = e.pageX - bounds.left - window.scrollX - markRadius;
     selectionToolModel.y = e.pageY - bounds.top - window.scrollY - markRadius;
-
     if (gridOn) {
         selectionToolModel.x = roundNearest(selectionToolModel.x, gridSize);
         selectionToolModel.y = roundNearest(selectionToolModel.y, gridSize);
@@ -23,16 +23,25 @@ function handleMouseEvents(e) {
 
     if (selectionToolModel.x > 0 && selectionToolModel.x < canvas.width && selectionToolModel.y > 0 && selectionToolModel.y < canvas.height) {
 
-        selectionToolModel.button = e.type === "mousedown";
-
-        if (e.type === "mousedown" && selectionTool.activePoint) {
-            selectionTool.insertPoint = selectionTool.activePoint;
+        if (e.type === "mousedown") {
+            selectionToolModel.button = true;
         }
+
+        if (e.type === "mouseup") {
+            selectionToolModel.button = false;
+            selectionToolModel.hold = false;
+        }
+
+        selectionToolModel.hold = selectionToolModel.button && e.type === "mousemove";
+
+        //debugInfo[0] = e.type;
+
+        debugInfo[0] = e.type + ' ' + JSON.stringify(selectionToolModel);
 
         return updateSelection();
     }
 
-    debugInfo[0] = JSON.stringify(selectionToolModel);
+
     return false;
 }
 
@@ -119,28 +128,39 @@ const polylineShape = () => ({
         ctx.closePath();
 
         // draw marks
-        if (this.fill) ctx.strokeStyle = "blue";
+        let contrastBgColor = getContrastBgColor();
+
+        if (this.fill) ctx.strokeStyle = contrastBgColor;
+        ctx.fillStyle = contrastBgColor;
+        ctx.font = `${markRadius * 4}px serif`;
 
         for (const p of this.points) {
-            ctx.moveTo(p.x + 4, p.y);
+            ctx.moveTo(p.x + markRadius, p.y);
             ctx.arc(p.x, p.y, markRadius, 0, Math.PI * 2);
+
+            ctx.fillText(this.points.indexOf(p), p.x + markRadius * 2, p.y + markRadius);
+
         }
         ctx.stroke();
 
+        ctx.strokeStyle = contrastBgColor;
         if (this.hoverPoint) {
-            drawCircle(this.hoverPoint, "yellow");
+            drawCircle(this.hoverPoint, contrastBgColor, markRadius * 2);
+            //ctx.strokeRect(this.hoverPoint.x-markRadius * 2, this.hoverPoint.y-markRadius * 2, markRadius * 4, markRadius * 4);
+
         }
 
         if (this.activePoint) {
-            drawCircle(this.activePoint, "red", markRadius * 2 + 2);
+            drawCircle(this.activePoint, contrastBgColor, markRadius * 2);
         }
 
         if (this.insertPoint) {
-            drawCircle(this.insertPoint, "blue", markRadius * 2 + 1);
+            //drawCircle(this.insertPoint, "blue", markRadius * 2 + 1);
+            ctx.strokeRect(this.insertPoint.x - markRadius * 2, this.insertPoint.y - markRadius * 2, markRadius * 4, markRadius * 4);
+
         }
 
         if (this.centerPoint && this.points.length > 2) {
-            let contrastBgColor = getContrastBgColor();
             ctx.lineWidth = this.isCenterSelected ? markRadius * 2 : markRadius * 1;
             drawCircle(this.centerPoint, this.isCenterSelected ? contrastBgColor : this.color, markRadius * 4);
 
@@ -164,7 +184,14 @@ const polylineShape = () => ({
             }
             i++;
         }
-        if (index > -1) { return this.points[index] }
+        if (index > -1) {
+            debugInfo[4] = 'found closest: #' + index;
+
+            return this.points[index]
+        }
+        // console.log('not found');
+        debugInfo[4] = 'closest not found';
+
     }
 });
 
@@ -175,60 +202,70 @@ function updateSelection() {
 
     selectionTool.hoverPoint = selectionTool.closest(selectionToolModel);
 
-    selectionTool.isCenterSelected = selectionTool.centerPoint ? getDistance(selectionTool.centerPoint, selectionToolModel) <= markRadius * 4 : false;
-    if (selectionTool.isCenterSelected) {
+    selectionTool.cursor = selectionTool.hoverPoint ? "move" : "crosshair";
 
-        if (selectionToolModel.button) {
-            selectionToolModel.moving = !selectionToolModel.moving;
-            selectionToolModel.button = false;
+    if (selectionToolModel.button) {
+
+        selectionTool.isCenterSelected = selectionTool.centerPoint ? getDistance(selectionTool.centerPoint, selectionToolModel) <= markRadius * 4 : false;
+        if (selectionTool.isCenterSelected) {
+
+            selectionToolModel.moving = true;//!selectionToolModel.moving;
+            selectionTool.cursor = "move";
+            selectionTool.activePoint = undefined;
+            selectionTool.insertPoint = undefined;
         }
     }
 
-    if (selectionToolModel.moving) {
+
+    if (selectionToolModel.moving && selectionToolModel.hold) {
         selectionTool.move(selectionToolModel.x - selectionToolModel.lx, selectionToolModel.y - selectionToolModel.ly);
-    } else {
+        selectionTool.cursor = "move";
 
-        if (selectionToolModel.button) {
-            selectionTool.activePoint = selectionTool.closest(selectionToolModel);
-            if (selectionTool.activePoint) {
-                selectionTool.insertPoint = selectionTool.activePoint;
+    }
+    else {
+        if (selectionToolModel.button && !selectionToolModel.hold) {
+            let closest = selectionTool.closest(selectionToolModel);
+
+            if (selectionTool.activePoint === closest) {
+                selectionTool.activePoint = undefined;
+            } else {
+                selectionTool.activePoint = closest;
             }
-        }
 
-        if (!selectionToolModel.dragging) {
+            if (selectionTool.activePoint) selectionTool.insertPoint = selectionTool.activePoint;
 
-            if (selectionTool.activePoint === undefined && selectionToolModel.button) {
+
+            if (selectionTool.activePoint === undefined && selectionToolModel.button && !selectionToolModel.moving) {
+                selectionTool.cursor = "crosshair";
                 let p = point(selectionToolModel.x, selectionToolModel.y);
                 selectionTool.addPoint(p);
-                selectionTool.insertPoint = p;
                 selectionToolModel.button = false;
                 selectionTool.center();
             }
+
         }
 
-        if (selectionTool.activePoint) {
-            if (selectionToolModel.dragging) {
+        if (selectionToolModel.button && selectionToolModel.hold && !selectionToolModel.moving) {
+
+            if (selectionTool.activePoint) {
+                selectionTool.cursor = "move";
                 selectionTool.activePoint.x += selectionToolModel.x - selectionToolModel.lx;
                 selectionTool.activePoint.y += selectionToolModel.y - selectionToolModel.ly;
-                selectionTool.insertPoint = selectionTool.activePoint;
-
                 selectionTool.center();
             }
-
-            if (selectionToolModel.button) {
-                selectionToolModel.dragging = !selectionToolModel.dragging;
-            }
         }
+        selectionToolModel.moving = selectionToolModel.hold && selectionToolModel.moving;
     }
+
     selectionTool.color = pickerModel.rgbaColor;
     selectionToolModel.lx = selectionToolModel.x;
     selectionToolModel.ly = selectionToolModel.y;
-    selectionTool.cursor = selectionToolModel.moving || selectionToolModel.dragging ? "move" : "crosshair";
+    // selectionTool.cursor = selectionToolModel.moving ? "move" : "crosshair";
 
-    debugInfo[0] = JSON.stringify(selectionToolModel);
-    debugInfo[1] = JSON.stringify(selectionTool.activePoint);
-    debugInfo[2] = JSON.stringify(selectionTool.hoverPoint);
-    debugInfo[3] = JSON.stringify(selectionTool.insertPoint);
+    //debugInfo[0] = JSON.stringify(selectionToolModel);
+    debugInfo[1] = 'active: ' + JSON.stringify(selectionTool.activePoint);
+    debugInfo[2] = 'hover: ' + JSON.stringify(selectionTool.hoverPoint);
+    debugInfo[3] = 'insert: ' + JSON.stringify(selectionTool.insertPoint);
 
     return true;
 }

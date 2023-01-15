@@ -18,6 +18,7 @@ function delete_selection_active_point_command() {
     selectionTool.deletePoint(selectionTool.activePoint);
     selectionTool.activePoint = nextActivePoint;
     selectionTool.hoverPoint = null;
+    selectionTool.insertPoint = null;
     selectionTool.center();
 }
 
@@ -33,7 +34,7 @@ function delete_selection_points_command() {
 
     selectionTool.activePoint = null;
     selectionTool.hoverPoint = null;
-    selectionToolModel.dragging = false;
+    selectionTool.insertPoint = null;
     selectionToolModel.moving = false;
 
     selectionTool.center();
@@ -173,7 +174,6 @@ function clear_layer_shapes_command() {
 function selection_tool_disable_command() {
     selectionToolModel.enabled = false;
     canvas.style.cursor = "crosshair";
-    selectionToolModel.dragging = false;
     selectionTool.activePoint = null;
     selectionTool.hoverPoint = null;
 }
@@ -183,7 +183,6 @@ function selection_tool_switch_command() {
     layer().move_mode = false;
     if (!selectionToolModel.enabled) {
         canvas.style.cursor = "crosshair";
-        selectionToolModel.dragging = false;
     }
 }
 

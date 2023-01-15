@@ -291,7 +291,7 @@ function drawPointer() {
         ctx.fillText(selectionToolModel.inversed ? 'inversed' : '', (mouseEditor.x + gridSize / 10), (mouseEditor.y + gridSize * 0.9));
 
         ctx.lineWidth = 2;
-        ctx.strokeStyle = "white";
+        ctx.strokeStyle = contrastBgColor;
         ctx.strokeRect(mouseEditor.x, mouseEditor.y, (gridSize + 2), (gridSize + 2));
     }
 

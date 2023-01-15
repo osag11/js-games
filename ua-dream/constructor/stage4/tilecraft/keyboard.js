@@ -67,6 +67,10 @@ function handleKeyDown(event) {
         edit_mode_switch_command();
     }
 
+    // TODO:
+    // Ctrl + A, Ctrl + C, Ctrl + V
+    // Layer up (swap -1), Layer down (swap +1)
+
     if (keyPressed == 32) {// Space
         selection_tool_switch_command();
     }

@@ -33,6 +33,7 @@ function mouse_down(event) {
     screenshot_mode = false;
 
     if (selectionToolModel.enabled) {
+        screenshot_mode = true;
         handleMouseEvents(event);
         return;
     }
@@ -81,11 +82,20 @@ function mouse_down(event) {
 }
 
 function mouse_up(event) {
+
+    if (selectionToolModel.enabled) {
+        handleMouseEvents(event);
+        return;
+    }
+
     if (!is_dragging) {
         return;
     }
     event.preventDefault();
     is_dragging = false;
+
+
+
 }
 
 function mouse_out(event) {
@@ -104,9 +114,11 @@ function mouse_move(event) {
     }
 
     if (selectionToolModel.enabled) {
+        screenshot_mode = true;
         handleMouseEvents(event);
         return;
     }
+    screenshot_mode = false;
 
     let gridSize = layer().gridSize;
 
