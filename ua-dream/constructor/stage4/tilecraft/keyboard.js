@@ -72,7 +72,7 @@ function handleKeyDown(event) {
     }
 
     if (keyPressed == 13) {// Enter
-        apply_selection_command(inversedSelection);
+        apply_selection_command(selectionToolModel.inversed);
     }
 
     if (keyPressed == 82) {// R

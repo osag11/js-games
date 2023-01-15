@@ -8,7 +8,8 @@ function delete_previous_shape_command() {
 }
 
 function inversed_selection_switch_command() {
-    inversedSelection = !inversedSelection;
+    selectionToolModel.inversed = !selectionToolModel.inversed;
+    return selectionToolModel.inversed;
 }
 
 function delete_selection_active_point_command() {
@@ -21,11 +22,20 @@ function delete_selection_active_point_command() {
 }
 
 function delete_selection_points_command() {
-    selectionTool.points = [];
+
+    if (selectionTool.points.length > 0 && layer().selection?.length > 0) {
+        layer().selection = [];
+    }
+    else {
+        selectionTool.points = [];
+    }
     // do not delete selection here. it happen on layer cleanup command if shapes length equals to selection length
+
     selectionTool.activePoint = null;
     selectionTool.hoverPoint = null;
     selectionToolModel.dragging = false;
+    selectionToolModel.moving = false;
+
     selectionTool.center();
 }
 
@@ -54,11 +64,13 @@ function feel_tiles_grid_command() {
             }
             color = paletteColors[idx];
 
-        } else {
+        } else if (randomColor)
             color = generateColor();
-        }
+        else
+            color = rgba2hex(pickerModel.rgbaColor);
 
-        if (inversedSelection)
+
+        if (selectionToolModel.inversed)
             layer().shapes.unshift({ x: x, y: y, c: color });
         else
             layer().shapes.push({ x: x, y: y, c: color });
@@ -124,14 +136,34 @@ function clear_layer_shapes_command() {
 
         if (layer().selection && layer().selection.length > 0) {
             if (layer().selection.length == layer().shapes.length) {
-                // cleanup selection if all shapes selected
+                // all shapes selected => cleanup selection
                 layer().selection = [];
             } else {
-                // cleanup non selected shapes
-                let deepCopy = layer().selection.map((s) => ({ x: s.x, y: s.y, c: s.c }))
-                layer().shapes = [...deepCopy];
+                // selected and non selected shapes present
+                let filtered = [];
+                for (let s of layer().shapes) {
+
+                    if (selectionToolModel.inversed) {
+                        // preserve selected, drop all other
+                        if (layer().selection.indexOf(s) >= 0) {
+                            filtered.push(s);
+                        }
+                    } else {
+                        // drop selected
+                        if (layer().selection.indexOf(s) < 0) {
+                            filtered.push(s);
+                        }
+                    }
+                }
+
+                layer().shapes = [...filtered];
+
+                if (!selectionToolModel.inversed) {
+                    layer().selection = [];
+                }
+
             }
-        } else {
+        } else { // selection empty
             // cleanup all shapes
             layer().shapes = [];
         }

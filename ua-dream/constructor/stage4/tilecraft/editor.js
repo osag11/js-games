@@ -164,7 +164,7 @@ function mouse_move(event) {
                 }
             }
 
-        } else if (layer().move_mode) {
+        } else if (layer().move_mode) {// MOVE TOOL
             if (layer().selection && layer().selection.length > 0) {
 
                 if (layer().move_selection_copy) {
@@ -180,9 +180,19 @@ function mouse_move(event) {
 
                 } else {
 
-                    for (let s of layer().selection) {
-                        s.x += dx;
-                        s.y += dy;
+                    if (selectionToolModel.inversed) {
+                        for (let s of layer().shapes) {
+                            if (layer().selection.indexOf(s) < 0) {
+                                s.x += dx;
+                                s.y += dy;
+                            }
+                        }
+                    } else {
+                        for (let s of layer().selection) {
+                            s.x += dx;
+                            s.y += dy;
+                        }
+
                     }
                 }
 

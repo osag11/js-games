@@ -5,9 +5,10 @@ const selectionToolModel = {
 
     enabled: false,
     dragging: false,
-    moving: false
+    moving: false,
+    inversed: false
 };
-let inversedSelection = false;
+
 
 function handleMouseEvents(e) {
 
@@ -62,7 +63,7 @@ const polylineShape = () => ({
     deletePoint(p) {
         let idx = this.points.indexOf(p);
         if (idx >= 0) {
-            this.points.splice(idx, 1);             
+            this.points.splice(idx, 1);
         }
         return idx;
     },
@@ -131,12 +132,22 @@ const polylineShape = () => ({
         }
 
         if (this.activePoint) {
-            drawCircle(this.activePoint, "red");
+            drawCircle(this.activePoint, "red", markRadius * 2 + 2);
+        }
+
+        if (this.insertPoint) {
+            drawCircle(this.insertPoint, "blue", markRadius * 2 + 1);
         }
 
         if (this.centerPoint && this.points.length > 2) {
+            let contrastBgColor = getContrastBgColor();
             ctx.lineWidth = this.isCenterSelected ? markRadius * 2 : markRadius * 1;
-            drawCircle(this.centerPoint, this.isCenterSelected ? getContrastBgColor() : this.color, markRadius * 4);
+            drawCircle(this.centerPoint, this.isCenterSelected ? contrastBgColor : this.color, markRadius * 4);
+
+            ctx.fillStyle = this.color;
+            ctx.font = `${markRadius * 4}px serif`;
+            ctx.fillText(selectionToolModel.inversed ? 'inversed' : '', this.centerPoint.x - markRadius * 6, this.centerPoint.y + markRadius * 6);
+
         }
     },
 
@@ -179,12 +190,17 @@ function updateSelection() {
 
         if (selectionToolModel.button) {
             selectionTool.activePoint = selectionTool.closest(selectionToolModel);
+            if (selectionTool.activePoint) {
+                selectionTool.insertPoint = selectionTool.activePoint;
+            }
         }
 
         if (!selectionToolModel.dragging) {
 
             if (selectionTool.activePoint === undefined && selectionToolModel.button) {
-                selectionTool.addPoint(point(selectionToolModel.x, selectionToolModel.y));
+                let p = point(selectionToolModel.x, selectionToolModel.y);
+                selectionTool.addPoint(p);
+                selectionTool.insertPoint = p;
                 selectionToolModel.button = false;
                 selectionTool.center();
             }
@@ -194,6 +210,8 @@ function updateSelection() {
             if (selectionToolModel.dragging) {
                 selectionTool.activePoint.x += selectionToolModel.x - selectionToolModel.lx;
                 selectionTool.activePoint.y += selectionToolModel.y - selectionToolModel.ly;
+                selectionTool.insertPoint = selectionTool.activePoint;
+
                 selectionTool.center();
             }
 
@@ -207,9 +225,10 @@ function updateSelection() {
     selectionToolModel.ly = selectionToolModel.y;
     selectionTool.cursor = selectionToolModel.moving || selectionToolModel.dragging ? "move" : "crosshair";
 
-    // debugInfo[0] = JSON.stringify(selectionToolModel);
-    // debugInfo[1] = JSON.stringify(selectionTool.activePoint);
-    // debugInfo[2] = JSON.stringify(selectionTool.hoverPoint);
+    debugInfo[0] = JSON.stringify(selectionToolModel);
+    debugInfo[1] = JSON.stringify(selectionTool.activePoint);
+    debugInfo[2] = JSON.stringify(selectionTool.hoverPoint);
+    debugInfo[3] = JSON.stringify(selectionTool.insertPoint);
 
     return true;
 }
