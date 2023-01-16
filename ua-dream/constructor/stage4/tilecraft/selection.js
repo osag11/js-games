@@ -150,15 +150,16 @@ const polylineShape = () => ({
 
         }
 
-        if (this.activePoint) {
-            drawCircle(this.activePoint, contrastBgColor, markRadius * 2);
-        }
 
         if (this.insertPoint) {
             //drawCircle(this.insertPoint, "blue", markRadius * 2 + 1);
             ctx.strokeRect(this.insertPoint.x - markRadius * 2, this.insertPoint.y - markRadius * 2, markRadius * 4, markRadius * 4);
 
+        }       
+        if (this.activePoint&& !this.insertPoint) {
+            drawCircle(this.activePoint, contrastBgColor, markRadius * 2);
         }
+
 
         if (this.centerPoint && this.points.length > 2) {
             ctx.lineWidth = this.isCenterSelected ? markRadius * 2 : markRadius * 1;
@@ -226,19 +227,16 @@ function updateSelection() {
         if (selectionToolModel.button && !selectionToolModel.hold) {
             let closest = selectionTool.closest(selectionToolModel);
 
-            if (selectionTool.activePoint === closest) {
-                selectionTool.activePoint = undefined;
-            } else {
-                selectionTool.activePoint = closest;
-            }
+            if (closest) selectionTool.insertPoint = closest;
 
-            if (selectionTool.activePoint) selectionTool.insertPoint = selectionTool.activePoint;
+            selectionTool.activePoint = closest;
 
 
             if (selectionTool.activePoint === undefined && selectionToolModel.button && !selectionToolModel.moving) {
                 selectionTool.cursor = "crosshair";
                 let p = point(selectionToolModel.x, selectionToolModel.y);
                 selectionTool.addPoint(p);
+                //selectionTool.activePoint = p;
                 selectionToolModel.button = false;
                 selectionTool.center();
             }
