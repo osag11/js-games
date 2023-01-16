@@ -118,6 +118,7 @@ let debugOn = false;
 let debugInfo = [];
 
 function draw() {
+
     const contrastBgColor = getContrastBgColor();
     for (let layer of model.layers) {
         if (!layer.visible) { continue; }
@@ -228,7 +229,9 @@ function draw() {
         }
     }
 
-    if (layer().selection) {
+    ctx.stroke(); // finalize
+
+    if (layer().selection && layer().visible) {
         let gridSize = layer().gridSize;
         ctx.strokeStyle = contrastBgColor;
         ctx.lineWidth = 1;

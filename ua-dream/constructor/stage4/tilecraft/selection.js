@@ -52,8 +52,9 @@ const lerp = (a, b, amount) => (1 - amount) * a + amount * b;
 
 const polylineShape = () => ({
     color: undefined,
-    fill: false,
     points: [],
+    closePath: true,
+    useInterpolation: true,
     activePoint: null, hoverPoint: null, insertPoint: null, centerPoint: null,
     cursor: "crosshair",
     isCenterSelected: false,
@@ -79,7 +80,7 @@ const polylineShape = () => ({
     getInterpolationPoints() {
         let result = [];
         let pointsCopy = [...this.points];
-        if (this.points.length > 2) {
+        if (this.closePath && this.points.length > 2) {
             pointsCopy = pointsCopy.concat(pointsCopy[0]);
         }
 
@@ -116,7 +117,7 @@ const polylineShape = () => ({
     reducePoints(minInterval) {
         let result = [];
         let pointsCopy = [...this.points];
-        if (this.points.length > 2) {
+        if (this.closePath && this.points.length > 2) {
             pointsCopy = pointsCopy.concat(pointsCopy[0]);
         }
 
@@ -128,7 +129,7 @@ const polylineShape = () => ({
         while (nextPoint) {
 
             nextPoint = pointsCopy[iterator];
-            if(!nextPoint) break;
+            if (!nextPoint) break;
 
             let dist = getDistance(initialPoint, nextPoint);
 
@@ -138,7 +139,7 @@ const polylineShape = () => ({
             }
             iterator++;
         }
-      
+
         return result;
 
     },
@@ -193,14 +194,25 @@ const polylineShape = () => ({
             ctx.lineTo(p.x, p.y)
         }
 
-        ctx.closePath();
+        if (this.closePath) {
+            ctx.closePath();
+        }
         ctx.stroke();
 
-        // if (this.fill) {
-        //     ctx.fill();
-        // } else {
-        //     ctx.stroke();
-        // }
+        // draw interpolation
+        if (this.useInterpolation) {
+            ctx.lineWidth = 0.8;
+            ctx.strokeStyle = this.color;
+            ctx.fillStyle = this.color;
+            ctx.beginPath();
+            for (const p of this.getInterpolationPoints()) {
+
+                ctx.moveTo(p.x + markRadius, p.y);
+                ctx.arc(p.x, p.y, markRadius * 0.6, 0, Math.PI * 2);
+            }
+
+            ctx.stroke();
+        }
 
         // draw marks
         let contrastBgColor = getContrastBgColor();
@@ -221,17 +233,6 @@ const polylineShape = () => ({
             ctx.fillText(this.points.indexOf(p), p.x + markRadius * 2, p.y + markRadius);
         }
 
-        ctx.lineWidth = 0.8;
-        ctx.strokeStyle = this.color;
-        ctx.fillStyle = this.color;
-        ctx.beginPath();
-        for (const p of this.getInterpolationPoints()) {
-
-            ctx.moveTo(p.x + markRadius, p.y);
-            ctx.arc(p.x, p.y, markRadius * 0.6, 0, Math.PI * 2);
-        }
-
-        ctx.stroke();
 
         ctx.lineWidth = 2;
 

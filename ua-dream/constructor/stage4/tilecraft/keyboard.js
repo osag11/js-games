@@ -47,6 +47,9 @@ function handleKeyDown(event) {
     if (keyPressed == 191) {// ? slash
         help_switch_command();
     }
+    if (keyPressed == 79) {// O
+        observer_switch_command();
+    }
 
     if (keyPressed == 72) {// H
         all_layers_visible_command(false);
@@ -55,14 +58,10 @@ function handleKeyDown(event) {
     if (keyPressed == 27) {// Esc
         if (selectionModel.enabled) {
             delete_selection_points_command();
-            //if( selectionTool.points.length == 0) selection_tool_switch_command();
 
         } else {
             clear_layer_shapes_command();
         }
-    }
-
-    if (keyPressed == 67) {// C
     }
 
     if (keyPressed == 69) {// E 
@@ -73,7 +72,6 @@ function handleKeyDown(event) {
     }
 
     // TODO:
-    // Ctrl + A, Ctrl + C, Ctrl + V
     // Layer up (swap -1), Layer down (swap +1)
 
     if (keyPressed == 32) {// Space
@@ -81,7 +79,10 @@ function handleKeyDown(event) {
         if (event.ctrlKey) {
             make_selection_from_layer_tiles_command();
 
-        } else {
+        } else if (event.shiftKey) {
+            clear_selection_command();
+        }
+        else {
             selection_tool_switch_command();
         }
     }
@@ -140,16 +141,27 @@ function handleKeyDown(event) {
         shape_apply_command('polyline');
     }
 
-    if (keyPressed == 67) {// C
-        layer_clone_mode_switch_command();
+    if (keyPressed == 65) {// A
+        if (event.ctrlKey) { select_all_command(); }
     }
 
-    if (keyPressed == 76) {// L
-        layer_add_command();
+    if (keyPressed == 67) {// C
+        if (event.ctrlKey) {
+            clipboard_copy_command();
+
+        } else layer_clone_mode_switch_command();
+    }
+
+    if (keyPressed == 74) {// J
+        selection_tool_close_path_switch_command();
     }
 
     if (keyPressed == 75) {// K
         layer_remove_command();
+    }
+
+    if (keyPressed == 76) {// L
+        layer_add_command();
     }
 
     if (keyPressed == 77) {// M
@@ -169,7 +181,10 @@ function handleKeyDown(event) {
     }
 
     if (keyPressed == 86) {// V
-        all_layers_visible_command(true);
+
+        if (event.ctrlKey) {
+            clipboard_paste_command();
+        } else all_layers_visible_command(true);
     }
 
     if (keyPressed == 68) {// D
@@ -195,10 +210,6 @@ function handleKeyDown(event) {
         else {//rotate
             background_command("rotate");
         }
-
-        canvas.style.background = model.background[model.backgroundIdx] ?? 'black';
-        canvas.style.backgroundSize = 'contain';
-        console.log(JSON.stringify(model.background));
     }
 
     if (keyPressed == 80) {// P
@@ -218,18 +229,23 @@ function handleKeyDown(event) {
     }
 
     if (keyPressed == 38) { // ArrowUp  
-        palette_import_layer_colors_command(event.ctrlKey ? true : false);
-    }
-
-    if (keyPressed == 37) { // ArrowLeft
-        history_back_command();
-    }
-
-    if (keyPressed == 39) { // ArrowRight
-        history_forward_command();
+        if (event.ctrlKey) {
+            layer_move_up_command();
+        } else palette_import_layer_colors_command();
     }
 
     if (keyPressed == 40) { // ArrowDown
-        palette_add_color_command();
+        if (event.ctrlKey) {
+            layer_move_down_command();
+        } else palette_add_color_command();
     }
+
+    if (keyPressed == 37) { // ArrowLeft
+        history_back_command(event.ctrlKey ? true : false);
+    }
+
+    if (keyPressed == 39) { // ArrowRight
+        history_forward_command(event.ctrlKey ? true : false);
+    }
+
 }

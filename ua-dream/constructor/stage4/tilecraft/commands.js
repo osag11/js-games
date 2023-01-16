@@ -12,6 +12,11 @@ function inverse_selection_switch_command() {
     return selectionModel.inverse;
 }
 
+function selection_tool_close_path_switch_command() {
+
+    selectionTool.closePath = !selectionTool.closePath;
+}
+
 function delete_selection_active_point_command() {
 
     let nextActivePoint = selectionTool.points[selectionTool.points.indexOf(selectionTool.activePoint) - 1];
@@ -23,12 +28,13 @@ function delete_selection_active_point_command() {
 }
 
 function fill_selection_tiles_command() {
-    let selectionPoints = selectionTool.getInterpolationPoints();
+    let selectionPoints = selectionTool.useInterpolation ? selectionTool.getInterpolationPoints() : selectionTool.points;
     let shift = layer().gridSize / 2;
+    let paletteColor = nextPaletteColor();
     for (let sp of selectionPoints) {
 
         let p = {
-            c: sp.c = randomColor ? generateColor() : pickerColor(),
+            c: sp.c = hexPalette ? paletteColor : randomColor ? generateColor() : pickerColor(),
             x: sp.x - shift,
             y: sp.y - shift
         }
@@ -45,7 +51,7 @@ function make_selection_from_layer_tiles_command() {
 }
 
 function reduce_selection_base_points_command() {
-    let size = layer().gridSize/2;    
+    let size = layer().gridSize / 2;
     selectionTool.points = selectionTool.reducePoints(size);
     selectionTool.center();
 }
@@ -81,12 +87,7 @@ function feel_tiles_grid_command() {
     while (y < canvas.height) {
         let color;
         if (hexPalette) {
-            idx++;
-            if (idx > paletteColors.length - 1) {
-                idx = 0;
-            }
-            color = paletteColors[idx];
-
+            color = nextPaletteColor();
         } else if (randomColor)
             color = generateColor();
         else
@@ -154,6 +155,39 @@ function help_switch_command() {
     return help;
 }
 
+function observer_switch_command() {
+    // show state of all tools
+}
+
+function select_all_command() {
+    layer().selection = [...layer().shapes];
+    // for (let s of layer().shapes) {
+    //     layer().selection.push(
+    //         { x: s.x, y: s.y, c: s.c }
+    //     );
+
+    // }
+}
+
+let clipboard = [];
+
+function clipboard_paste_command() {
+    if (clipboard && clipboard.length > 0) {
+        layer().shapes = layer().shapes.concat([...clipboard.map((s) => { return { x: s.x, y: s.y, c: s.c } })])
+    }
+}
+
+function clipboard_copy_command() {
+
+    let filtered = [];
+    for (let s of layer().shapes) {
+        if (layer().selection.indexOf(s) >= 0) {
+            filtered.push(s);
+        }
+    }
+
+    clipboard = [...filtered];
+}
 function clear_layer_shapes_command() {
     if (layer().visible) { // if layer not activated - skip action
 
@@ -191,6 +225,11 @@ function clear_layer_shapes_command() {
             layer().shapes = [];
         }
     }
+}
+
+function clear_selection_command() {
+    selectionTool.points = [];
+    layer().selection = [];
 }
 
 function selection_tool_disable_command() {
@@ -303,6 +342,24 @@ function layer_remove_command() {
     removeLayer();
 }
 
+function layer_move_up_command() {
+    let nextUp = model.layers[model.activeLayer - 1];
+    if (nextUp) {
+        model.layers[model.activeLayer - 1] = model.layers[model.activeLayer];
+        model.layers[model.activeLayer] = nextUp;
+        model.activeLayer--;
+    }
+}
+
+function layer_move_down_command() {
+    let nextDown = model.layers[model.activeLayer + 1];
+    if (nextDown) {
+        model.layers[model.activeLayer + 1] = model.layers[model.activeLayer];
+        model.layers[model.activeLayer] = nextDown;
+        model.activeLayer++;
+    }
+}
+
 function debug_mode_switch_command() {
     debugOn = !debugOn;
     return debugOn;
@@ -315,8 +372,29 @@ function layer_clone_mode_switch_command() {
 
 function background_command(action) {
     if (action === "add") {//add
-        model.background.push(pickerModel.rgbaColor);
-        model.backgroundIdx = model.background.length - 1;
+
+        const image = new Image();
+        let img_uri;
+        navigator.clipboard.readText()
+            .then(
+                (text) => {
+                    console.log(text);
+                    img_uri = text;
+                    image.src = img_uri;
+                }
+            );
+
+        image.onload = function () {
+            model.background.push(`url("${img_uri}")`);
+            model.backgroundIdx = model.background.length - 1;
+            applyBackground();
+        };
+
+        image.onerror = function () {
+            model.background.push(pickerModel.rgbaColor);
+            model.backgroundIdx = model.background.length - 1;
+            applyBackground();
+        };
     }
     else if (action === "remove") {//remove
         model.background.splice(model.backgroundIdx, 1);
@@ -325,9 +403,11 @@ function background_command(action) {
     else if (action === "rotate") {
         model.backgroundIdx++;
         if (model.backgroundIdx > model.background.length - 1) model.backgroundIdx = 0;
-        canvas.style.background = model.background[model.backgroundIdx] ?? 'black';
+        applyBackground();
     }
+}
 
+function applyBackground() {
     canvas.style.background = model.background[model.backgroundIdx] ?? 'black';
     canvas.style.backgroundSize = 'contain';
     console.log(JSON.stringify(model.background));
@@ -349,8 +429,7 @@ function save_picture_command() {
     }, 1000)
 }
 
-function palette_import_layer_colors_command(destroy) {
-    let gridSize = layer().gridSize;
+function palette_import_layer_colors_command() {
     if (layer().shapes.length == 0) return;
     let clonedShapes = [...layer().shapes];
     hexPalette = true;
@@ -371,11 +450,6 @@ function palette_import_layer_colors_command(destroy) {
 
     paletteColors = [];
 
-    if (destroy) {//destroy layer tiles
-        layer().shapesHistory = [...layer().shapes]; // make backup
-        layer().shapes = [];
-    }
-
     let x = 0;
     let y = 0;
 
@@ -383,28 +457,45 @@ function palette_import_layer_colors_command(destroy) {
 
         if (paletteColors.indexOf(cS.c) < 0) {
             paletteColors.push(cS.c);
-
-            if (destroy) {
-                layer().shapes.unshift({ x: x, y: y, c: cS.c });
-                x += gridSize;
-
-                if (x > canvas.width) {
-                    x = 0;
-                    y += gridSize;
-                }
-            }
         }
     }
 }
 
-function history_back_command() {
+function history_back_command(bySelectionSize) {
+    if (bySelectionSize && selectionTool.points.length > 0) {
+        for (let i = 0; i < selectionTool.points.length; i++) {
+            let s = layer().shapes.pop();
+            if (s)
+                layer().shapesHistory.push(s);
+            else return i;
+        }
+    }
+
     let s = layer().shapes.pop();
-    if (s) layer().shapesHistory.push(s);
+    if (s) {
+        layer().shapesHistory.push(s);
+        return 1;
+    }
+
+    return 0;
 }
 
-function history_forward_command() {
+function history_forward_command(bySelectionSize) {
+
+    if (bySelectionSize && selectionTool.points.length > 0) {
+        for (let i = 0; i < selectionTool.points.length; i++) {
+            let s = layer().shapesHistory.pop();
+            if (s) layer().shapes.push(s);
+            else return i;
+        }
+    }
+
     let s = layer().shapesHistory.pop();
-    if (s) layer().shapes.push(s);
+    if (s) {
+        layer().shapes.push(s);
+        return 1;
+    }
+    return 0;
 }
 
 function palette_add_color_command() {

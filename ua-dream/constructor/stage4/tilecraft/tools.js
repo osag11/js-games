@@ -324,11 +324,29 @@ var openFile = function (event) {
         let jsonModel = JSON.parse(text)
         model.layers = jsonModel.layers;
         model.selectionPoints = jsonModel.selectionPoints;
+        model.background = jsonModel.background;
+        model.backgroundIdx = jsonModel.backgroundIdx;
+
+        // apply        
         selectionTool.points = model.selectionPoints;
     };
     reader.readAsText(input.files[0]);
 };
 
+
+let hexPaletteIdx = 0;
+function nextPaletteColor() {
+    let color;
+    if (paletteColors.length > 0) {
+        hexPaletteIdx++;
+        if (hexPaletteIdx > paletteColors.length - 1) {
+            hexPaletteIdx = 0;
+        }
+        color = paletteColors[hexPaletteIdx];
+        return color;
+    }
+    return "#aaa";
+}
 // with respect to eperezcosano
 // https://eperezcosano.github.io/hex-grid/
 let hexPalette = false;
