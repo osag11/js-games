@@ -17,6 +17,8 @@ const btnState = {
     help_state: "help",
     inverse_selection_state: "selectionModel.inverse",
     selection_tool_state: "selectionModel.enabled",
+    selection_close_path_state: "selectionTool.closePath",
+    selection_interpolation_state: "selectionTool.useInterpolation",
     palette_state: "hexPalette",
     edit_mode_state: "layer().edit_mode",
     move_mode_state: "layer().move_mode",
@@ -174,11 +176,12 @@ onlongtouch = function () {
         if (btn_hold_action) {
             let res = eval(btn_hold_action);
             console.log(`${btn_hold_action} => ${res}`);
+            refreshBtnState();
+
         }
         
         btn_tap_action = null;
         if (holdInProgress) onlongtouch();
-        refreshBtnState();
 
     }, longTouchRepeatInterval)
 };

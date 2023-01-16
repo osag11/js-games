@@ -53,9 +53,9 @@ const lerp = (a, b, amount) => (1 - amount) * a + amount * b;
 const polylineShape = () => ({
     color: undefined,
     points: [],
+    activePoint: null, hoverPoint: null, insertPoint: null, centerPoint: null,
     closePath: true,
     useInterpolation: true,
-    activePoint: null, hoverPoint: null, insertPoint: null, centerPoint: null,
     cursor: "crosshair",
     isCenterSelected: false,
 
@@ -104,7 +104,7 @@ const polylineShape = () => ({
                 let minX = Math.min(p1.x, p2.x);
                 let maxY = Math.max(p1.x, p2.x);
                 let minY = Math.min(p1.x, p2.x);
-
+// here is bug, not all cases handled
                 if (ip.x <= maxX && ip.x >= minX || ip.y <= maxY && ip.y >= minY) {
                     result.push(ip);
                 }
@@ -141,7 +141,6 @@ const polylineShape = () => ({
         }
 
         return result;
-
     },
 
     center() {

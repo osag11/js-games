@@ -13,8 +13,11 @@ function inverse_selection_switch_command() {
 }
 
 function selection_tool_close_path_switch_command() {
-
     selectionTool.closePath = !selectionTool.closePath;
+}
+
+function selection_tool_interpolation_switch_command() {
+    selectionTool.useInterpolation = !selectionTool.useInterpolation;
 }
 
 function delete_selection_active_point_command() {
@@ -27,14 +30,14 @@ function delete_selection_active_point_command() {
     selectionTool.center();
 }
 
-function fill_selection_tiles_command() {
+function fill_selection_tiles_command(paletteStrategy = 'next') {
     let selectionPoints = selectionTool.useInterpolation ? selectionTool.getInterpolationPoints() : selectionTool.points;
     let shift = layer().gridSize / 2;
-    let paletteColor = nextPaletteColor();
+    let paletteColor = nextPaletteColor(1);
     for (let sp of selectionPoints) {
 
         let p = {
-            c: sp.c = hexPalette ? paletteColor : randomColor ? generateColor() : pickerColor(),
+            c: hexPalette ? paletteStrategy === 'sequence' ? nextPaletteColor(paletteSequenceLength) : paletteColor : randomColor ? generateColor() : pickerColor(),
             x: sp.x - shift,
             y: sp.y - shift
         }
@@ -56,23 +59,6 @@ function reduce_selection_base_points_command() {
     selectionTool.center();
 }
 
-function delete_selection_points_command() {
-
-    if (selectionTool.points.length > 0 && layer().selection?.length > 0) {
-        layer().selection = [];
-    }
-    else {
-        selectionTool.points = [];
-    }
-
-    selectionTool.dispose();
-}
-
-function grid_switch_command(callback) {
-    gridOn = !gridOn;
-    callback = gridOn;
-    return gridOn;
-}
 
 const minTileSize = 8;
 function feel_tiles_grid_command() {
@@ -80,18 +66,18 @@ function feel_tiles_grid_command() {
     if (!layer().visible) return;
 
     const gridSize = layer().gridSize > minTileSize ? layer().gridSize : minTileSize;
-    let x = 0, y = 0, idx = 0;
+    let x = 0, y = 0;
 
     paletteColors = paletteColors.map(x => x.startsWith('#') ? x : '#' + colorByName(x));
 
     while (y < canvas.height) {
         let color;
         if (hexPalette) {
-            color = nextPaletteColor();
+            color = nextPaletteColor(paletteSequenceLength);
         } else if (randomColor)
             color = generateColor();
         else
-            color = rgba2hex(pickerModel.rgbaColor);
+            color = pickerColor();
 
 
         if (selectionModel.inverse)
@@ -108,6 +94,41 @@ function feel_tiles_grid_command() {
     }
 }
 
+let paletteSequenceLength = 3;
+
+function apply_selection_color_command(paletteStrategy) {
+    if (!layer().selection) return;
+
+    let paletteNextColor = nextPaletteColor(1);
+
+    for (let sp of layer().selection) {
+        if (paletteStrategy) {
+            sp.c = paletteStrategy === 'sequence' ? nextPaletteColor(paletteSequenceLength) : paletteNextColor;
+        } else {
+            sp.c = hexPalette ? paletteNextColor : randomColor ? generateColor() : pickerColor();
+        }
+    }
+}
+
+function delete_selection_points_command() {
+
+    if (selectionTool.points.length > 0 && layer().selection?.length > 0) {
+        layer().selection = [];
+    }
+    else {
+        selectionTool.points = [];
+    }
+
+    selectionTool.dispose();
+}
+
+
+function grid_switch_command(callback) {
+    gridOn = !gridOn;
+    callback = gridOn;
+    return gridOn;
+}
+
 function grid_plus_command() {
     if (layer().gridSize < 1) {
         layer().gridSize += 0.1
@@ -115,6 +136,8 @@ function grid_plus_command() {
         layer().gridSize++;
         initGrid(layer().gridSize < 2 ? 2 : layer().gridSize * (layer().zoom ?? 1));//do not let be grid size less than 2
     }
+
+    return layer().gridSize;
 }
 
 function grid_minus_command() {
@@ -122,20 +145,39 @@ function grid_minus_command() {
         layer().gridSize -= 0.1
     } else {
         layer().gridSize--;
-        initGrid(layer().gridSize < 2 ? 2 : layer().gridSize * (layer().zoom ?? 1));//do not let be grid size less than 2
+        initGrid(layer().gridSize < 2 ? 2 : layer().gridSize * (layer().zoom ?? 1));//do not let be grid size less than 2        
     }
+
+    return layer().gridSize;
 }
 
 function transparency_minus_command() {
     if (!layer().transparency) layer().transparency = 255;
     layer().transparency--;
     if (layer().transparency <= 1) layer().transparency = 1;
+    return layer().transparency;
 }
 
 function transparency_plus_command() {
     if (!layer().transparency) layer().transparency = 255;
     layer().transparency++;
     if (layer().transparency > 255) layer().transparency = 255;
+    return layer().transparency;
+}
+
+function palette_sequence_lenght_minus() {
+    paletteSequenceLength--;
+    if (paletteSequenceLength < 1) paletteSequenceLength = 1;
+    console.log(paletteSequenceLength);
+    return paletteSequenceLength;
+}
+
+function palette_sequence_lenght_plus() {
+    paletteSequenceLength++;
+    if (paletteSequenceLength > 100) paletteSequenceLength = 100;
+    console.log(paletteSequenceLength);
+    return paletteSequenceLength;
+
 }
 
 function hex_palette_switch_command() {
@@ -159,15 +201,6 @@ function observer_switch_command() {
     // show state of all tools
 }
 
-function select_all_command() {
-    layer().selection = [...layer().shapes];
-    // for (let s of layer().shapes) {
-    //     layer().selection.push(
-    //         { x: s.x, y: s.y, c: s.c }
-    //     );
-
-    // }
-}
 
 let clipboard = [];
 
@@ -188,6 +221,11 @@ function clipboard_copy_command() {
 
     clipboard = [...filtered];
 }
+
+function select_all_command() {
+    layer().selection = [...layer().shapes];
+}
+
 function clear_layer_shapes_command() {
     if (layer().visible) { // if layer not activated - skip action
 
@@ -450,9 +488,6 @@ function palette_import_layer_colors_command() {
 
     paletteColors = [];
 
-    let x = 0;
-    let y = 0;
-
     for (let cS of clonedShapes) {
 
         if (paletteColors.indexOf(cS.c) < 0) {
@@ -499,7 +534,7 @@ function history_forward_command(bySelectionSize) {
 }
 
 function palette_add_color_command() {
-    let color = generateColor();
+    let color = randomColor ? generateColor() : pickerColor();
     paletteColors.push(color);
     injectColor(color);
 }

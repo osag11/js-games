@@ -335,10 +335,18 @@ var openFile = function (event) {
 
 
 let hexPaletteIdx = 0;
-function nextPaletteColor() {
+let hexPaletteSwitchCounter = 0;
+
+function nextPaletteColor(sequence = 1) {
     let color;
+
     if (paletteColors.length > 0) {
-        hexPaletteIdx++;
+        hexPaletteSwitchCounter++;
+        
+        if (hexPaletteSwitchCounter >= sequence) {
+            hexPaletteIdx++;
+            hexPaletteSwitchCounter = 0;
+        }
         if (hexPaletteIdx > paletteColors.length - 1) {
             hexPaletteIdx = 0;
         }

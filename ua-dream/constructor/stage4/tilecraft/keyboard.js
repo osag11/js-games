@@ -17,11 +17,17 @@ function handleKeyDown(event) {
     }
 
     if (keyPressed == 107 || keyPressed == 187) {// +
-        grid_plus_command();
+        if (event.altKey) {
+            palette_sequence_lenght_plus();
+        } else
+            grid_plus_command();
     }
 
     if (keyPressed == 109 || keyPressed == 189) {// -
-        grid_minus_command();
+        if (event.altKey) {
+            palette_sequence_lenght_minus();
+        } else
+            grid_minus_command();
     }
 
     if (keyPressed == 111 || keyPressed == 188) {// NumpadDivide or <
@@ -71,12 +77,9 @@ function handleKeyDown(event) {
         edit_mode_switch_command();
     }
 
-    // TODO:
-    // Layer up (swap -1), Layer down (swap +1)
-
     if (keyPressed == 32) {// Space
 
-        if (event.ctrlKey) {
+        if (event.ctrlKey && event.target == document.body) {
             make_selection_from_layer_tiles_command();
 
         } else if (event.shiftKey) {
@@ -90,9 +93,12 @@ function handleKeyDown(event) {
     if (keyPressed == 13) {// Enter
 
         if (event.ctrlKey) {
-            fill_selection_tiles_command();
+            fill_selection_tiles_command('next');
 
-        } else {
+        } else if (event.altKey) {
+            fill_selection_tiles_command('sequence');
+        }
+        else {
             apply_selection_command();
         }
     }
@@ -173,7 +179,9 @@ function handleKeyDown(event) {
     }
 
     if (keyPressed == 73) {// I
-        inverse_selection_switch_command();
+        if (event.ctrlKey) {
+            selection_tool_interpolation_switch_command();
+        } else inverse_selection_switch_command();
     }
 
     if (keyPressed == 85) {// U
@@ -185,6 +193,13 @@ function handleKeyDown(event) {
         if (event.ctrlKey) {
             clipboard_paste_command();
         } else all_layers_visible_command(true);
+    }
+
+    if (keyPressed == 87) {// W
+        if (event.altKey) {
+            apply_selection_color_command('next');
+        } else 
+        apply_selection_color_command('sequence');
     }
 
     if (keyPressed == 68) {// D
