@@ -8,7 +8,7 @@ function handleKeyDown(event) {
     if (namingInProgress) return;
 
     if (keyPressed == 46) { // Del
-        if (selectionToolModel.enabled) {
+        if (selectionModel.enabled) {
             delete_selection_active_point_command();
         }
         else {
@@ -53,11 +53,16 @@ function handleKeyDown(event) {
     }
 
     if (keyPressed == 27) {// Esc
-        if (selectionToolModel.enabled) {
+        if (selectionModel.enabled) {
             delete_selection_points_command();
+            //if( selectionTool.points.length == 0) selection_tool_switch_command();
+
         } else {
             clear_layer_shapes_command();
         }
+    }
+
+    if (keyPressed == 67) {// C
     }
 
     if (keyPressed == 69) {// E 
@@ -72,11 +77,23 @@ function handleKeyDown(event) {
     // Layer up (swap -1), Layer down (swap +1)
 
     if (keyPressed == 32) {// Space
-        selection_tool_switch_command();
+
+        if (event.ctrlKey) {
+            make_selection_from_layer_tiles_command();
+
+        } else {
+            selection_tool_switch_command();
+        }
     }
 
     if (keyPressed == 13) {// Enter
-        apply_selection_command(selectionToolModel.inversed);
+
+        if (event.ctrlKey) {
+            fill_selection_tiles_command();
+
+        } else {
+            apply_selection_command();
+        }
     }
 
     if (keyPressed == 82) {// R
@@ -144,7 +161,11 @@ function handleKeyDown(event) {
     }
 
     if (keyPressed == 73) {// I
-        inversed_selection_switch_command();
+        inverse_selection_switch_command();
+    }
+
+    if (keyPressed == 85) {// U
+        reduce_selection_base_points_command();
     }
 
     if (keyPressed == 86) {// V

@@ -362,15 +362,38 @@ duplicate some commands according  context. refresh should rely on element names
             </tr>
 
             <tr>
-                <td><button name="inversed_selection_state" onclickaction="inversed_selection_switch_command()" onmousedown="btnMouseHoldStart(this)"
+                <td><button name="inverse_selection_state" onclickaction="inverse_selection_switch_command()" onmousedown="btnMouseHoldStart(this)"
                   ontouchstart="btnTouchStart(this)">
                   <p>I</p>Inverse selection
+                </button></td>
+
+                <td><button name="selection_tool_state" onclickaction="selection_tool_switch_command()" onmousedown="btnMouseHoldStart(this)"
+                  ontouchstart="btnTouchStart(this)">
+                  <p>Space</p>Selection
                 </button></td>
 
                  <td><button onclickaction="feel_tiles_grid_command()" onmousedown="btnMouseHoldStart(this)"
                   ontouchstart="btnTouchStart(this)">
                   <p>F</p>Fill tiles
                 </button></td>
+            </tr>
+
+              <tr>
+                <td><button onclickaction="apply_selection_command()" onmousedown="btnMouseHoldStart(this)"
+                  ontouchstart="btnTouchStart(this)">
+                  <p>Enter</p>Apply selection to layer
+                </button></td>
+
+                <td><button  onclickaction="fill_selection_tiles_command()" onmousedown="btnMouseHoldStart(this)"
+                  ontouchstart="btnTouchStart(this)">
+                  <p>Ctrl + Enter</p>Fill layer by selection
+                </button></td>
+
+                <td><button onclickaction="make_selection_from_layer_tiles_command()" onmousedown="btnMouseHoldStart(this)"
+                  ontouchstart="btnTouchStart(this)">
+                  <p>Ctrl + Space</p>Make Selection from layer
+                </button></td>
+
             </tr>
           </table>
         </section>

@@ -25,7 +25,7 @@ function drawLayersUI() {
 
     ctx2.font = "16px serif";
 
-    if (selectionToolModel.enabled) {
+    if (selectionModel.enabled) {
         ctx2.fillStyle = alertColor;
         ctx2.fillText(`selection tool enabled`, 5, 25);
 
@@ -321,7 +321,10 @@ var openFile = function (event) {
 
     reader.onload = function () {
         var text = reader.result;
-        model.layers = JSON.parse(text).layers;
+        let jsonModel = JSON.parse(text)
+        model.layers = jsonModel.layers;
+        model.selectionPoints = jsonModel.selectionPoints;
+        selectionTool.points = model.selectionPoints;
     };
     reader.readAsText(input.files[0]);
 };

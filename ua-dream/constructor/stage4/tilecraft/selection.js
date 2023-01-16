@@ -1,42 +1,38 @@
-const selectionToolModel = {
+const selectionModel = {
     x: 0, y: 0,
     lx: 0, ly: 0,
     button: 0,
     hold: 0,
 
     enabled: false,
-    //dragging: false,
     moving: false,
-    inversed: false
+    inverse: false
 };
 
 
 function handleMouseEvents(e) {
 
     const bounds = canvas.getBoundingClientRect();
-    selectionToolModel.x = e.pageX - bounds.left - window.scrollX - markRadius;
-    selectionToolModel.y = e.pageY - bounds.top - window.scrollY - markRadius;
+    selectionModel.x = e.pageX - bounds.left - window.scrollX - markRadius;
+    selectionModel.y = e.pageY - bounds.top - window.scrollY - markRadius;
+
     if (gridOn) {
-        selectionToolModel.x = roundNearest(selectionToolModel.x, gridSize);
-        selectionToolModel.y = roundNearest(selectionToolModel.y, gridSize);
+        selectionModel.x = roundNearest(selectionModel.x, gridSize);
+        selectionModel.y = roundNearest(selectionModel.y, gridSize);
     }
 
-    if (selectionToolModel.x > 0 && selectionToolModel.x < canvas.width && selectionToolModel.y > 0 && selectionToolModel.y < canvas.height) {
+    if (selectionModel.x > 0 && selectionModel.x < canvas.width && selectionModel.y > 0 && selectionModel.y < canvas.height) {
 
         if (e.type === "mousedown") {
-            selectionToolModel.button = true;
+            selectionModel.button = true;
         }
 
         if (e.type === "mouseup") {
-            selectionToolModel.button = false;
-            selectionToolModel.hold = false;
+            selectionModel.button = false;
+            selectionModel.hold = false;
         }
 
-        selectionToolModel.hold = selectionToolModel.button && e.type === "mousemove";
-
-        //debugInfo[0] = e.type;
-
-        debugInfo[0] = e.type + ' ' + JSON.stringify(selectionToolModel);
+        selectionModel.hold = selectionModel.button && e.type === "mousemove";
 
         return updateSelection();
     }
@@ -50,6 +46,9 @@ function handleMouseEvents(e) {
 
 
 const point = (x, y) => ({ x, y });
+//  linear interpolation between two numbers  
+// https://quickref.me/calculate-the-linear-interpolation-between-two-numbers
+const lerp = (a, b, amount) => (1 - amount) * a + amount * b;
 
 const polylineShape = () => ({
     color: undefined,
@@ -77,9 +76,76 @@ const polylineShape = () => ({
         return idx;
     },
 
+    getInterpolationPoints() {
+        let result = [];
+        let pointsCopy = [...this.points];
+        if (this.points.length > 2) {
+            pointsCopy = pointsCopy.concat(pointsCopy[0]);
+        }
+
+        for (let i = 1; i < pointsCopy.length; i++) {
+            let p1 = pointsCopy[i - 1];
+            let p2 = pointsCopy[i];
+            let dist = getDistance(p1, p2);
+            let amount = dist / layer().gridSize;
+            let iterator = 0;
+
+            result.push(p1);
+
+            while (iterator <= 1) {
+                iterator += 1 / amount;
+                let ip = point(
+                    lerp(p2.x, p1.x, iterator),
+                    lerp(p2.y, p1.y, iterator)
+                );
+
+                let maxX = Math.max(p1.x, p2.x);
+                let minX = Math.min(p1.x, p2.x);
+                let maxY = Math.max(p1.x, p2.x);
+                let minY = Math.min(p1.x, p2.x);
+
+                if (ip.x <= maxX && ip.x >= minX || ip.y <= maxY && ip.y >= minY) {
+                    result.push(ip);
+                }
+            }
+        }
+
+        return result;
+    },
+
+    reducePoints(minInterval) {
+        let result = [];
+        let pointsCopy = [...this.points];
+        if (this.points.length > 2) {
+            pointsCopy = pointsCopy.concat(pointsCopy[0]);
+        }
+
+        let iterator = 0;
+        let initialPoint = pointsCopy[iterator];
+        result.push(initialPoint);
+        let nextPoint = pointsCopy[iterator];
+
+        while (nextPoint) {
+
+            nextPoint = pointsCopy[iterator];
+            if(!nextPoint) break;
+
+            let dist = getDistance(initialPoint, nextPoint);
+
+            if (dist > minInterval) {
+                result.push(nextPoint);
+                initialPoint = pointsCopy[iterator]
+            }
+            iterator++;
+        }
+      
+        return result;
+
+    },
+
     center() {
 
-        if (this.points.length == 0) {
+        if (this.points.length < 3) {
             this.centerPoint = null;
             return this.centerPoint;
         }
@@ -95,6 +161,14 @@ const polylineShape = () => ({
         return this.centerPoint;
     },
 
+    dispose() {
+        this.activePoint = null;
+        this.hoverPoint = null;
+        this.insertPoint = null;
+        this.center();
+        selectionModel.moving = false;
+    },
+
     move(dx, dy) {
         for (const p of this.points) {
             p.x += dx;
@@ -108,6 +182,8 @@ const polylineShape = () => ({
         ctx.lineWidth = 2;
         ctx.beginPath();
         canvas.style.cursor = this.cursor;
+        ctx.strokeStyle = this.color;
+        ctx.fillStyle = this.color;
 
         if (this.points && this.points.length > 0) {
             ctx.moveTo(this.points[0].x, this.points[0].y)
@@ -117,47 +193,63 @@ const polylineShape = () => ({
             ctx.lineTo(p.x, p.y)
         }
 
-        if (this.fill) {
-            ctx.fillStyle = this.color;
-            ctx.fill();
-        } else {
-            ctx.strokeStyle = this.color;
-            ctx.stroke();
-        }
-
         ctx.closePath();
+        ctx.stroke();
+
+        // if (this.fill) {
+        //     ctx.fill();
+        // } else {
+        //     ctx.stroke();
+        // }
 
         // draw marks
         let contrastBgColor = getContrastBgColor();
 
-        if (this.fill) ctx.strokeStyle = contrastBgColor;
-        ctx.fillStyle = contrastBgColor;
         ctx.font = `${markRadius * 4}px serif`;
+        ctx.strokeStyle = this.color;
+        ctx.beginPath();
 
         for (const p of this.points) {
+
             ctx.moveTo(p.x + markRadius, p.y);
             ctx.arc(p.x, p.y, markRadius, 0, Math.PI * 2);
-
-            ctx.fillText(this.points.indexOf(p), p.x + markRadius * 2, p.y + markRadius);
-
         }
         ctx.stroke();
 
-        ctx.strokeStyle = contrastBgColor;
-        if (this.hoverPoint) {
-            drawCircle(this.hoverPoint, contrastBgColor, markRadius * 2);
-            //ctx.strokeRect(this.hoverPoint.x-markRadius * 2, this.hoverPoint.y-markRadius * 2, markRadius * 4, markRadius * 4);
-
+        ctx.fillStyle = contrastBgColor;
+        for (const p of this.points) {
+            ctx.fillText(this.points.indexOf(p), p.x + markRadius * 2, p.y + markRadius);
         }
 
+        ctx.lineWidth = 0.8;
+        ctx.strokeStyle = this.color;
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        for (const p of this.getInterpolationPoints()) {
+
+            ctx.moveTo(p.x + markRadius, p.y);
+            ctx.arc(p.x, p.y, markRadius * 0.6, 0, Math.PI * 2);
+        }
+
+        ctx.stroke();
+
+        ctx.lineWidth = 2;
+
+        if (this.hoverPoint) {
+            //drawCircle(this.hoverPoint, contrastBgColor, markRadius * 2);
+            ctx.strokeStyle = contrastBgColor;
+            ctx.strokeRect(this.hoverPoint.x - markRadius * 2, this.hoverPoint.y - markRadius * 2, markRadius * 4, markRadius * 4);
+        }
 
         if (this.insertPoint) {
             //drawCircle(this.insertPoint, "blue", markRadius * 2 + 1);
+            ctx.strokeStyle = contrastBgColor;
             ctx.strokeRect(this.insertPoint.x - markRadius * 2, this.insertPoint.y - markRadius * 2, markRadius * 4, markRadius * 4);
+        }
 
-        }       
-        if (this.activePoint&& !this.insertPoint) {
-            drawCircle(this.activePoint, contrastBgColor, markRadius * 2);
+        if (this.activePoint) { //&& !this.insertPoint
+            drawCircle(this.activePoint, contrastBgColor, markRadius * 1.5);
+            ctx.stroke();
         }
 
 
@@ -165,11 +257,11 @@ const polylineShape = () => ({
             ctx.lineWidth = this.isCenterSelected ? markRadius * 2 : markRadius * 1;
             drawCircle(this.centerPoint, this.isCenterSelected ? contrastBgColor : this.color, markRadius * 4);
 
-            ctx.fillStyle = this.color;
             ctx.font = `${markRadius * 4}px serif`;
-            ctx.fillText(selectionToolModel.inversed ? 'inversed' : '', this.centerPoint.x - markRadius * 6, this.centerPoint.y + markRadius * 6);
-
+            ctx.fillStyle = this.color;
+            ctx.fillText(selectionModel.inverse ? 'inverse' : '', this.centerPoint.x - markRadius * 6, this.centerPoint.y + markRadius * 8);
         }
+
     },
 
     closest(pos, dist = markRadius * 2) {
@@ -201,66 +293,61 @@ let selectionTool = polylineShape();
 
 function updateSelection() {
 
-    selectionTool.hoverPoint = selectionTool.closest(selectionToolModel);
+    selectionTool.hoverPoint = selectionTool.closest(selectionModel);
 
     selectionTool.cursor = selectionTool.hoverPoint ? "move" : "crosshair";
 
-    if (selectionToolModel.button) {
+    if (selectionModel.button) {
 
-        selectionTool.isCenterSelected = selectionTool.centerPoint ? getDistance(selectionTool.centerPoint, selectionToolModel) <= markRadius * 4 : false;
+        selectionTool.isCenterSelected = selectionTool.centerPoint ? getDistance(selectionTool.centerPoint, selectionModel) <= markRadius * 4 : false;
         if (selectionTool.isCenterSelected) {
 
-            selectionToolModel.moving = true;//!selectionToolModel.moving;
+            selectionModel.moving = true;
             selectionTool.cursor = "move";
-            selectionTool.activePoint = undefined;
-            selectionTool.insertPoint = undefined;
         }
     }
 
 
-    if (selectionToolModel.moving && selectionToolModel.hold) {
-        selectionTool.move(selectionToolModel.x - selectionToolModel.lx, selectionToolModel.y - selectionToolModel.ly);
+    if (selectionModel.moving && selectionModel.hold) {
+        selectionTool.move(selectionModel.x - selectionModel.lx, selectionModel.y - selectionModel.ly);
         selectionTool.cursor = "move";
 
     }
     else {
-        if (selectionToolModel.button && !selectionToolModel.hold) {
-            let closest = selectionTool.closest(selectionToolModel);
+        if (selectionModel.button && !selectionModel.hold) {
+            let closest = selectionTool.closest(selectionModel);
 
             if (closest) selectionTool.insertPoint = closest;
 
             selectionTool.activePoint = closest;
 
 
-            if (selectionTool.activePoint === undefined && selectionToolModel.button && !selectionToolModel.moving) {
+            if (selectionTool.activePoint === undefined && selectionModel.button && !selectionModel.moving) {
                 selectionTool.cursor = "crosshair";
-                let p = point(selectionToolModel.x, selectionToolModel.y);
+                let p = point(selectionModel.x, selectionModel.y);
                 selectionTool.addPoint(p);
-                //selectionTool.activePoint = p;
-                selectionToolModel.button = false;
+                selectionModel.button = false;
                 selectionTool.center();
             }
-
         }
 
-        if (selectionToolModel.button && selectionToolModel.hold && !selectionToolModel.moving) {
+        if (selectionModel.button && selectionModel.hold && !selectionModel.moving) {
 
             if (selectionTool.activePoint) {
                 selectionTool.cursor = "move";
-                selectionTool.activePoint.x += selectionToolModel.x - selectionToolModel.lx;
-                selectionTool.activePoint.y += selectionToolModel.y - selectionToolModel.ly;
+                selectionTool.activePoint.x += selectionModel.x - selectionModel.lx;
+                selectionTool.activePoint.y += selectionModel.y - selectionModel.ly;
                 selectionTool.center();
             }
         }
-        selectionToolModel.moving = selectionToolModel.hold && selectionToolModel.moving;
+        selectionModel.moving = selectionModel.hold && selectionModel.moving;
     }
 
-    selectionTool.color = pickerModel.rgbaColor;
-    selectionToolModel.lx = selectionToolModel.x;
-    selectionToolModel.ly = selectionToolModel.y;
-    // selectionTool.cursor = selectionToolModel.moving ? "move" : "crosshair";
+    selectionTool.color = pickerColor();
+    selectionModel.lx = selectionModel.x;
+    selectionModel.ly = selectionModel.y;
 
-    //debugInfo[0] = JSON.stringify(selectionToolModel);
+    debugInfo[0] = JSON.stringify(selectionModel);
     debugInfo[1] = 'active: ' + JSON.stringify(selectionTool.activePoint);
     debugInfo[2] = 'hover: ' + JSON.stringify(selectionTool.hoverPoint);
     debugInfo[3] = 'insert: ' + JSON.stringify(selectionTool.insertPoint);
@@ -274,4 +361,5 @@ function drawCircle(pos, color = "red", size = 8) {
     ctx.beginPath();
     ctx.arc(pos.x, pos.y, size, 0, Math.PI * 2);
     ctx.stroke();
+    //ctx.closePath();
 }

@@ -7,9 +7,9 @@ function delete_previous_shape_command() {
     }
 }
 
-function inversed_selection_switch_command() {
-    selectionToolModel.inversed = !selectionToolModel.inversed;
-    return selectionToolModel.inversed;
+function inverse_selection_switch_command() {
+    selectionModel.inverse = !selectionModel.inverse;
+    return selectionModel.inverse;
 }
 
 function delete_selection_active_point_command() {
@@ -22,6 +22,34 @@ function delete_selection_active_point_command() {
     selectionTool.center();
 }
 
+function fill_selection_tiles_command() {
+    let selectionPoints = selectionTool.getInterpolationPoints();
+    let shift = layer().gridSize / 2;
+    for (let sp of selectionPoints) {
+
+        let p = {
+            c: sp.c = randomColor ? generateColor() : pickerColor(),
+            x: sp.x - shift,
+            y: sp.y - shift
+        }
+
+        layer().shapes.push(p);
+    }
+}
+
+function make_selection_from_layer_tiles_command() {
+    selectionModel.enabled = true;
+    let shift = layer().gridSize / 2;
+    selectionTool.points = [...layer().shapes].map(s => point(s.x + shift, s.y + shift));
+    selectionTool.center();
+}
+
+function reduce_selection_base_points_command() {
+    let size = layer().gridSize/2;    
+    selectionTool.points = selectionTool.reducePoints(size);
+    selectionTool.center();
+}
+
 function delete_selection_points_command() {
 
     if (selectionTool.points.length > 0 && layer().selection?.length > 0) {
@@ -30,14 +58,8 @@ function delete_selection_points_command() {
     else {
         selectionTool.points = [];
     }
-    // do not delete selection here. it happen on layer cleanup command if shapes length equals to selection length
 
-    selectionTool.activePoint = null;
-    selectionTool.hoverPoint = null;
-    selectionTool.insertPoint = null;
-    selectionToolModel.moving = false;
-
-    selectionTool.center();
+    selectionTool.dispose();
 }
 
 function grid_switch_command(callback) {
@@ -71,7 +93,7 @@ function feel_tiles_grid_command() {
             color = rgba2hex(pickerModel.rgbaColor);
 
 
-        if (selectionToolModel.inversed)
+        if (selectionModel.inverse)
             layer().shapes.unshift({ x: x, y: y, c: color });
         else
             layer().shapes.push({ x: x, y: y, c: color });
@@ -144,7 +166,7 @@ function clear_layer_shapes_command() {
                 let filtered = [];
                 for (let s of layer().shapes) {
 
-                    if (selectionToolModel.inversed) {
+                    if (selectionModel.inverse) {
                         // preserve selected, drop all other
                         if (layer().selection.indexOf(s) >= 0) {
                             filtered.push(s);
@@ -159,7 +181,7 @@ function clear_layer_shapes_command() {
 
                 layer().shapes = [...filtered];
 
-                if (!selectionToolModel.inversed) {
+                if (!selectionModel.inverse) {
                     layer().selection = [];
                 }
 
@@ -172,23 +194,24 @@ function clear_layer_shapes_command() {
 }
 
 function selection_tool_disable_command() {
-    selectionToolModel.enabled = false;
+    selectionModel.enabled = false;
     canvas.style.cursor = "crosshair";
     selectionTool.activePoint = null;
     selectionTool.hoverPoint = null;
 }
 
 function selection_tool_switch_command() {
-    selectionToolModel.enabled = !selectionToolModel.enabled;
+    selectionModel.enabled = !selectionModel.enabled;
+    selectionTool.center();
     layer().move_mode = false;
-    if (!selectionToolModel.enabled) {
+    if (!selectionModel.enabled) {
         canvas.style.cursor = "crosshair";
     }
 }
 
-function apply_selection_command(inverted = false) {
+function apply_selection_command() {
 
-    if (!selectionToolModel.enabled) {
+    if (!selectionModel.enabled) {
         return;
     }
 
@@ -205,7 +228,7 @@ function apply_selection_command(inverted = false) {
 
     for (let s of layer().shapes) {
         let pointInPath = ctx.isPointInPath(p2d, s.x + gridSize / 2, s.y + gridSize / 2);
-        if (inverted) pointInPath = !pointInPath;
+        if (selectionModel.inverse) pointInPath = !pointInPath;
 
         if (pointInPath) {
             layer().selection.push(s);
@@ -223,7 +246,7 @@ function edit_mode_switch_command() {
 function move_mode_switch_command(move_selection_copy = false) {
     layer().move_mode = !layer().move_mode;
 
-    if (selectionToolModel.enabled) {
+    if (selectionModel.enabled) {
         layer().move_mode = true;
         selection_tool_disable_command();
     }
@@ -312,6 +335,7 @@ function background_command(action) {
 
 function save_file_command() {
     let date = new Date().toISOString().split('T')[0];
+    model.selectionPoints = selectionTool.points;
     download(JSON.stringify(model), `tiles-${date}-${Date.now()}.json`, 'text/plain');
 }
 

@@ -32,7 +32,7 @@ function mouse_down(event) {
 
     screenshot_mode = false;
 
-    if (selectionToolModel.enabled) {
+    if (selectionModel.enabled) {
         screenshot_mode = true;
         handleMouseEvents(event);
         return;
@@ -83,7 +83,7 @@ function mouse_down(event) {
 
 function mouse_up(event) {
 
-    if (selectionToolModel.enabled) {
+    if (selectionModel.enabled) {
         handleMouseEvents(event);
         return;
     }
@@ -93,9 +93,6 @@ function mouse_up(event) {
     }
     event.preventDefault();
     is_dragging = false;
-
-
-
 }
 
 function mouse_out(event) {
@@ -113,7 +110,7 @@ function mouse_move(event) {
         return;
     }
 
-    if (selectionToolModel.enabled) {
+    if (selectionModel.enabled) {
         screenshot_mode = true;
         handleMouseEvents(event);
         return;
@@ -192,7 +189,7 @@ function mouse_move(event) {
 
                 } else {
 
-                    if (selectionToolModel.inversed) {
+                    if (selectionModel.inverse) {
                         for (let s of layer().shapes) {
                             if (layer().selection.indexOf(s) < 0) {
                                 s.x += dx;

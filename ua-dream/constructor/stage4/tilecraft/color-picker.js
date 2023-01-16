@@ -16,6 +16,8 @@ let pickerModel = {
     rgbaColor: 'rgba(0,255,0,1)'
 }
 
+const pickerColor = () => rgba2hex(pickerModel.rgbaColor);
+
 function initPicker() {
     ctxColor.rect(0, 0, colorBlock.width, colorBlock.height);
     fillGradient();
@@ -50,7 +52,7 @@ function alfaChannel(transparency) {
         return null;
 }
 
-function rgba2hex(orig) {
+function  rgba2hex(orig) {
     let rgb = orig.replace(/\s/g, '').match(/^rgba?\((\d+),(\d+),(\d+),?([^,\s)]+)?/i),
         hex = rgb ?
             (rgb[1] | 1 << 8).toString(16).slice(1) +

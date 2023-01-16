@@ -13,7 +13,7 @@ function main() {
     draw();
     if (gridOn) drawGrid(ctx);
 
-    if(selectionToolModel.enabled){
+    if(selectionModel.enabled){
         selectionTool.draw();
     }
 
@@ -56,5 +56,6 @@ function setup() {
 
     updateLayersList();
     canvas.style.cursor = selectionTool.cursor;
+    selectionTool.color = pickerModel.rgbaColor;
 
 }

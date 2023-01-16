@@ -15,7 +15,8 @@ let btn_tap_action = null;
 
 const btnState = {
     help_state: "help",
-    inversed_selection_state: "selectionToolModel.inversed",
+    inverse_selection_state: "selectionModel.inverse",
+    selection_tool_state: "selectionModel.enabled",
     palette_state: "hexPalette",
     edit_mode_state: "layer().edit_mode",
     move_mode_state: "layer().move_mode",
@@ -194,6 +195,7 @@ function btnHoldStart(btn) {
     btn_tap_action = action;
 }
 
+// TODO: rename btnTouch
 function btnTouchStart(btn) {
     var action = parseAction(btn);
     btn_tap_action = action;

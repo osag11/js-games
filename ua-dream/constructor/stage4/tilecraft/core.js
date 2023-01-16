@@ -288,7 +288,7 @@ function drawPointer() {
         ctx.fillStyle = contrastBgColor;
         ctx.font = `${gridSize / 4}px serif`;
         ctx.fillText(`MOVE`, (mouseEditor.x + gridSize / 10), (mouseEditor.y + gridSize / 2));
-        ctx.fillText(selectionToolModel.inversed ? 'inversed' : '', (mouseEditor.x + gridSize / 10), (mouseEditor.y + gridSize * 0.9));
+        ctx.fillText(selectionModel.inverse ? 'inverse' : '', (mouseEditor.x + gridSize / 10), (mouseEditor.y + gridSize * 0.9));
 
         ctx.lineWidth = 2;
         ctx.strokeStyle = contrastBgColor;
