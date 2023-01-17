@@ -231,7 +231,7 @@ function draw() {
 
     ctx.stroke(); // finalize
 
-    // draw selection
+    // draw selection tool
     if (layer().selection && layer().visible) {
         let gridSize = layer().gridSize;
         ctx.strokeStyle = contrastBgColor;

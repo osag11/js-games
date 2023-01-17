@@ -1,8 +1,8 @@
 const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d",{ willReadFrequently: true });
+const ctx = canvas.getContext("2d", { willReadFrequently: true });
 
 const toolsCanvas = document.getElementById("tools");
-const ctx2 = toolsCanvas.getContext("2d",{ willReadFrequently: true });
+const ctx2 = toolsCanvas.getContext("2d", { willReadFrequently: true });
 
 function main() {
 
@@ -13,7 +13,7 @@ function main() {
     draw();
     if (gridOn) drawGrid(ctx);
 
-    if(selectionModel.enabled){
+    if (selectionModel.enabled) {
         selectionTool.draw();
     }
 
@@ -57,5 +57,11 @@ function setup() {
     updateLayersList();
     canvas.style.cursor = selectionTool.cursor;
     selectionTool.color = pickerModel.rgbaColor;
+
+    selectionModel.mirrorAxis = {
+        p1: { x: canvas.width / 2, y: 50 },
+        p2: { x: canvas.width / 2, y: canvas.height - 50 },
+        selected: undefined
+    }
 
 }

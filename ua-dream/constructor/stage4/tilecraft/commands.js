@@ -31,7 +31,8 @@ function delete_selection_active_point_command() {
 }
 
 function fill_selection_tiles_command(paletteStrategy = 'next') {
-    let selectionPoints = selectionTool.useInterpolation ? selectionTool.getInterpolationPoints() : selectionTool.points;
+    let selectionPoints = selectionTool.getPoints();// selectionTool.useInterpolation ? selectionTool.getInterpolationPoints() : selectionTool.points;
+
     let shift = layer().gridSize / 2;
     let paletteColor = nextPaletteColor(1);
     for (let sp of selectionPoints) {
@@ -306,7 +307,7 @@ function apply_selection_command() {
     let p2d = new Path2D();
     ctx.strokeStyle = '#ffffff00';
     let gridSize = layer().gridSize;
-    for (const p of selectionTool.points) {
+    for (const p of selectionTool.getPoints()) {
         p2d.lineTo(p.x, p.y);
     }
     ctx.stroke(p2d);

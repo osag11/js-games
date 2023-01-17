@@ -67,7 +67,9 @@ function handleKeyDown(event) {
     if (keyPressed == 27) {// Esc
         handle_clear_command();
     }
-
+    if (keyPressed == 8) {// Backspace
+        selectionModel.mirrorAxis.enabled = !selectionModel.mirrorAxis.enabled;
+    }
     if (keyPressed == 69) {// E 
         if (event.target == document.body) {
             event.preventDefault();

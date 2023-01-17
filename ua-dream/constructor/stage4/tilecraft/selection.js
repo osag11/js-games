@@ -4,6 +4,13 @@ const selectionModel = {
     button: 0,
     hold: 0,
 
+    mirrorAxis: {
+        p1: undefined,
+        p2: undefined,
+        selected: undefined,
+        enabled: false
+    },
+
     enabled: false,
     moving: false,
     inverse: false,
@@ -22,12 +29,11 @@ function handleMouseEvents(e) {
         selectionModel.y = parseInt(e.touches[0].clientY + markRadius * 2);
     }
 
-
     if (gridOn) {
         selectionModel.x = roundNearest(selectionModel.x, layer().gridSize);
         selectionModel.y = roundNearest(selectionModel.y, layer().gridSize);
     }
-    
+
     if (selectionModel.x > 0 && selectionModel.x < canvas.width && selectionModel.y > 0 && selectionModel.y < canvas.height) {
 
         if (e.type === "mousedown" || e.type === "touchstart") {
@@ -41,11 +47,8 @@ function handleMouseEvents(e) {
 
         selectionModel.hold = selectionModel.button && (e.type === "mousemove" || e.type === "touchmove");
 
-        return updateSelection();
+        updateSelection();
     }
-
-
-    return false;
 }
 
 //["mousedown", "mouseup", "mousemove"].forEach(name => document.addEventListener(name, mouseEvents));
@@ -82,6 +85,21 @@ const polylineShape = () => ({
             this.points.splice(idx, 1);
         }
         return idx;
+    },
+
+    getPoints() {
+        let selectionPoints = this.useInterpolation ? this.getInterpolationPoints() : this.points;
+        let reflectedPoints = selectionModel.mirrorAxis.enabled ? this.reflect(selectionPoints, selectionModel.mirrorAxis.p1, selectionModel.mirrorAxis.p2) : [];
+        return selectionPoints.concat(reflectedPoints);
+    },
+
+    reflect(points, p1, p2) {
+        let reflectedPoints = [];
+        for (const p of points) {
+            let rp = reflect(p, p1, p2);
+            reflectedPoints.push(rp);
+        }
+        return reflectedPoints;
     },
 
     getInterpolationPoints() {
@@ -194,10 +212,10 @@ const polylineShape = () => ({
 
         if (this.points && this.points.length > 0) {
             ctx.moveTo(this.points[0].x, this.points[0].y)
-        }
 
-        for (const p of this.points) {
-            ctx.lineTo(p.x, p.y)
+            for (const p of this.points) {
+                ctx.lineTo(p.x, p.y)
+            }
         }
 
         if (this.closePath) {
@@ -232,6 +250,7 @@ const polylineShape = () => ({
             ctx.moveTo(p.x + markRadius, p.y);
             ctx.arc(p.x, p.y, markRadius, 0, Math.PI * 2);
         }
+        ctx.lineWidth = 1;
         ctx.stroke();
 
         ctx.fillStyle = contrastBgColor;
@@ -240,7 +259,16 @@ const polylineShape = () => ({
         }
 
 
-        ctx.lineWidth = 2;
+        if (this.centerPoint && this.points.length > 2) {
+            ctx.lineWidth = this.isCenterSelected ? markRadius * 2 : markRadius * 1;
+            drawCircle(this.centerPoint, this.isCenterSelected ? contrastBgColor : this.color, markRadius * 3);
+
+            ctx.font = `${markRadius * 4}px serif`;
+            ctx.fillStyle = this.color;
+            ctx.fillText(selectionModel.inverse ? 'inverse' : '', this.centerPoint.x - markRadius * 6, this.centerPoint.y + markRadius * 8);
+        }
+
+        ctx.lineWidth = 1;
 
         if (this.hoverPoint) {
             //drawCircle(this.hoverPoint, contrastBgColor, markRadius * 2);
@@ -259,22 +287,53 @@ const polylineShape = () => ({
             ctx.stroke();
         }
 
+        let ma = selectionModel.mirrorAxis;
 
-        if (this.centerPoint && this.points.length > 2) {
-            ctx.lineWidth = this.isCenterSelected ? markRadius * 2 : markRadius * 1;
-            drawCircle(this.centerPoint, this.isCenterSelected ? contrastBgColor : this.color, markRadius * 4);
+        if (ma.enabled) {
+            ctx.strokeStyle = this.color;
+            ctx.moveTo(ma.p1.x, ma.p1.y);
+            ctx.lineTo(ma.p2.x, ma.p2.y);
+            ctx.stroke();
 
-            ctx.font = `${markRadius * 4}px serif`;
-            ctx.fillStyle = this.color;
-            ctx.fillText(selectionModel.inverse ? 'inverse' : '', this.centerPoint.x - markRadius * 6, this.centerPoint.y + markRadius * 8);
+            ctx.strokeStyle = contrastBgColor;
+            ctx.strokeRect(ma.p1.x - markRadius * 2, ma.p1.y - markRadius * 2, markRadius * 4, markRadius * 4);
+            ctx.strokeRect(ma.p2.x - markRadius * 2, ma.p2.y - markRadius * 2, markRadius * 4, markRadius * 4);
+            ctx.stroke();
+
+
+            ctx.strokeStyle = this.color;
+            ctx.beginPath();
+
+            ctx.lineWidth = 1;
+
+            let reflectedPoints = this.reflect(this.points, ma.p1, ma.p2);
+
+            if (reflectedPoints.length > 0) {
+                ctx.moveTo(reflectedPoints[0].x, reflectedPoints[0].y)
+
+                for (const p of reflectedPoints) {
+                    ctx.lineTo(p.x, p.y)
+                }
+
+                for (const p of reflectedPoints) {
+
+                    ctx.moveTo(p.x + markRadius, p.y);
+                    ctx.arc(p.x, p.y, markRadius, 0, Math.PI * 2);
+                }
+            }
+            ctx.stroke();
         }
-
     },
 
-    closest(pos, dist = markRadius * 2) {
+    closest(pos, points, dist = markRadius * 2) {
         var i = 0, index = -1;
+
+        if (!points) {
+            points = this.points;
+        }
+
         dist *= dist;
-        for (const p of this.points) {
+        for (const p of points) {
             var x = pos.x - p.x;
             var y = pos.y - p.y;
             var d2 = x * x + y * y;
@@ -285,13 +344,8 @@ const polylineShape = () => ({
             i++;
         }
         if (index > -1) {
-            debugInfo[4] = 'found closest: #' + index;
-
-            return this.points[index]
+            return points[index];
         }
-        // console.log('not found');
-        debugInfo[4] = 'closest not found';
-
     }
 });
 
@@ -299,11 +353,14 @@ const polylineShape = () => ({
 let selectionTool = polylineShape();
 
 function updateSelection() {
+    let dx = selectionModel.x - selectionModel.lx;
+    let dy = selectionModel.y - selectionModel.ly;
 
     selectionTool.hoverPoint = selectionTool.closest(selectionModel);
 
     selectionTool.cursor = selectionTool.hoverPoint ? "move" : "crosshair";
 
+    
     if (selectionModel.button) {
 
         selectionTool.isCenterSelected = selectionTool.centerPoint ? getDistance(selectionTool.centerPoint, selectionModel) <= markRadius * 4 : false;
@@ -312,24 +369,41 @@ function updateSelection() {
             selectionModel.moving = true;
             selectionTool.cursor = "move";
         }
+
+        let mirrorPoints = [selectionModel.mirrorAxis.p1, selectionModel.mirrorAxis.p2];
+        selectionModel.mirrorAxis.selected = selectionTool.closest(selectionModel, mirrorPoints, markRadius * 10);
+
+        if (selectionModel.mirrorAxis.selected) {
+
+            debugInfo[0] = JSON.stringify(selectionModel.mirrorAxis.selected);
+            debugInfo[1] = JSON.stringify(selectionModel.mirrorAxis.p1);
+            debugInfo[2] = JSON.stringify(selectionModel.mirrorAxis.p2);
+
+            selectionModel.mirrorAxis.moving = true;
+            selectionTool.cursor = "move";
+        }
     }
 
 
     if (selectionModel.moving && selectionModel.hold) {
-        selectionTool.move(selectionModel.x - selectionModel.lx, selectionModel.y - selectionModel.ly);
+        selectionTool.move(dx, dy);
         selectionTool.cursor = "move";
 
+    } else if (selectionModel.mirrorAxis.moving && selectionModel.hold) {
+        selectionTool.cursor = "move";
+        selectionModel.mirrorAxis.selected.x += dx;
+        selectionModel.mirrorAxis.selected.y += dy;
     }
     else {
+
         if (selectionModel.button && !selectionModel.hold) {
-            let closest = selectionTool.closest(selectionModel);
+            let closest = selectionTool.closest(selectionModel, undefined, markRadius * 4);
 
             if (closest) selectionTool.insertPoint = closest;
 
             selectionTool.activePoint = closest;
 
-
-            if (selectionTool.activePoint === undefined && selectionModel.button && !selectionModel.moving) {
+            if (selectionTool.activePoint === undefined && selectionModel.button && !selectionModel.moving && !selectionModel.mirrorAxis.moving) {
                 selectionTool.cursor = "crosshair";
                 let p = point(selectionModel.x, selectionModel.y);
                 selectionTool.addPoint(p);
@@ -342,24 +416,28 @@ function updateSelection() {
 
             if (selectionTool.activePoint) {
                 selectionTool.cursor = "move";
-                selectionTool.activePoint.x += selectionModel.x - selectionModel.lx;
-                selectionTool.activePoint.y += selectionModel.y - selectionModel.ly;
+                selectionTool.activePoint.x += dx;
+                selectionTool.activePoint.y += dy;
                 selectionTool.center();
+                selectionModel.mirrorAxis.moving = false;
             }
+
         }
+        
         selectionModel.moving = selectionModel.hold && selectionModel.moving;
+
     }
+
+    selectionModel.mirrorAxis.moving = selectionModel.hold && selectionModel.mirrorAxis.moving;
 
     selectionTool.color = pickerColor();
     selectionModel.lx = selectionModel.x;
     selectionModel.ly = selectionModel.y;
 
-    debugInfo[0] = JSON.stringify(selectionModel);
-    debugInfo[1] = 'active: ' + JSON.stringify(selectionTool.activePoint);
-    debugInfo[2] = 'hover: ' + JSON.stringify(selectionTool.hoverPoint);
-    debugInfo[3] = 'insert: ' + JSON.stringify(selectionTool.insertPoint);
-
-    return true;
+    // debugInfo[0] = JSON.stringify(selectionModel);
+    // debugInfo[1] = 'active: ' + JSON.stringify(selectionTool.activePoint);
+    // debugInfo[2] = 'hover: ' + JSON.stringify(selectionTool.hoverPoint);
+    // debugInfo[3] = 'insert: ' + JSON.stringify(selectionTool.insertPoint);
 }
 
 
@@ -370,3 +448,38 @@ function drawCircle(pos, color = "red", size = 8) {
     ctx.stroke();
     //ctx.closePath();
 }
+
+
+var reflect = function (p, p0, p1) {
+    var dx, dy, a, b, x, y;
+
+    dx = p1.x - p0.x;
+    dy = p1.y - p0.y;
+    a = (dx * dx - dy * dy) / (dx * dx + dy * dy);
+    b = 2 * dx * dy / (dx * dx + dy * dy);
+    x = Math.round(a * (p.x - p0.x) + b * (p.y - p0.y) + p0.x);
+    y = Math.round(b * (p.x - p0.x) - a * (p.y - p0.y) + p0.y);
+
+    return { x: x, y: y };
+}
+
+// function project(p, a, b) {
+
+//     var atob = { x: b.x - a.x, y: b.y - a.y };
+//     var atop = { x: p.x - a.x, y: p.y - a.y };
+//     var len = atob.x * atob.x + atob.y * atob.y;
+//     var dot = atop.x * atob.x + atop.y * atob.y;
+//     var t = min(1, max(0, dot / len));
+
+//     dot = (b.x - a.x) * (p.y - a.y) - (b.y - a.y) * (p.x - a.x);
+
+//     return {
+//         point: {
+//             x: a.x + atob.x * t,
+//             y: a.y + atob.y * t
+//         },
+//         left: dot < 1,
+//         dot: dot,
+//         t: t
+//     };
+// }
