@@ -22,6 +22,12 @@ function handleMouseEvents(e) {
         selectionModel.y = parseInt(e.touches[0].clientY + markRadius * 2);
     }
 
+
+    if (gridOn) {
+        selectionModel.x = roundNearest(selectionModel.x, layer().gridSize);
+        selectionModel.y = roundNearest(selectionModel.y, layer().gridSize);
+    }
+    
     if (selectionModel.x > 0 && selectionModel.x < canvas.width && selectionModel.y > 0 && selectionModel.y < canvas.height) {
 
         if (e.type === "mousedown" || e.type === "touchstart") {
