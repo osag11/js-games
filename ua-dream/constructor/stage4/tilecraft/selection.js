@@ -6,7 +6,8 @@ const selectionModel = {
 
     enabled: false,
     moving: false,
-    inverse: false
+    inverse: false,
+    hideMarks: false,
 };
 
 
@@ -16,23 +17,23 @@ function handleMouseEvents(e) {
     selectionModel.x = e.pageX - bounds.left - window.scrollX - markRadius;
     selectionModel.y = e.pageY - bounds.top - window.scrollY - markRadius;
 
-    if (gridOn) {
-        selectionModel.x = roundNearest(selectionModel.x, gridSize);
-        selectionModel.y = roundNearest(selectionModel.y, gridSize);
+    if (e.touches && e.touches.length > 0) {
+        selectionModel.x = parseInt(e.touches[0].clientX - markRadius * 2);
+        selectionModel.y = parseInt(e.touches[0].clientY + markRadius * 2);
     }
 
     if (selectionModel.x > 0 && selectionModel.x < canvas.width && selectionModel.y > 0 && selectionModel.y < canvas.height) {
 
-        if (e.type === "mousedown") {
+        if (e.type === "mousedown" || e.type === "touchstart") {
             selectionModel.button = true;
         }
 
-        if (e.type === "mouseup") {
+        if (e.type === "mouseup" || e.type === "touchend") {
             selectionModel.button = false;
             selectionModel.hold = false;
         }
 
-        selectionModel.hold = selectionModel.button && e.type === "mousemove";
+        selectionModel.hold = selectionModel.button && (e.type === "mousemove" || e.type === "touchmove");
 
         return updateSelection();
     }
@@ -102,10 +103,10 @@ const polylineShape = () => ({
 
                 let maxX = Math.max(p1.x, p2.x);
                 let minX = Math.min(p1.x, p2.x);
-                let maxY = Math.max(p1.x, p2.x);
-                let minY = Math.min(p1.x, p2.x);
-// here is bug, not all cases handled
-                if (ip.x <= maxX && ip.x >= minX || ip.y <= maxY && ip.y >= minY) {
+                let maxY = Math.max(p1.y, p2.y);
+                let minY = Math.min(p1.y, p2.y);
+                // here is bug, not all cases handled
+                if (ip.x <= maxX && ip.x >= minX && ip.y <= maxY && ip.y >= minY) {
                     result.push(ip);
                 }
             }

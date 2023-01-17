@@ -63,7 +63,7 @@
 
     #virtual_keyboard button {
       width: 170px;
-      min-height: 74px;
+      min-height: 84px;
       font-size: 14px;
     }
 
@@ -71,13 +71,28 @@
       background-color: lightgreen;
     }
 
-    #virtual_keyboard button.enabled {
-      border: 4px dotted red;
+    .button_state_enabled {
+      border: 8px solid #00cfff;
     }
 
     #virtual_keyboard button>p {
       font-size: 18px;
       margin: 6px;
+      background-color: #00CFC6;
+      color: white;
+      padding: 5px 4px;
+      text-align: center;
+      border-radius: 5px;
+    }
+
+    #virtual_keyboard button>p>span {
+      font-size: 14px;
+      float:left;
+      background-color: dodgerblue;
+      color: white;
+      padding: 3px 10px;
+      text-align: center;
+      border-radius: 5px;
     }
 
     .vbtn-shape {
@@ -155,11 +170,14 @@ duplicate some commands according  context. refresh should rely on element names
       <input type="radio" name="tabset" id="tab3" aria-controls="tiles">
       <label for="tab3">Tiles</label>
       <!-- Tab 4 -->
-      <input type="radio" name="tabset" id="tab4" aria-controls="drawing-tools">
-      <label for="tab4">Tools</label>
+      <input type="radio" name="tabset" id="tab4" aria-controls="selection">
+      <label for="tab4">Selection</label>
       <!-- Tab 5 -->
-      <input type="radio" name="tabset" id="tab5" aria-controls="layers">
-      <label for="tab5">Layers</label>
+      <input type="radio" name="tabset" id="tab5" aria-controls="drawing-tools">
+      <label for="tab5">Tools</label>
+      <!-- Tab 6 -->
+      <input type="radio" name="tabset" id="tab6" aria-controls="layers">
+      <label for="tab6">Layers</label>
 
       <div id="virtual_keyboard" class="tab-panels">
         <section id="edit" class="tab-panel">
@@ -221,14 +239,14 @@ duplicate some commands according  context. refresh should rely on element names
 
             <tr>
 
-              <td><button onclickaction="grid_plus_command()" onmousedown="btnMouseHoldStart(this)"
+              <td><button name="grid_size_value" onclickaction="grid_plus_command()" onmousedown="btnMouseHoldStart(this)"
                   ontouchstart="btnHoldStart(this)">
-                  <p>+</p>Grid size plus
+                  <p><span></span>+</p>Grid size plus
                 </button></td>
 
-              <td><button onclickaction="transparency_plus_command()" onmousedown="btnMouseHoldStart(this)"
+              <td><button name="layer_transparency_value" onclickaction="transparency_plus_command()" onmousedown="btnMouseHoldStart(this)"
                   ontouchstart="btnHoldStart(this)">
-                  <p>&#8727;</p>Layer transparency plus
+                  <p><span></span>&#8727;</p>Layer transparency plus
                 </button></td>
 
               <td><button onclickaction="palette_import_layer_colors_command()" onmousedown="btnMouseHoldStart(this)"
@@ -239,13 +257,13 @@ duplicate some commands according  context. refresh should rely on element names
 
             <tr>
 
-              <td><button onclickaction="grid_minus_command()" onmousedown="btnMouseHoldStart(this)"
+              <td><button name="grid_size_value" onclickaction="grid_minus_command()" onmousedown="btnMouseHoldStart(this)"
                   ontouchstart="btnHoldStart(this)">
-                  <p>&#8722;</p>Grid size minus
+                  <p><span></span>&#8722;</p>Grid size minus
                 </button></td>
-              <td><button onclickaction="transparency_minus_command()" onmousedown="btnMouseHoldStart(this)"
+              <td><button name="layer_transparency_value" onclickaction="transparency_minus_command()" onmousedown="btnMouseHoldStart(this)"
                   ontouchstart="btnHoldStart(this)">
-                  <p>&#8725;</p>Layer transparency minus
+                  <p><span></span>&#8725;</p>Layer transparency minus
                 </button></td>
 
               <td><button onclickaction="palette_add_color_command()" onmousedown="btnMouseHoldStart(this)"
@@ -324,9 +342,9 @@ duplicate some commands according  context. refresh should rely on element names
             </tr>
 
             <tr>
-              <td><button onclickaction="grid_plus_command()" onmousedown="btnMouseHoldStart(this)"
-                  ontouchstart="btnHoldStart(this)">
-                  <p>+</p>Grid size plus
+              <td><button name="grid_size_value" onclickaction="grid_plus_command()"
+                  onmousedown="btnMouseHoldStart(this)" ontouchstart="btnHoldStart(this)">
+                  <p><span></span>+</p>Grid size plus
                 </button></td>
 
               <td><button name="shape_state_polyline" class="vbtn-shape" onclickaction="shape_apply_command('polyline')"
@@ -334,24 +352,95 @@ duplicate some commands according  context. refresh should rely on element names
                   <p>0</p>polyline
                 </button></td>
 
-              <td><button onclickaction="grid_minus_command()" onmousedown="btnMouseHoldStart(this)"
+              <td><button name="grid_size_value" onclickaction="grid_minus_command()" onmousedown="btnMouseHoldStart(this)"
                   ontouchstart="btnHoldStart(this)">
-                  <p>&#8722;</p>Grid size minus
+                  <p><span></span>&#8722;</p>Grid size minus
                 </button></td>
             </tr>
 
           </table>
         </section>
+
+        <section id="selection" class="tab-panel">
+          <table name="virtual_keyboard">
+            <tr>
+              <td><button name="selection_tool_state" onclickaction="selection_tool_switch_command()"
+                  onmousedown="btnMouseHoldStart(this)" ontouchstart="btnTouchStart(this)">
+                  <p>Space</p>Selection Path On/Off
+                </button></td>
+
+              <td><button onclickaction="make_selection_from_layer_tiles_command()"
+                  onmousedown="btnMouseHoldStart(this)" ontouchstart="btnTouchStart(this)">
+                  <p>Ctrl + Space</p>Make Selection Path from layer
+                </button></td>
+
+              <td><button class="vbtn-delete" onclickaction="handle_clear_command()"
+                  onmousedown="btnMouseHoldStart(this)" ontouchstart="btnTouchStart(this)">
+                  <p>Esc</p>Clear layer tiles
+                </button></td>
+            </tr>
+
+            <tr>
+              <td><button onclickaction="apply_selection_command()" onmousedown="btnMouseHoldStart(this)"
+                  ontouchstart="btnTouchStart(this)">
+                  <p>Enter</p>Apply Selection Path to layer
+                </button></td>
+
+              <td><button onclickaction="reduce_selection_base_points_command()" onmousedown="btnMouseHoldStart(this)"
+                  ontouchstart="btnTouchStart(this)">
+                  <p>U</p>Reduce points in Selection Path
+                </button></td>
+
+              <td><button name="selection_close_path_state" onclickaction="selection_tool_close_path_switch_command()"
+                  onmousedown="btnMouseHoldStart(this)" ontouchstart="btnTouchStart(this)">
+                  <p>J</p>Close Selection Path
+                </button></td>
+            </tr>
+
+            <tr>
+
+              <td><button onclickaction="fill_selection_tiles_command('next')" onmousedown="btnMouseHoldStart(this)"
+                  ontouchstart="btnTouchStart(this)">
+                  <p>Ctrl + Enter</p>Add tiles to Path palette next color
+                </button></td>
+
+              <td><button onclickaction="fill_selection_tiles_command('sequence')" onmousedown="btnMouseHoldStart(this)"
+                  ontouchstart="btnTouchStart(this)">
+                  <p>Alt + Enter</p>Add tiles to Path palette sequence color
+                </button></td>
+
+              <td><button name="selection_interpolation_state"
+                  onclickaction="selection_tool_interpolation_switch_command()" onmousedown="btnMouseHoldStart(this)"
+                  ontouchstart="btnTouchStart(this)">
+                  <p>Ctrl + I</p>Selection Path interpolation points
+                </button></td>
+
+            </tr>
+
+            <tr>
+
+              <td><button onclickaction="clear_selection_command()" onmousedown="btnMouseHoldStart(this)"
+                  ontouchstart="btnTouchStart(this)">
+                  <p>Shift + Space</p>Clear Selection
+                </button></td>
+              <td><button name="hide_selection_marks_state" onclickaction="selection_marks_switch_command()"
+                  onmousedown="btnMouseHoldStart(this)" ontouchstart="btnTouchStart(this)">
+                  <p>Shift + H</p>Hide selection marks
+                </button></td>
+              <td><button name="inverse_selection_state" onclickaction="inverse_selection_switch_command()"
+                  onmousedown="btnMouseHoldStart(this)" ontouchstart="btnTouchStart(this)">
+                  <p>I</p>Inverse selection
+                </button></td>
+            </tr>
+
+          </table>
+        </section>
+
         <section id="drawing-tools" class="tab-panel">
           <table name="virtual_keyboard">
             <tr>
 
-              <td><button name="help_state" onclickaction="help_switch_command()" onmousedown="btnMouseHoldStart(this)"
-                  ontouchstart="btnTouchStart(this)">
-                  <p>?</p>Help
-                </button></td>
-
-              <td><button onclickaction="save_picture_command()" onmousedown="btnMouseHoldStart(this)"
+              <td><button class="vbtn-save" onclickaction="save_picture_command()" onmousedown="btnMouseHoldStart(this)"
                   ontouchstart="btnTouchStart(this)">
                   <p>Q</p>Save picture
                 </button></td>
@@ -360,41 +449,11 @@ duplicate some commands according  context. refresh should rely on element names
                   onmousedown="btnMouseHoldStart(this)" ontouchstart="btnTouchStart(this)">
                   <p>Z</p>Hide pointer
                 </button></td>
-            </tr>
 
-            <tr>
-              <td><button name="inverse_selection_state" onclickaction="inverse_selection_switch_command()"
-                  onmousedown="btnMouseHoldStart(this)" ontouchstart="btnTouchStart(this)">
-                  <p>I</p>Inverse selection
-                </button></td>
-
-              <td><button name="selection_tool_state" onclickaction="selection_tool_switch_command()"
-                  onmousedown="btnMouseHoldStart(this)" ontouchstart="btnTouchStart(this)">
-                  <p>Space</p>Selection
-                </button></td>
-
-              <td><button onclickaction="feel_tiles_grid_command()" onmousedown="btnMouseHoldStart(this)"
+              <td><button name="help_state" onclickaction="help_switch_command()" onmousedown="btnMouseHoldStart(this)"
                   ontouchstart="btnTouchStart(this)">
-                  <p>F</p>Fill tiles
+                  <p>?</p>Help
                 </button></td>
-            </tr>
-
-            <tr>
-              <td><button onclickaction="apply_selection_command()" onmousedown="btnMouseHoldStart(this)"
-                  ontouchstart="btnTouchStart(this)">
-                  <p>Enter</p>Apply selection to layer
-                </button></td>
-
-              <td><button onclickaction="fill_selection_tiles_command('next')" onmousedown="btnMouseHoldStart(this)"
-                  ontouchstart="btnTouchStart(this)">
-                  <p>Ctrl + Enter</p>Fill layer by selection
-                </button></td>
-
-              <td><button onclickaction="make_selection_from_layer_tiles_command()"
-                  onmousedown="btnMouseHoldStart(this)" ontouchstart="btnTouchStart(this)">
-                  <p>Ctrl + Space</p>Make Selection from layer
-                </button></td>
-
             </tr>
 
             <tr>
@@ -416,21 +475,12 @@ duplicate some commands according  context. refresh should rely on element names
             </tr>
 
             <tr>
-              <td><button name="selection_interpolation_state"  onclickaction="selection_tool_interpolation_switch_command()"
-                  onmousedown="btnMouseHoldStart(this)" ontouchstart="btnTouchStart(this)">
-                  <p>Ctrl + I</p>Selection interpolation
+
+              <td><button onclickaction="feel_tiles_grid_command()" onmousedown="btnMouseHoldStart(this)"
+                  ontouchstart="btnTouchStart(this)">
+                  <p>F</p>Fill tiles
                 </button></td>
 
-              <td><button name="selection_close_path_state" onclickaction="selection_tool_close_path_switch_command()"
-                  onmousedown="btnMouseHoldStart(this)" ontouchstart="btnTouchStart(this)">
-                  <p>J</p>Close selection path
-                </button></td>
-              <td><button onclickaction="reduce_selection_base_points_command()" onmousedown="btnMouseHoldStart(this)"
-                  ontouchstart="btnTouchStart(this)">
-                  <p>U</p>Reduce points in selection path
-                </button></td>
-            </tr>
-            <tr>
               <td><button onclickaction="apply_selection_color_command('sequence')"
                   onmousedown="btnMouseHoldStart(this)" ontouchstart="btnTouchStart(this)">
                   <p>W</p>Selected tiles: Apply pallete sequence color
@@ -441,20 +491,24 @@ duplicate some commands according  context. refresh should rely on element names
                   <p>Alt + W</p>Selected tiles: Apply next pallete color
                 </button></td>
 
-              <td><button onclickaction="fill_selection_tiles_command('sequence')" onmousedown="btnMouseHoldStart(this)"
-                  ontouchstart="btnTouchStart(this)">
-                  <p>Alt + Enter</p>Fill layer by selection
-                </button></td>
             </tr>
             <tr>
-              <td><button onclickaction="palette_sequence_lenght_plus()" onmousedown="btnMouseHoldStart(this)" ontouchstart="btnTouchStart(this)">
-                  <p>Alt + plus</p>Palette sequence lenght plus
-                  </button></td>
-              <td><button onclickaction="palette_sequence_lenght_minus()" onmousedown="btnMouseHoldStart(this)" ontouchstart="btnTouchStart(this)">
-                  <p>Alt + minus</p>Palette sequence lenght minus
-                   </button></td>
 
-              <!--
+              <td></td>
+              <td><button name="palette_sequence_lenght_value" onclickaction="palette_sequence_lenght_plus()"
+                  onmousedown="btnMouseHoldStart(this)" ontouchstart="btnTouchStart(this)">
+                  <p><span></span>Alt +</p>Palette sequence lenght plus
+                </button></td>
+              <td><button name="palette_sequence_lenght_value" onclickaction="palette_sequence_lenght_minus()" onmousedown="btnMouseHoldStart(this)"
+                  ontouchstart="btnTouchStart(this)">
+                  <p><span></span>Alt &#8722;</p>Palette sequence lenght minus
+                </button></td>
+
+              <!-- 
+
+              Ctrl + LeftArrow
+              Ctrl + RightArrow
+
                 <td><button  onclickaction="()" onmousedown="btnMouseHoldStart(this)"
                   ontouchstart="btnTouchStart(this)">
                   <p></p>
@@ -488,9 +542,9 @@ duplicate some commands according  context. refresh should rely on element names
                   <p>C</p>layer tiles clone mode
                 </button></td>
 
-              <td><button class="vbtn-delete" onclickaction="palette_import_layer_colors_command(true)"
+              <td><button class="vbtn-delete" onclickaction="handle_clear_command()"
                   onmousedown="btnMouseHoldStart(this)" ontouchstart="btnTouchStart(this)">
-                  <p>Ctrl + Up Arrow</p>Transform layer tiles to palette
+                  <p>Esc</p>Clear layer tiles
                 </button></td>
 
             </tr>
@@ -506,7 +560,6 @@ duplicate some commands according  context. refresh should rely on element names
                   ontouchstart="btnTouchStart(this)">
                   <p>L</p>add new or clone active layer
                 </button></td>
-
               <td><button class="vbtn-delete" onclickaction="layer_remove_command()"
                   onmousedown="btnMouseHoldStart(this)" ontouchstart="btnTouchStart(this)">
                   <p>K</p>remove active layer
@@ -515,6 +568,7 @@ duplicate some commands according  context. refresh should rely on element names
             </tr>
 
             <tr>
+
               <td><button onclickaction="background_command('remove')" onmousedown="btnMouseHoldStart(this)"
                   ontouchstart="btnTouchStart(this)">
                   <p>Shift + B</p>remove background
@@ -525,17 +579,11 @@ duplicate some commands according  context. refresh should rely on element names
                   <p>V</p>show inactive layers
                 </button></td>
 
-              <td><button class="vbtn-delete" onclickaction="clear_layer_shapes_command()"
-                  onmousedown="btnMouseHoldStart(this)" ontouchstart="btnTouchStart(this)">
-                  <p>Esc</p>Clear layer tiles
+              <td><button onclickaction="layer_move_up_command()" onmousedown="btnMouseHoldStart(this)"
+                  ontouchstart="btnTouchStart(this)">
+                  <p>Ctrl + ArrowUp</p>Move layer up
                 </button></td>
 
-              <!--
-              <td><button class="vbtn-delete" onclickaction="clean_all_layers_command()" onmousedown="btnMouseHoldStart(this)"
-                  ontouchstart="btnTouchStart(this)">
-                  <p>CLEAR ALL</p>clear all layers tiles
-                </button></td>
-            -->
             </tr>
 
             <tr>
@@ -547,6 +595,10 @@ duplicate some commands according  context. refresh should rely on element names
                   <p>H</p>hide inactive layers
                 </button></td>
 
+              <td><button onclickaction="layer_move_down_command()" onmousedown="btnMouseHoldStart(this)"
+                  ontouchstart="btnTouchStart(this)">
+                  <p>Ctrl + ArrowDown</p>Move layer down
+                </button></td>
             </tr>
 
           </table>

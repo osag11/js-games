@@ -231,10 +231,11 @@ function draw() {
 
     ctx.stroke(); // finalize
 
+    // draw selection
     if (layer().selection && layer().visible) {
         let gridSize = layer().gridSize;
         ctx.strokeStyle = contrastBgColor;
-        ctx.lineWidth = 1;
+        ctx.lineWidth = selectionModel.hideMarks ? 0.2 : 1;
         for (let s of layer().selection) {
             ctx.strokeRect(s.x, s.y, gridSize, gridSize);
         }

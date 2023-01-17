@@ -58,16 +58,14 @@ function handleKeyDown(event) {
     }
 
     if (keyPressed == 72) {// H
-        all_layers_visible_command(false);
+        if (event.shiftKey) {
+            selection_marks_switch_command();
+        }
+        else all_layers_visible_command(false);
     }
 
     if (keyPressed == 27) {// Esc
-        if (selectionModel.enabled) {
-            delete_selection_points_command();
-
-        } else {
-            clear_layer_shapes_command();
-        }
+        handle_clear_command();
     }
 
     if (keyPressed == 69) {// E 
@@ -198,8 +196,8 @@ function handleKeyDown(event) {
     if (keyPressed == 87) {// W
         if (event.altKey) {
             apply_selection_color_command('next');
-        } else 
-        apply_selection_color_command('sequence');
+        } else
+            apply_selection_color_command('sequence');
     }
 
     if (keyPressed == 68) {// D

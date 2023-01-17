@@ -342,7 +342,7 @@ function nextPaletteColor(sequence = 1) {
 
     if (paletteColors.length > 0) {
         hexPaletteSwitchCounter++;
-        
+
         if (hexPaletteSwitchCounter >= sequence) {
             hexPaletteIdx++;
             hexPaletteSwitchCounter = 0;
@@ -371,9 +371,7 @@ function drawHexagonGrid(width, height, r, colors = ['red', 'green', 'blue']) {
             idx++;
             if (idx > colors.length - 1) idx = 0;
             let color = colors[idx];
-
-            // if (!colors[idx].startsWith('#')) { color = '#' + colorByName(colors[idx]); }
-
+            
             hexaGridData.push({ x: x, y: y, r: r, c: color });
             drawPolygon(ctx2, x, y, r, color);
         }

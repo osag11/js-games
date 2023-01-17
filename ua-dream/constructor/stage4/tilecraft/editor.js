@@ -201,7 +201,6 @@ function mouse_move(event) {
                             s.x += dx;
                             s.y += dy;
                         }
-
                     }
                 }
 
@@ -244,7 +243,7 @@ function getPositionAlongTheLine(x1, y1, x2, y2, percentage) {
     return { x: x1 * (1.0 - percentage) + x2 * percentage, y: y1 * (1.0 - percentage) + y2 * percentage };
 }
 
-const zoomIntensity = 0.2;
+const zoomIntensity = 0.1;
 
 function onwheel(event) {
     event.preventDefault();
@@ -328,7 +327,7 @@ function handlePinch(evt) {
             lastDist = dist;
         }
 
-        let zoom = dist > lastDist ? -zoomIntensity / 10 : zoomIntensity / 10;
+        let zoom = dist > lastDist ? -zoomIntensity / 4 : zoomIntensity / 4;
 
         zoomLayerShapes(newCenter.x, newCenter.y, zoom);
 

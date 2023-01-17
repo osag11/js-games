@@ -177,7 +177,6 @@ function palette_sequence_lenght_plus() {
     if (paletteSequenceLength > 100) paletteSequenceLength = 100;
     console.log(paletteSequenceLength);
     return paletteSequenceLength;
-
 }
 
 function hex_palette_switch_command() {
@@ -226,6 +225,15 @@ function select_all_command() {
     layer().selection = [...layer().shapes];
 }
 
+function handle_clear_command() {
+    if (selectionModel.enabled) {
+        delete_selection_points_command();
+
+    } else {
+        clear_layer_shapes_command();
+    }
+}
+
 function clear_layer_shapes_command() {
     if (layer().visible) { // if layer not activated - skip action
 
@@ -263,6 +271,9 @@ function clear_layer_shapes_command() {
             layer().shapes = [];
         }
     }
+}
+function selection_marks_switch_command() {
+    selectionModel.hideMarks = !selectionModel.hideMarks;
 }
 
 function clear_selection_command() {

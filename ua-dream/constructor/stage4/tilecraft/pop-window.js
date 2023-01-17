@@ -19,19 +19,23 @@ const btnState = {
     selection_tool_state: "selectionModel.enabled",
     selection_close_path_state: "selectionTool.closePath",
     selection_interpolation_state: "selectionTool.useInterpolation",
+    hide_selection_marks_state: "selectionModel.hideMarks",
     palette_state: "hexPalette",
+    palette_sequence_lenght_value: "paletteSequenceLength",    
     edit_mode_state: "layer().edit_mode",
     move_mode_state: "layer().move_mode",
     transparency_state: "!layer().transparency||layer().transparency===255",
+    layer_transparency_value: "layer().transparency",
     screenshot_mode_state: "screenshot_mode",
-    x_lock_state: "xLock",
-    y_lock_state: "yLock",
+    x_lock_state: "typeof xLock == 'number'",
+    y_lock_state: "typeof yLock == 'number'",
     grid_state: "gridOn",
+    grid_size_value: "layer().gridSize",
     random_color_state: "randomColor",
     layer_clone_mode_state: "layerCloneMode",
     debug_mode_state: "debugOn",
 }
-const enabledBtnBorder = '5px solid #00cfff';
+const enabledBtnBorder = '8px solid #00cfff';
 
 document.getElementsByName("virtual_keyboard")
     .forEach(kb => {
@@ -217,7 +221,10 @@ function refreshBtnState() {
             .forEach(btn => {
                 let state = eval(btnState[property]);
                 console.log(`${property} ${btnState[property]} ${state}`);
-                btn.style.border = (state === true || typeof state == 'number') ? enabledBtnBorder : ''
+                if(typeof state == 'number'&& btn.children[0].children[0]){ 
+                    btn.children[0].children[0].innerHTML = `${state}`;
+                }
+                btn.style.border = (state === true) ? enabledBtnBorder : ''
             });
     }
 
