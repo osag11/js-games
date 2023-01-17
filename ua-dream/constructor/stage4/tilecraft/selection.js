@@ -8,7 +8,8 @@ const selectionModel = {
         p1: undefined,
         p2: undefined,
         selected: undefined,
-        enabled: false
+        enabled: false,
+        useReflectionOnly: false
     },
 
     enabled: false,
@@ -87,9 +88,16 @@ const polylineShape = () => ({
         return idx;
     },
 
-    getPoints() {
+    getPoints(useReflectionOnly) {
+
         let selectionPoints = this.useInterpolation ? this.getInterpolationPoints() : this.points;
         let reflectedPoints = selectionModel.mirrorAxis.enabled ? this.reflect(selectionPoints, selectionModel.mirrorAxis.p1, selectionModel.mirrorAxis.p2) : [];
+       
+        if(useReflectionOnly)
+        {
+            return reflectedPoints;
+        }
+
         return selectionPoints.concat(reflectedPoints);
     },
 
@@ -423,7 +431,7 @@ function updateSelection() {
             }
 
         }
-        
+
         selectionModel.moving = selectionModel.hold && selectionModel.moving;
 
     }

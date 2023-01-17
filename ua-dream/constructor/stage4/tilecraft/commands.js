@@ -30,8 +30,16 @@ function delete_selection_active_point_command() {
     selectionTool.center();
 }
 
+function mirror_tool_switch_command() {
+    selectionModel.mirrorAxis.enabled = !selectionModel.mirrorAxis.enabled;
+}
+
+function mirror_tool_use_reflection_only_switch_command() {
+    selectionModel.mirrorAxis.useReflectionOnly = !selectionModel.mirrorAxis.useReflectionOnly;
+}
+
 function fill_selection_tiles_command(paletteStrategy = 'next') {
-    let selectionPoints = selectionTool.getPoints();// selectionTool.useInterpolation ? selectionTool.getInterpolationPoints() : selectionTool.points;
+    let selectionPoints = selectionTool.getPoints(selectionModel.mirrorAxis.useReflectionOnly);
 
     let shift = layer().gridSize / 2;
     let paletteColor = nextPaletteColor(1);

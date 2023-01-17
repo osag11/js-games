@@ -58,10 +58,7 @@ function setup() {
     canvas.style.cursor = selectionTool.cursor;
     selectionTool.color = pickerModel.rgbaColor;
 
-    selectionModel.mirrorAxis = {
-        p1: { x: canvas.width / 2, y: 50 },
-        p2: { x: canvas.width / 2, y: canvas.height - 50 },
-        selected: undefined
-    }
+    selectionModel.mirrorAxis.p1 = { x: canvas.width / 2, y: 50 };
+    selectionModel.mirrorAxis.p2 = { x: canvas.width / 2, y: canvas.height - 50 };    
 
 }
