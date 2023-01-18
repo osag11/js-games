@@ -97,7 +97,7 @@ function addShape() {
 
     let shapes = layer().shapes;
 
-    let color = randomColor ? generateColor() : rgba2hex(pickerModel.rgbaColor);
+    let color = randomColor ? generateColor() : pickerColor();
     let newShape = { x: mouseEditor.x, y: mouseEditor.y, c: color };
 
     let existing = shapes.find(el =>
@@ -316,41 +316,38 @@ function drawPointer() {
 function findShape(x, y) {
     let shapes = layer().shapes;
     let gridSize = layer().gridSize;
+    let minDist = gridSize * 1.2;
+    return getClosest(shapes, { x: x, y: y }, minDist);   
+}
 
-    result = [];
-    for (var i = shapes.length - 1; i >= 0; i--) {
-        let shape = shapes[i];
+function getClosest(points, pos, dist, fastCheck = 2) {
 
-        let shape_left = shape.x - gridSize / 2;
-        let shape_right = shape.x + gridSize;
+    let result;
+    let minDist = dist;
 
-        let shape_top = shape.y - gridSize / 2;
-        let shape_bottom = shape.y + gridSize;
+    for (var i = points.length - 1; i >= 0; i--) {
 
-        if (x > shape_left && x < shape_right && y > shape_top && y < shape_bottom) {
-            if (result.length < 30) {
-                result.push(shape);
+        let p = points[i];
+        let dist = getDistance(pos, p);
+        if (dist < minDist) {
+            result = p;
+            minDist = dist;
+            if (dist < fastCheck) {
+                return result;
             }
         }
     }
-    console.log(JSON.stringify(result));
-    result.sort((a, b) => {
-        return (a.x - b.x) * (a.y - b.y);
-    })
-    console.log(`----${x};${y}------`)
-    console.log(JSON.stringify(result));
+    return result;
 
-    return result[0];
 }
 
-
+// TODO:rename updateRandomColorState  and move to picker
 function randomColorState(enabled) {
-    console.log(enabled);
     randomColor = enabled;
     colorLabel.style.backgroundColor = enabled ? 'white' : pickerModel.rgbaColor;
     randomColorSwitch.checked = enabled;
 
-    colorLabel.children[1].style.color = contrastColor(rgba2hex(pickerModel.rgbaColor));
+    colorLabel.children[1].style.color = contrastColor(pickerColor());
     colorLabel.children[1].style.display = enabled ? 'none' : 'block';
     colorLabel.children[1].textContent = rgba2hex(pickerModel.rgbaColor).toLowerCase();
     colorLabel.children[0].style.display = enabled ? 'block' : 'none';
@@ -367,4 +364,16 @@ function drawPolygon(ctx, x, y, r, color, corners = 6) {
     }
     ctx.closePath();
     ctx.fill();
+}
+
+
+function getDistance(p1, p2) {
+    return Math.hypot(p2.x - p1.x, p2.y - p1.y);
+}
+
+function getCenter(p1, p2) {
+    return {
+        x: (p1.x + p2.x) / 2,
+        y: (p1.y + p2.y) / 2,
+    };
 }

@@ -24,6 +24,8 @@ const btnState = {
     palette_sequence_lenght_value: "paletteSequenceLength",    
     edit_mode_state: "layer().edit_mode",
     move_mode_state: "layer().move_mode",
+    mirror_tool_state: "selectionModel.mirrorAxis.enabled",
+    mirror_tool_use_reflection_only_state: "selectionModel.mirrorAxis.useReflectionOnly ",
     transparency_state: "!layer().transparency||layer().transparency===255",
     layer_transparency_value: "layer().transparency",
     screenshot_mode_state: "screenshot_mode",

@@ -339,26 +339,12 @@ const polylineShape = () => ({
     },
 
     closest(pos, points, dist = markRadius * 2) {
-        var i = 0, index = -1;
 
         if (!points) {
             points = this.points;
         }
+        return getClosest(points, pos, dist)
 
-        dist *= dist;
-        for (const p of points) {
-            var x = pos.x - p.x;
-            var y = pos.y - p.y;
-            var d2 = x * x + y * y;
-            if (d2 < dist) {
-                dist = d2;
-                index = i;
-            }
-            i++;
-        }
-        if (index > -1) {
-            return points[index];
-        }
     }
 });
 
@@ -370,9 +356,7 @@ function updateSelection() {
     let dy = selectionModel.y - selectionModel.ly;
 
     selectionTool.hoverPoint = selectionTool.closest(selectionModel);
-
     selectionTool.cursor = selectionTool.hoverPoint ? "move" : "crosshair";
-
 
     if (selectionModel.button) {
 
@@ -404,8 +388,19 @@ function updateSelection() {
 
     } else if (selectionModel.mirrorAxis.moving && selectionModel.hold) {
         selectionTool.cursor = "move";
-        selectionModel.mirrorAxis.selected.x += dx;
-        selectionModel.mirrorAxis.selected.y += dy;
+
+        if (selectionModel.mirrorAxis.parallel) {
+
+            selectionModel.mirrorAxis.p1.x += xLock ? 0 : dx;
+            selectionModel.mirrorAxis.p1.y += yLock ? 0 : dy;
+
+            selectionModel.mirrorAxis.p2.x += xLock ? 0 : dx;
+            selectionModel.mirrorAxis.p2.y += yLock ? 0 : dy;
+
+        } else if(selectionModel.mirrorAxis.selected) {
+            selectionModel.mirrorAxis.selected.x += xLock ? 0 : dx;
+            selectionModel.mirrorAxis.selected.y += yLock ? 0 : dy;
+        }
     }
     else {
 
@@ -423,16 +418,29 @@ function updateSelection() {
                 selectionModel.button = false;
                 selectionTool.center();
             }
+
+            selectionModel.mirrorAxis.parallel = false;
+            selectionModel.parallel = false;
+
         }
 
         if (selectionModel.button && selectionModel.hold && !selectionModel.moving) {
 
             if (selectionTool.activePoint) {
                 selectionTool.cursor = "move";
-                selectionTool.activePoint.x += dx;
-                selectionTool.activePoint.y += dy;
+
+                if (selectionModel.parallel) {
+                    let idx = selectionTool.points.indexOf(selectionTool.activePoint);
+
+                    let next = selectionTool.points[idx - 1] ?? selectionTool.points[idx + 1] ?? point(0, 0);
+                    next.x += xLock ? 0 : dx;
+                    next.y += yLock ? 0 : dy;
+                }
+
+                selectionTool.activePoint.x += xLock ? 0 : dx;
+                selectionTool.activePoint.y += yLock ? 0 : dy;
+
                 selectionTool.center();
-                selectionModel.mirrorAxis.moving = false;
             }
         }
 

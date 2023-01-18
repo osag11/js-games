@@ -2,7 +2,24 @@ window.addEventListener("keydown", handleKeyDown);
 
 function handleKeyDown(event) {
     const keyPressed = event.keyCode;
-    console.log(`keyPressed: ${keyPressed} ${event.code}`)
+    console.log(`keyPressed: ${keyPressed} ${event.code}`);
+
+    // Ctrl hold and move selection tool
+    if (selectionModel.enabled && event.ctrlKey) {
+
+        if (selectionModel.mirrorAxis.enabled) {
+            selectionModel.mirrorAxis.parallel = true;
+            selectionModel.parallel = false;
+        } else {
+            selectionModel.parallel = true;
+            selectionModel.mirrorAxis.parallel = false;
+        }
+
+    } else {
+
+        selectionModel.parallel = false;
+        selectionModel.mirrorAxis.parallel = false;
+    }
 
     // ignore if layer name editing
     if (namingInProgress) return;
@@ -67,7 +84,7 @@ function handleKeyDown(event) {
     if (keyPressed == 27) {// Esc
         handle_clear_command();
     }
-    
+
     if (keyPressed == 8) {// Backspace
         if (event.ctrlKey)
             mirror_tool_use_reflection_only_switch_command();

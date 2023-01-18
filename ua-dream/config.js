@@ -15,7 +15,7 @@ module.exports = {
       },
 
       scripts: {
-        src: './tilecraft/*.{js,html}',
+        src: './tilecraft/*.{js,html,css}',
         build: buildBase + '/',
         release: releaseBase + '/'
       },

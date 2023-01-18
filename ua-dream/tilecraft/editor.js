@@ -164,12 +164,19 @@ function mouse_move(event) {
 
             if (layer().current_shape) {
 
-                layer().current_shape.x += dx;
-                layer().current_shape.y += dy;
+                layer().current_shape.x = xLock ? 0 : (mouseX - gridSize / 2);
+                layer().current_shape.y = yLock ? 0 : (mouseY - gridSize / 2);
 
                 if (gridOn) {
                     layer().current_shape.x = roundNearest(layer().current_shape.x, gridSize);
                     layer().current_shape.y = roundNearest(layer().current_shape.y, gridSize);
+                }
+            }
+            
+            if (layer().selection && layer().selection.length > 0) {
+                for (let s of layer().selection) {
+                    s.x += xLock ? 0 : dx;
+                    s.y += yLock ? 0 : dy;
                 }
             }
 
@@ -182,8 +189,8 @@ function mouse_move(event) {
                     layer().selection = [...deepCopy];
 
                     for (let s of layer().selection) {
-                        s.x += dx;
-                        s.y += dy;
+                        s.x += xLock ? 0 : dx;
+                        s.y += yLock ? 0 : dy;
                     }
                     layer().move_selection_copy = false;
 
@@ -192,22 +199,22 @@ function mouse_move(event) {
                     if (selectionModel.inverse) {
                         for (let s of layer().shapes) {
                             if (layer().selection.indexOf(s) < 0) {
-                                s.x += dx;
-                                s.y += dy;
+                                s.x += xLock ? 0 : dx;
+                                s.y += yLock ? 0 : dy;
                             }
                         }
                     } else {
                         for (let s of layer().selection) {
-                            s.x += dx;
-                            s.y += dy;
+                            s.x += xLock ? 0 : dx;
+                            s.y += yLock ? 0 : dy;
                         }
                     }
                 }
 
             } else {
                 for (let s of layer().shapes) {
-                    s.x += dx;
-                    s.y += dy;
+                    s.x += xLock ? 0 : dx;
+                    s.y += yLock ? 0 : dy;
                 }
             }
         } else {
@@ -339,13 +346,3 @@ function handlePinch(evt) {
     return false;
 }
 
-function getDistance(p1, p2) {
-    return Math.hypot(p2.x - p1.x, p2.y - p1.y);
-}
-
-function getCenter(p1, p2) {
-    return {
-        x: (p1.x + p2.x) / 2,
-        y: (p1.y + p2.y) / 2,
-    };
-}

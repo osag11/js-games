@@ -32,11 +32,33 @@ function delete_selection_active_point_command() {
 
 function mirror_tool_switch_command() {
     selectionModel.mirrorAxis.enabled = !selectionModel.mirrorAxis.enabled;
+    
+    if (!selectionModel.mirrorAxis.enabled) {
+        selectionModel.mirrorAxis.useReflectionOnly = false;
+    }
 }
 
 function mirror_tool_use_reflection_only_switch_command() {
     selectionModel.mirrorAxis.useReflectionOnly = !selectionModel.mirrorAxis.useReflectionOnly;
 }
+function handleSelectionParallelMove(state) {
+    if (selectionModel.enabled && state) {
+
+        if (selectionModel.mirrorAxis.enabled) {
+            selectionModel.mirrorAxis.parallel = true;
+            selectionModel.parallel = false;
+        } else {
+            selectionModel.parallel = true;
+            selectionModel.mirrorAxis.parallel = false;
+        }
+
+    } else {
+
+        selectionModel.parallel = false;
+        selectionModel.mirrorAxis.parallel = false;
+    }
+}
+
 
 function fill_selection_tiles_command(paletteStrategy = 'next') {
     let selectionPoints = selectionTool.getPoints(selectionModel.mirrorAxis.useReflectionOnly);
