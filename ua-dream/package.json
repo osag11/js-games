@@ -1,0 +1,44 @@
+{
+  "name": "tilecraft",
+  "type": "commonjs",
+  "version": "1.0.0",
+  "description": "tile crafting for Cognitive Behavioral Therapy ",
+  "main": "entry-point.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cerginio/js-games.git"
+  },
+  "keywords": [
+    "tilecraft",
+    "js",
+    "html5",
+    "canvas",
+    "CBT",
+    "2d",
+    "drawing",
+    "tools",
+    "editor",
+    "tiles",
+    "shapes"
+  ],
+  "author": "Sergii Kulyk",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/cerginio/js-games/issues"
+  },
+  "homepage": "https://github.com/cerginio/js-games#readme",
+  "devDependencies": {
+    "del": "^7.0.0",
+    "gulp": "^4.0.2",
+    "gulp-clean": "^0.4.0",
+    "gulp-rev": "^10.0.0",
+    "gulp-rev-rewrite": "^5.0.0",
+    "gulp-zip": "^5.1.0"
+  },
+  "dependencies": {
+    "node-fetch": "^2.6.6"
+  }
+}

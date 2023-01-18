@@ -52,13 +52,11 @@ function handleMouseEvents(e) {
     }
 }
 
-//["mousedown", "mouseup", "mousemove"].forEach(name => document.addEventListener(name, mouseEvents));
-// http://jsfiddle.net/cpbwx5vr/1/
-
 
 const point = (x, y) => ({ x, y });
-//  linear interpolation between two numbers  
-// https://quickref.me/calculate-the-linear-interpolation-between-two-numbers
+
+// linear interpolation between two numbers  
+// Kudo to https://quickref.me/calculate-the-linear-interpolation-between-two-numbers
 const lerp = (a, b, amount) => (1 - amount) * a + amount * b;
 
 const polylineShape = () => ({
@@ -92,9 +90,8 @@ const polylineShape = () => ({
 
         let selectionPoints = this.useInterpolation ? this.getInterpolationPoints() : this.points;
         let reflectedPoints = selectionModel.mirrorAxis.enabled ? this.reflect(selectionPoints, selectionModel.mirrorAxis.p1, selectionModel.mirrorAxis.p2) : [];
-       
-        if(useReflectionOnly)
-        {
+
+        if (useReflectionOnly) {
             return reflectedPoints;
         }
 
@@ -137,7 +134,7 @@ const polylineShape = () => ({
                 let minX = Math.min(p1.x, p2.x);
                 let maxY = Math.max(p1.y, p2.y);
                 let minY = Math.min(p1.y, p2.y);
-                // here is bug, not all cases handled
+
                 if (ip.x <= maxX && ip.x >= minX && ip.y <= maxY && ip.y >= minY) {
                     result.push(ip);
                 }
@@ -151,7 +148,7 @@ const polylineShape = () => ({
         let result = [];
         let pointsCopy = [...this.points];
         if (this.closePath && this.points.length > 2) {
-            pointsCopy = pointsCopy.concat(pointsCopy[0]);
+            pointsCopy.push(point(pointsCopy[0].x, pointsCopy[0].y));
         }
 
         let iterator = 0;
@@ -231,13 +228,15 @@ const polylineShape = () => ({
         }
         ctx.stroke();
 
+
         // draw interpolation
         if (this.useInterpolation) {
             ctx.lineWidth = 0.8;
             ctx.strokeStyle = this.color;
             ctx.fillStyle = this.color;
             ctx.beginPath();
-            for (const p of this.getInterpolationPoints()) {
+            const drawingPoints = this.getInterpolationPoints()
+            for (const p of drawingPoints) {
 
                 ctx.moveTo(p.x + markRadius, p.y);
                 ctx.arc(p.x, p.y, markRadius * 0.6, 0, Math.PI * 2);
@@ -265,7 +264,6 @@ const polylineShape = () => ({
         for (const p of this.points) {
             ctx.fillText(this.points.indexOf(p), p.x + markRadius * 2, p.y + markRadius);
         }
-
 
         if (this.centerPoint && this.points.length > 2) {
             ctx.lineWidth = this.isCenterSelected ? markRadius * 2 : markRadius * 1;
@@ -298,6 +296,8 @@ const polylineShape = () => ({
         let ma = selectionModel.mirrorAxis;
 
         if (ma.enabled) {
+
+            ctx.beginPath();
             ctx.strokeStyle = this.color;
             ctx.moveTo(ma.p1.x, ma.p1.y);
             ctx.lineTo(ma.p2.x, ma.p2.y);
@@ -309,18 +309,22 @@ const polylineShape = () => ({
             ctx.stroke();
 
 
-            ctx.strokeStyle = this.color;
-            ctx.beginPath();
-
-            ctx.lineWidth = 1;
-
-            let reflectedPoints = this.reflect(this.points, ma.p1, ma.p2);
+            let reflectedPoints = this.reflect(this.getInterpolationPoints(), ma.p1, ma.p2);
 
             if (reflectedPoints.length > 0) {
+
+                ctx.strokeStyle = contrastBgColor;
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+
                 ctx.moveTo(reflectedPoints[0].x, reflectedPoints[0].y)
 
                 for (const p of reflectedPoints) {
                     ctx.lineTo(p.x, p.y)
+                }
+
+                if (this.closePath) {
+                    ctx.closePath();
                 }
 
                 for (const p of reflectedPoints) {
@@ -328,8 +332,9 @@ const polylineShape = () => ({
                     ctx.moveTo(p.x + markRadius, p.y);
                     ctx.arc(p.x, p.y, markRadius, 0, Math.PI * 2);
                 }
+
+                ctx.stroke();
             }
-            ctx.stroke();
         }
     },
 
@@ -368,7 +373,7 @@ function updateSelection() {
 
     selectionTool.cursor = selectionTool.hoverPoint ? "move" : "crosshair";
 
-    
+
     if (selectionModel.button) {
 
         selectionTool.isCenterSelected = selectionTool.centerPoint ? getDistance(selectionTool.centerPoint, selectionModel) <= markRadius * 4 : false;
@@ -383,12 +388,12 @@ function updateSelection() {
 
         if (selectionModel.mirrorAxis.selected) {
 
-            debugInfo[0] = JSON.stringify(selectionModel.mirrorAxis.selected);
-            debugInfo[1] = JSON.stringify(selectionModel.mirrorAxis.p1);
-            debugInfo[2] = JSON.stringify(selectionModel.mirrorAxis.p2);
-
             selectionModel.mirrorAxis.moving = true;
             selectionTool.cursor = "move";
+
+            // debugInfo[0] = JSON.stringify(selectionModel.mirrorAxis.selected);
+            // debugInfo[1] = JSON.stringify(selectionModel.mirrorAxis.p1);
+            // debugInfo[2] = JSON.stringify(selectionModel.mirrorAxis.p2);
         }
     }
 
@@ -429,11 +434,9 @@ function updateSelection() {
                 selectionTool.center();
                 selectionModel.mirrorAxis.moving = false;
             }
-
         }
 
         selectionModel.moving = selectionModel.hold && selectionModel.moving;
-
     }
 
     selectionModel.mirrorAxis.moving = selectionModel.hold && selectionModel.mirrorAxis.moving;
@@ -454,10 +457,10 @@ function drawCircle(pos, color = "red", size = 8) {
     ctx.beginPath();
     ctx.arc(pos.x, pos.y, size, 0, Math.PI * 2);
     ctx.stroke();
-    //ctx.closePath();
+    ctx.closePath();
 }
 
-
+// Kudo to https://gist.github.com/balint42/b99934b2a6990a53e14b#file-reflect-js
 var reflect = function (p, p0, p1) {
     var dx, dy, a, b, x, y;
 
@@ -470,24 +473,3 @@ var reflect = function (p, p0, p1) {
 
     return { x: x, y: y };
 }
-
-// function project(p, a, b) {
-
-//     var atob = { x: b.x - a.x, y: b.y - a.y };
-//     var atop = { x: p.x - a.x, y: p.y - a.y };
-//     var len = atob.x * atob.x + atob.y * atob.y;
-//     var dot = atop.x * atob.x + atop.y * atob.y;
-//     var t = min(1, max(0, dot / len));
-
-//     dot = (b.x - a.x) * (p.y - a.y) - (b.y - a.y) * (p.x - a.x);
-
-//     return {
-//         point: {
-//             x: a.x + atob.x * t,
-//             y: a.y + atob.y * t
-//         },
-//         left: dot < 1,
-//         dot: dot,
-//         t: t
-//     };
-// }
