@@ -32,7 +32,7 @@ function delete_selection_active_point_command() {
 
 function mirror_tool_switch_command() {
     selectionModel.mirrorAxis.enabled = !selectionModel.mirrorAxis.enabled;
-    
+
     if (!selectionModel.mirrorAxis.enabled) {
         selectionModel.mirrorAxis.useReflectionOnly = false;
     }
@@ -41,6 +41,7 @@ function mirror_tool_switch_command() {
 function mirror_tool_use_reflection_only_switch_command() {
     selectionModel.mirrorAxis.useReflectionOnly = !selectionModel.mirrorAxis.useReflectionOnly;
 }
+
 function handleSelectionParallelMove(state) {
     if (selectionModel.enabled && state) {
 

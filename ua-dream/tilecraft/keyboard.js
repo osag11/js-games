@@ -5,22 +5,8 @@ function handleKeyDown(event) {
     console.log(`keyPressed: ${keyPressed} ${event.code}`);
 
     // Ctrl hold and move selection tool
-    if (selectionModel.enabled && event.ctrlKey) {
-
-        if (selectionModel.mirrorAxis.enabled) {
-            selectionModel.mirrorAxis.parallel = true;
-            selectionModel.parallel = false;
-        } else {
-            selectionModel.parallel = true;
-            selectionModel.mirrorAxis.parallel = false;
-        }
-
-    } else {
-
-        selectionModel.parallel = false;
-        selectionModel.mirrorAxis.parallel = false;
-    }
-
+    handleSelectionParallelMove(event.ctrlKey);
+    
     // ignore if layer name editing
     if (namingInProgress) return;
 
