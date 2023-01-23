@@ -30,12 +30,28 @@ function main() {
 }
 
 function setSize() {
+    // Hackish layout. TODO: rework
     canvas.height = window.innerHeight;
     canvas.width = window.innerWidth - tools.width;
     toolsCanvas.height = window.innerHeight - colorBlock.height - 44;
     toolsCanvas.style.marginTop = colorBlock.height + 44 + "px";
 }
 
+function detectMob() {
+    const toMatch = [
+        /Android/i,
+        /webOS/i,
+        /iPhone/i,
+        /iPad/i,
+        /iPod/i,
+        /BlackBerry/i,
+        /Windows Phone/i
+    ];
+
+    return toMatch.some((toMatchItem) => {
+        return navigator.userAgent.match(toMatchItem);
+    });
+}
 
 // entry-point
 setSize();
@@ -48,6 +64,8 @@ main();
 
 
 function setup() {
+    mobile_layout = detectMob();
+    
     gridOn = false;
     randomColor = true;
     initGrid(layer().gridSize);
@@ -59,6 +77,5 @@ function setup() {
     selectionTool.color = pickerModel.rgbaColor;
 
     selectionModel.mirrorAxis.p1 = { x: canvas.width / 2, y: 50 };
-    selectionModel.mirrorAxis.p2 = { x: canvas.width / 2, y: canvas.height - 50 };    
-
+    selectionModel.mirrorAxis.p2 = { x: canvas.width / 2, y: canvas.height - 50 };
 }

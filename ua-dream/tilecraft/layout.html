@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="tabs.css">
+
+    <style>
+        body {
+            overscroll-behavior: contain;
+            user-select: none
+        }
+
+        * {
+            box-sizing: border-box;
+            padding: 0;
+            margin: 0;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-panel {
+            flex: auto;
+            min-height: 100vh;
+            background: darkslateblue;
+        }
+
+        .tools-panel {
+            width: 300px;
+            display: flex;
+            background: dodgerblue;
+        }
+
+        .color-panel {
+            order: 0;
+            display: flex;
+            flex-direction: row;
+            width: auto;
+        }
+
+        .color-block {
+            background: crimson;
+        }
+
+        .color-strip {
+            background: pink;
+        }
+
+        /* mobile */
+        @media only screen and (min-width: 400px) and (max-width: 768px) {
+            .side-panel {
+                order: 1;
+                width: 200px;
+                display: none;
+                background: deeppink;
+            }
+
+            .main-panel {
+                order: 2;
+                background: red;
+            }
+
+            .tools-panel {
+                order: 0;
+                flex-direction: row;
+            }
+
+            .color-panel {
+                order: 1;
+            }
+        }
+
+
+        /* desktop */
+        @media only screen and  (min-width: 769px) {
+            .container {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+
+            .side-panel {
+                order: 0;
+                width: 200px;
+                display: none;
+                background: deeppink;
+            }
+
+            .main-panel {
+                order: 1;
+                background: darkslateblue;
+            }
+
+            .tools-panel {
+                order: 2;
+                flex-direction: column;
+            }
+
+            .color-panel {
+                order: 0;
+            }
+        }
+
+/* TODO: */
+/*       @media only screen and  (min-device-width: 400px) and (max-device-width: 768px) {
+            .side-panel {
+                order: 1;
+                width: 200px;
+                display: none;
+                background: deeppink;
+            }
+
+            .main-panel {
+                order: 2;
+                background: red;
+            }
+
+            .tools-panel {
+                order: 0;
+                flex-direction: row;
+            }
+
+            .color-panel {
+                order: 1;
+            }
+        }
+*/
+    </style>
+
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="side-panel">
+            HELP
+        </div>
+
+        <div class="tools-panel">
+            <div class="color-panel" id="color-picker">
+                <label for="color-input" id="color-label" style="background-color: white">
+                    <img src="images/random-color.png" height="180" width="70">
+                    <p style="margin:6px;"></p>
+                </label>
+
+                <canvas class="color-block" id="color-block" height="180" width="170"></canvas>
+                <canvas class="color-strip" id="color-strip" height="180" width="60"></canvas>
+            </div>
+
+            <canvas id="tools" style="border: 1px solid; background-color:grey;"></canvas>
+        </div>
+
+        <div class="main-panel">
+            <canvas id="canvas" style="border: 1px solid; background-color:black;"></canvas>
+        </div>
+    </div>
+
+    <!--
+    <div class="container">
+        <canvas id="canvas" style="border: 1px solid; background-color:black;" width="auto" height="auto"></canvas>
+        <canvas id="tools" style="border: 1px solid; background-color:black;" width="auto" height="auto"></canvas>
+
+        <div id="file-panel">
+            <input type='file' accept=".json" onchange='openFile(event)' style="color:white">
+        </div>
+
+        <div id="tool-panel">
+            <button type="button" onclick="toggleVirtualKeyboard()">pop-menu</button>
+            <button type="button" onclick="help_switch_command()">?</button>
+            <button type="button" onclick="hex_palette_switch_command()">palette</button>
+            <input type="input" style="max-width:60px;" name="layerName" onfocusin="nameFocusHandler(event)"
+                onfocusout="nameFocusHandler(event)" onchange="onLayerNameChanged(this.value)" value="backstage">
+            <button type="button" onclick="addLayer()">+</button>
+            <button type="button" onclick="removeLayer()">-</button>
+            <select name="activeLayer" style="max-width:60px;display:none"
+                onchange="onActiveLayerChanged(this.value)"></select>
+        </div>
+
+        <input type="checkbox" id="color-input" onclick="randomColorState(this.checked)" checked>
+        <div id="color-picker">
+            <label for="color-input" id="color-label" style="background-color: white">
+                <img src="images/random-color.png" height="180" width="70">
+                <p style="margin:6px;"></p>
+            </label>
+
+            <canvas id="color-block" height="180" width="150"></canvas>
+            <canvas id="color-strip" height="180" width="45"></canvas>
+        </div>
+
+    </div>
+    -->
+    <script src="layout.js"></script>
+</body>

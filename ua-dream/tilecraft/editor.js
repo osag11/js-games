@@ -8,6 +8,8 @@ let startY;
 let offset_x;
 let offset_y;
 
+let mobile_layout =false;
+
 function get_offset() {
     let canvas_offsets = canvas.getBoundingClientRect();
     offset_x = canvas_offsets.left;
@@ -22,6 +24,8 @@ window.onresize = function () {
 }
 
 canvas.onresize = function () { get_offset(); }
+
+/* mouse handlers */
 
 function mouse_down(event) {
     event.preventDefault();
@@ -172,7 +176,7 @@ function mouse_move(event) {
                     layer().current_shape.y = roundNearest(layer().current_shape.y, gridSize);
                 }
             }
-            
+
             if (layer().selection && layer().selection.length > 0) {
                 for (let s of layer().selection) {
                     s.x += xLock ? 0 : dx;
