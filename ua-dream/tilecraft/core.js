@@ -248,7 +248,7 @@ function draw() {
     if (debugOn) {
         ctx.fillStyle = contrastBgColor;
         ctx.font = "12px serif";
-        const a = 0;
+        const a = 0;// on mobile devices there is scroll lift
         for (let i = 0; i < debugInfo.length; i++) {
             ctx.fillText(debugInfo[i], 20, 20 * (i + 1) + a);
         }

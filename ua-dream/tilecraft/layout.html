@@ -5,6 +5,12 @@
     <link rel="stylesheet" href="tabs.css">
 
     <style>
+        :root {
+            --blue: darkslateblue;
+            --white: #ffffff;
+        }
+
+
         body {
             overscroll-behavior: contain;
             user-select: none
@@ -24,7 +30,7 @@
         .main-panel {
             flex: auto;
             min-height: 100vh;
-            background: darkslateblue;
+            background-color: var(--blue);
         }
 
         .tools-panel {
@@ -48,18 +54,18 @@
             background: pink;
         }
 
+        .side-panel {
+            order: 1;
+            width: 200px;
+            display: none;
+            background: deeppink;
+        }
+
         /* mobile */
         @media only screen and (min-width: 400px) and (max-width: 768px) {
-            .side-panel {
-                order: 1;
-                width: 200px;
-                display: none;
-                background: deeppink;
-            }
 
             .main-panel {
                 order: 2;
-                background: red;
             }
 
             .tools-panel {
@@ -74,22 +80,14 @@
 
 
         /* desktop */
-        @media only screen and  (min-width: 769px) {
+        @media only screen and (min-width: 769px) {
             .container {
                 flex-direction: row;
                 flex-wrap: wrap;
             }
 
-            .side-panel {
-                order: 0;
-                width: 200px;
-                display: none;
-                background: deeppink;
-            }
-
             .main-panel {
                 order: 1;
-                background: darkslateblue;
             }
 
             .tools-panel {
@@ -102,18 +100,16 @@
             }
         }
 
-/* TODO: */
-/*       @media only screen and  (min-device-width: 400px) and (max-device-width: 768px) {
-            .side-panel {
-                order: 1;
-                width: 200px;
-                display: none;
-                background: deeppink;
+        /* TODO: */
+       /* @media only screen and (min-device-width: 400px) and (max-device-width: 768px) {
+            .container {
+                display: flex;
+                flex-direction: column;
             }
 
             .main-panel {
                 order: 2;
-                background: red;
+                background: darkslateblue;
             }
 
             .tools-panel {
@@ -124,8 +120,7 @@
             .color-panel {
                 order: 1;
             }
-        }
-*/
+        }*/
     </style>
 
 </head>

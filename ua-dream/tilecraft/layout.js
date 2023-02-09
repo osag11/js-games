@@ -19,7 +19,23 @@ window.onresize = function () {
 
 canvas.onresize = function () { get_offset(); }
 
+let media = [
+    "only screen and (min-width: 400px) and (max-width: 768px)",
+    "only screen and  (min-width: 769px)",
+    "only screen and  (min-device-width: 400px) and (max-device-width: 768px)",
+];
+
+
 function setSize() {
+    let debug = [];
+
+    media.forEach(m => {
+        if (window.matchMedia(m).matches) {
+            console.log(m);
+            debug.push(m);
+        }
+    });
+
 
     let winHeight = window.innerHeight;
     let winWidth = window.innerWidth;
@@ -49,6 +65,14 @@ function setSize() {
 
         toolsCanvas.height = colorPanelHeight - vMargin;
         toolsCanvas.width = window.innerWidth - colorPanelWidth - hMargin;
+    }
+
+    for (let i = 0; i < debug.length; i++) {
+        const item = debug[i];
+        ctx.fillStyle = 'white';
+        ctx.font = "12px serif";
+        ctx.fillText(`${item}`, 40, i*20+20);
+
     }
 }
 
